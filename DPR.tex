@@ -1,0 +1,68 @@
+% překládejte pomocí příkazu xelatex
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{url}
+
+%-------- odkomentujte pokud chcete pro seznam literatury používat biblatex, číselné odkazy  -------
+%\usepackage[style=iso-numeric]{biblatex}
+%\addbibresource{mybibliography.bib}
+%----------------------------------------------------------------------------------------------------
+
+\title{Implementation of GPU B-tree} %doplňte název bakalářské práce
+\author{
+    \small Author: Tat Dat Duong\\
+    \small Supervisor: \\
+    \small Specialization:
+} %doplňte své jméno, jméno vedoucího a svůj studijní obor
+\date{\small \url{username@fit.cvut.cz}}
+
+\begin{document}
+
+\maketitle              
+
+\paragraph{Keywords}{First keyword, Second keyword, Another keyword}
+%doplňte cca 5 až 10 klíčových slov oddělených čárkou
+%klíčová slova jsou odborné termíny popisující zaměření práce
+%mohou být vyjádřeny i více slovy (např. "konečný automat")
+
+\section{Introduction}
+%popis problému, který práce řeší + lze popsat i co práce neřeší (pokud je to dle vás potřeba)
+%důvody, proč je zajímavé/důležité se problémem zabývat, přínosy práce
+%vaše motivace pro výběr tématu (je-li dle vás zajímavá)
+%návaznost na jiné závěrečné práce 
+%popis struktury práce (stručný popis následujících sekcí)
+
+\section{Aim of the Thesis}
+%stanovte si cíl(e) pro svou práci (naplnění pak zhodnotíte v závěru)
+%lze rozdělit na hlavní cíle a dílčí (pokud máte více cílů)
+
+\section{Previous Work}
+%teoretická část, popis definic a zavedení používaných pojmů/metod atd. 
+%popis dosavadních poznatků (rešerše) k danému problému (kdo a jak problém řešil, k čemu došel, výhody a nevýhody) 
+%tato kapitola prokazuje vaši znalost daného tématu, zde budete nejvíce citovat
+
+\section{Your Approach}
+%zde by měl být popsán váš přístup k řešení daného problému, odůvodnění zvolených technik, experimenty, výpočty, testování, popis implementace apod.
+%jedná se o tvůrčí část práce, tj. musí být poznat, co je vaše práce
+
+\section{Conclusion}
+%shrnutí cíle (cílů) práce a zhodnocení jeho (jejich) naplnění
+%uvedení dosažených výsledků, komentář k využití daného řešení v praxi
+%možné podněty pro navazující práce (výhled do budoucna)
+
+% ---- Seznam literatury ----
+% použít můžete prostředí "thebibliography" nebo "biblatex" -- (ne)výhody jednotlivých řešení budou probrány na cvičení
+
+% THEBIBLIOGRAPHY -- smažte, pokud chcete pro seznam literatury používat biblatex
+\begin{thebibliography}{9}
+\bibitem{ukazka1} 
+ŠESTÁKOVÁ, Eliška. 
+\textit{Automaty a gramatiky: sbírka řešených příkladů}.
+1.~vydání. Praha: České vysoké učení technické, 2017. ISBN 978-80-01-06306-4.
+\end{thebibliography}
+
+% BIBLATEX -- odkomentujte, pokud chcete pro seznam literatury používat biblatex
+%\printbibliography
+
+\end{document}
