@@ -10,3 +10,7 @@ jobs:
         uses: xu-cheng/latex-action@v2
         with:
           root_file: BP_Duong_Tat_Dat_2021.tex
+      - uses: actions/upload-artifact@v2
+        with:
+          name: PDF
+          path: BP_Duong_Tat_Dat_2021.pdf
