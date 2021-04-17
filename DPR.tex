@@ -36,15 +36,32 @@
 \section{Aim of the Thesis}
 %stanovte si cíl(e) pro svou práci (naplnění pak zhodnotíte v závěru)
 %lze rozdělit na hlavní cíle a dílčí (pokud máte více cílů)
+The main goal of this bachelor thesis is to introduce a valid and working implementation of B-Tree data structure performing its' operation on GPU. 
+
+Further goals include familiarizing with programming GPU cards on NVIDIA CUDA platform and extending Template Numerical Library with patterns and data structures to accommodate development of graph algorithms. 
+
+We aim to measure performance speedup in comparison to reference state-of-the-art CPU implementation as well as competing GPU implementations of B-Tree and other data structures, such as hash table.
 
 \section{Previous Work}
 %teoretická část, popis definic a zavedení používaných pojmů/metod atd. 
 %popis dosavadních poznatků (rešerše) k danému problému (kdo a jak problém řešil, k čemu došel, výhody a nevýhody) 
 %tato kapitola prokazuje vaši znalost daného tématu, zde budete nejvíce citovat
 
+% CUDA
+% TNL
+% B-Tree
+% B-Link-Tree
+
 \section{Your Approach}
 %zde by měl být popsán váš přístup k řešení daného problému, odůvodnění zvolených technik, experimenty, výpočty, testování, popis implementace apod.
 %jedná se o tvůrčí část práce, tj. musí být poznat, co je vaše práce
+
+% Implementing CPU implementation
+% Experiment with potential splitting techniques
+% Add latching mechanism
+% Add debugging tool
+% Naively move into CUDA
+% Utilize Warp Cooperative Work Scheduling work balance
 
 \section{Conclusion}
 %shrnutí cíle (cílů) práce a zhodnocení jeho (jejich) naplnění
