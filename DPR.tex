@@ -9,56 +9,129 @@
 %\addbibresource{mybibliography.bib}
 %----------------------------------------------------------------------------------------------------
 
-\title{Implementation of GPU B-tree} %doplňte název bakalářské práce
+\title{Implementation of GPU B-Tree} %doplňte název bakalářské práce
 \author{
     \small Author: Tat Dat Duong\\
-    \small Supervisor: \\
-    \small Specialization:
+    \small Supervisor: Ing. Tomáš Obenhuber, Ph.D.\\
+    \small Specialization: Computer Science
 } %doplňte své jméno, jméno vedoucího a svůj studijní obor
-\date{\small \url{username@fit.cvut.cz}}
+\date{\small \url{duongtat@fit.cvut.cz}}
+\usepackage{biblatex}
+\addbibresource{sources.bib}
 
 \begin{document}
 
-\maketitle              
+\maketitle
 
 \paragraph{Keywords}{Data structures, B-Tree, B-Link-Tree, CUDA, GPU, TNL, Concurrency control}
 
 \section{Introduction}
-%popis problému, který práce řeší + lze popsat i co práce neřeší (pokud je to dle vás potřeba)
-%důvody, proč je zajímavé/důležité se problémem zabývat, přínosy práce
-%vaše motivace pro výběr tématu (je-li dle vás zajímavá)
-%návaznost na jiné závěrečné práce 
-%popis struktury práce (stručný popis následujících sekcí)
+\subsection{Motivation}
+
+Application of B-Tree and its' ubiquitousness
+
+\subsection{Structure of work}
 
 \section{Aim of the Thesis}
-%stanovte si cíl(e) pro svou práci (naplnění pak zhodnotíte v závěru)
-%lze rozdělit na hlavní cíle a dílčí (pokud máte více cílů)
-The main goal of this bachelor thesis is to introduce a valid and working implementation of B-Tree data structure performing its' operation on GPU. 
+The purpose of this bachelor thesis is to familiarize with GPU programming using CUDA, study and analyze the Template Numerical Library and introduce a valid implementation of B-Tree data structure performing its' operation on GPU.
 
-Further goals include familiarizing with programming GPU cards on NVIDIA CUDA platform and extending Template Numerical Library with patterns and data structures to accommodate development of graph algorithms. 
-
-We aim to measure performance speedup in comparison to reference state-of-the-art CPU implementation as well as competing GPU implementations of B-Tree and other data structures, such as hash table.
+Performance is measured against implementations found in standard C++ STL library, state-of-the-art CPU data structures as well as similar GPU implementations of B-Tree and other data structures, such as hash table.
 
 \section{Previous Work}
-%teoretická část, popis definic a zavedení používaných pojmů/metod atd. 
-%popis dosavadních poznatků (rešerše) k danému problému (kdo a jak problém řešil, k čemu došel, výhody a nevýhody) 
-%tato kapitola prokazuje vaši znalost daného tématu, zde budete nejvíce citovat
 
-% CUDA
-% TNL
-% B-Tree
-% B-Link-Tree
+\begin{itemize}
+    \item Kromě \cite{awad} všechny implementace vycházejí z toho, že ten strom se postaví na CPU a posléze se překopíruje do GPU 
+    \item 
+\end{itemize}
+
+B+-Tree Optimized for GPGPU \cite{kaczmarski} \\
+Engineering a High-Performance GPU B-Tree \cite{awad} \\
+Efficient locking for concurrent operations on B-trees \cite{lehman} \\
+
+\section{Theory}
+
+The GPU is comprised of an array of compute units called \textit{streaming multiprocessors} (SM). Each SM can handle many threads concurrently.
+
+Each SM has its own:
+
+\begin{itemize}
+    \item Register file:
+    \item CUDA cores:
+    \item SFU:
+    \item Shared memory / L1 cache
+\end{itemize}
+
+\subsection{GPU memory hiearchy}
+
+GPU has its own memory and memory addressing separate from
+Memory in GPU is divided into several regions:
+
+\begin{itemize}
+    \item Registers
+    \item Local memory
+    \item Shared memory
+    \item Constant memory
+    \item Global memory
+    \item Texture memory
+\end{itemize}
+
+\subsection{CUDA programming model}
+In order to simplify development on general-purpose GPUs, NVIDIA introduced CUDA programming model in November 2006. With CUDA, users can write applications exploiting the parallel nature of GPU using familiar high-level programming languages such as C/C++.
+
+The core idea behind CUDA is that parallel threads running on GPU are created and invoked by a coprocessor. This relationship between a CPU and GPU is modeled in CUDA as two separate entities: Host (CPU) and Device (GPU). A program is run by the host, which then launches parallel threads designed to be run on the device.
+
+CUDA allows the programmer to define functions, called kernels, which can be executed multiple times in parallel by different CUDA threads. These threads need to be grouped into thread blocks, as these blocks are later assigned to a specific SM limited in the number of processors. Thus, in order to invoke a kernel function, we need to pass additional parameters describing the number of thread blocks and the size of each thread block.
+
+Internally, only a few threads can execute at once by a streaming multiprocessor. Threads inside a thread block are thus partitioned into groups of 32 parallel threads called warps. A warp then executes a common instruction for all of its threads at the same time. This architecture is called SIMT - single instruction, multiple threads.
+
+The threads can execute each instruction independently, as each thread in a warp has their own registry state and instruction address counter. Thus the warps can freely branch and diverge. However, if a thread needs to take a path caused by a data-dependent branch, all other threads not on that same path are disabled, hindering the performance. Warps are at their peak efficiency when all of their threads execute the same instructions.
+
+\subsection{TNL}
+
+Template Numerical Library (TNL), is a C++ library offering robust tools for high performance computing and scientific computations. One of of the projects goals is provide a familiar interface, by reimplementing parts of STL to exploit parallel nature of GPU processing.
+
+The library makes a great use of template meta-programming to create an unified interface for both CPU and GPU. Regardless of target device, the interface stays the same and allows the programmer to enable or disable invocation on GPU without major rewrites. This pattern has heavily influenced the design of our implementation.
+
+Some of its classes have been used during implementation:
+
+\subsubsection{Views}
+
+TODO
+
+\subsubsection{Allocator}
+
+TODO
+
+\subsubsection{Devices}
+
+TODO
+
+
+\subsection{B-Tree}
+\begin{itemize}
+    \item Overview
+    \item Complexity
+    \item Search
+    \item Insertion
+    \item Balancing
+\end{itemize}
+
+\subsection{B-Link-Tree}
+\begin{itemize}
+    \item Overview
+    \item Differences
+    \item Complexity
+\end{itemize}
 
 \section{Your Approach}
-%zde by měl být popsán váš přístup k řešení daného problému, odůvodnění zvolených technik, experimenty, výpočty, testování, popis implementace apod.
-%jedná se o tvůrčí část práce, tj. musí být poznat, co je vaše práce
-
-% Implementing CPU implementation
-% Experiment with potential splitting techniques
-% Add latching mechanism
-% Add debugging tool
-% Naively move into CUDA
-% Utilize Warp Cooperative Work Scheduling work balance
+\begin{itemize}
+    \item Seach
+    \item Insertion
+    \item Removal
+    \item Add latching mechanism
+    \item Add debugging tool
+    \item Utilize Warp Cooperative Work Scheduling work balance
+\end{itemize}
 
 \section{Conclusion}
 %shrnutí cíle (cílů) práce a zhodnocení jeho (jejich) naplnění
@@ -68,15 +141,7 @@ We aim to measure performance speedup in comparison to reference state-of-the-ar
 % ---- Seznam literatury ----
 % použít můžete prostředí "thebibliography" nebo "biblatex" -- (ne)výhody jednotlivých řešení budou probrány na cvičení
 
-% THEBIBLIOGRAPHY -- smažte, pokud chcete pro seznam literatury používat biblatex
-\begin{thebibliography}{9}
-\bibitem{ukazka1} 
-ŠESTÁKOVÁ, Eliška. 
-\textit{Automaty a gramatiky: sbírka řešených příkladů}.
-1.~vydání. Praha: České vysoké učení technické, 2017. ISBN 978-80-01-06306-4.
-\end{thebibliography}
-
 % BIBLATEX -- odkomentujte, pokud chcete pro seznam literatury používat biblatex
-%\printbibliography
+\printbibliography
 
 \end{document}

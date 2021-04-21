@@ -56,6 +56,15 @@
 \setsecnumdepth{part}
 \chapter{Introduction}
 
+\subsection{Motivation}
+\begin{itemize}
+	\item Application of B-Tree and its' ubiquitousness
+\end{itemize}
+
+\subsection{Structure of Work}
+The purpose of this bachelor thesis is to familiarize with GPU programming using CUDA, study and analyze the Template Numerical Library and introduce a valid implementation of B-Tree data structure performing its' operation on GPU.
+
+Performance is measured against implementations found in standard C++ STL library, state-of-the-art CPU data structures as well as similar GPU implementations of B-Tree and other data structures, such as hash table.
 
 
 \setsecnumdepth{all}
@@ -63,13 +72,73 @@
 
 \chapter{Analysis and design}
 
+\subsection{GPU hardware architecture}
+
+The GPU is composed of an array of compute units called streaming multiprocessors.
+
+\subsection{GPU memory hiearchy}
+
+Memory in GPU is divided into several regions:
+
+\begin{itemize}
+	\item Registers
+	\item Local memory
+	\item Shared memory
+	\item Constant memory
+	\item Global memory
+	\item Texture memory
+\end{itemize}
+
+\subsection{CUDA programming model}
+In order to simplify development on general-purpose GPUs, NVIDIA introduced CUDA programming model in November 2006. With CUDA, users can write applications exploiting the parallel nature of GPU using familiar high-level programming languages such as C/C++.
+
+The core idea behind CUDA is that parallel threads running on GPU are created and invoked by a coprocessor. This relationship between a CPU and GPU is modeled in CUDA as two separate entities: Host (CPU) and Device (GPU). A program is run by the host, which then launches parallel threads designed to be run on the device.
+
+CUDA allows the programmer to define functions, called kernels, which can be executed multiple times in parallel by different CUDA threads. These threads need to be grouped into thread blocks, as these blocks are later assigned to a specific SM limited in the number of processors. Thus, in order to invoke a kernel function, we need to pass additional parameters describing the number of thread blocks and the size of each thread block.
+
+Internally, only a few threads can execute at once by a streaming multiprocessor. Threads inside a thread block are thus partitioned into groups of 32 parallel threads called warps. Each thread inside a warp have their own registry state and instruction address counter the threads can execute each instruction independently. This architecture is called SIMT - single instruction, multiple threads.
+
+Warps are at their peak efficiency when all of their threads execute the same instructions. However, if a thread needs to take a path caused by a data-dependent branch, all other threads not on that same path are disabled, hindering the performance.
+
+\subsection{TNL}
+
+\subsubsection{TNL ArrayView}
+\begin{itemize}
+	\item How it works
+	\item Array, ArrayView
+\end{itemize}
+
+\subsection{B-Tree}
+\begin{itemize}
+	\item What is is
+	\item How it is described
+	\item Complexity
+\end{itemize}
+
+\subsection{B-Link-Tree}
+\begin{itemize}
+	\item Why we decided for it
+	\item Differences
+	\item Complexity
+	\item Yahman, Leo concurrency control
+\end{itemize}
+
+
 \chapter{Realisation}
+
+\begin{itemize}
+	\item Implementing CPU implementation
+	\item Experiment with potential splitting techniques
+	\item Add latching mechanism
+	\item Add debugging tool
+	\item Utilize Warp Cooperative Work Scheduling work balance
+\end{itemize}
 
 \setsecnumdepth{part}
 \chapter{Conclusion}
 
 
-\bibliographystyle{iso690}
+\bibliographystyle{plain}
 \bibliography{sources}
 
 \setsecnumdepth{all}
