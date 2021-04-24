@@ -2182,10 +2182,18 @@
     <bcf:datasource type="file" datatype="bibtex">sources.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="1">awad</bcf:citekey>
-    <bcf:citekey order="2">kaczmarski</bcf:citekey>
-    <bcf:citekey order="3">awad</bcf:citekey>
-    <bcf:citekey order="4">lehman</bcf:citekey>
+    <bcf:citekey order="1">bayer-org</bcf:citekey>
+    <bcf:citekey order="2">10.1145/356770.356776</bcf:citekey>
+    <bcf:citekey order="3">knuth1998art</bcf:citekey>
+    <bcf:citekey order="4">goetz-text</bcf:citekey>
+    <bcf:citekey order="5">samadi1976b</bcf:citekey>
+    <bcf:citekey order="6">goetz-tech</bcf:citekey>
+    <bcf:citekey order="7">lehman</bcf:citekey>
+    <bcf:citekey order="8">awad</bcf:citekey>
+    <bcf:citekey order="9">fix2011accelerating</bcf:citekey>
+    <bcf:citekey order="10">kaczmarski</bcf:citekey>
+    <bcf:citekey order="11">awad</bcf:citekey>
+    <bcf:citekey order="12">ashkiani2018dynamic</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">

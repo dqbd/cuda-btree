@@ -28,9 +28,10 @@
 \section{Introduction}
 \subsection{Motivation}
 
-Application of B-Tree and its' ubiquitousness
+- GPUs are different than CPUs. Instead of reducing the latency and increasing speed of executing instructions, GPUs are achieving better performance by increasing throughput of instructions. Multiple execution streams achieve are able to process much more data with proper techniques utilizing parallel computations at the cost of efficiency on sequential operations.
 
-\subsection{Structure of work}
+- GPUs are now really powerful. Much more than GPUs. We can utilize their parallel nature to reduce the latencies found in CPUs. Most of the common usages of GPUs are related towards vector and matrix based operations. With the increasing memory sizes found in GPUs it opens a possibility of storing large quantity of data in GPUs directly. Having strong and general data structures open up potential savings which might be useful in database systems.
+
 
 \section{Aim of the Thesis}
 The purpose of this bachelor thesis is to familiarize with GPU programming using CUDA, study and analyze the Template Numerical Library and introduce a valid implementation of B-Tree data structure performing its' operation on GPU.
@@ -39,14 +40,55 @@ Performance is measured against implementations found in standard C++ STL librar
 
 \section{Previous Work}
 
+\subsection{B-Tree}
+Since their invention 50 years ago \cite{bayer-org}, B-Tres have been already considered ubiquitous less than 10 years later \cite{10.1145/356770.356776}. B-trees can be found in various forms in databases and file systems, where a performant self-balancing external index for large blocks of data is required.
+
+B-Tree is a self balanced tree supporting searching, insertion, deletion and updates in logarithmic time. Internally, the structure keeps the records sorted and operations preserve the sort order within the node.
+
+There are three kind of nodes found in a B-tree: root node, leaf nodes and internal nodes. Formally, as described by Knuth \cite{knuth1998art}, a B-tree of order m is a tree, that has the following properties:
+
+\begin{enumerate}
+    \item Every node has at most m children.
+    \item Every internal node, has at least m/2 children.
+    \item The root node has at least 2 children, except if it is a leaf node.
+    \item All leaf nodes appear on the same height.
+    \item Non-leaf nodes with k children contain k - 1 keys.
+\end{enumerate}
+
+There are various variants spurred from original B-tree:
+
 \begin{itemize}
-    \item Kromě \cite{awad} všechny implementace vycházejí z toho, že ten strom se postaví na CPU a posléze se překopíruje do GPU 
-    \item 
+    \item B+Tree: All of the keys are stored in leaf nodes. Separator keys may not match to keys contained in leaf nodes and may be freely chosen, with the only requirement being they properly point to correct subtree during a search. Deletion thus can affect only leave nodes. Leaf nodes may also include a pointer to its sibling.
+    \item B*tree: Each internal node must be at least 2/3 full, rather than half full.
 \end{itemize}
 
-B+-Tree Optimized for GPGPU \cite{kaczmarski} \\
-Engineering a High-Performance GPU B-Tree \cite{awad} \\
-Efficient locking for concurrent operations on B-trees \cite{lehman} \\
+
+- As described by \cite{goetz-text}, the relationship between B-trees and sorting can be exploited, an existing B-Tree can forgo sorting and the most efficient way to construct a B-tree is from a intially sorted list instead of random insert operations.
+
+\subsection{Concurrency control}
+
+Primary goal of concurrency control is to ensure correctness of results after concurrent operations are performed on the structure. Concurrency control can however mean two things, either the correctness and serializability of logical contents or serializability among threads modifying data structure in memory.
+
+In databases, the primary concern is to protech database contents, regardless of internal representation of said contents. Locks are utilzed to separate concurrent transactions. These locks have sophisticated acquiring and releasing mechanisms, usually handled by a lock manager with support of prioritization and queuing. As these locks ensure the serializability of database contents but not their representation, a B-Tree does not require locks of all non-leaf pages.
+
+In our case we must ensure the operations modifying the data structure in memory are serializable and do not create an invalid or incomplete state of the entire structure, not just its contents. Latches are commonly used, resembling critical sections implemented by mutexes and semaphores. They have a benefit of lower overhead, as these can be implemented with handful of instructions in comparison to full fledged lock managers.
+
+More specifically, splitting an full node is a major challenge for concurrent updates of B-Trees. As one thread is splitting a full B-Tree node, all the other threads must not observe any intermediate or incomplete state of data structure. Two latches on differnt levels must be acquired to atomically serialize changes to the full node, its new sibling and the parent of said full node. Even so, a splitting might propagate towards the root, as a split operation might cause the parent node to subsequently become full, further bottlenecking the concurrency on the entire tree.
+
+Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which alberit straighforward severely reduced concurrency.
+
+In order to alleviate the bottleneck without risking inconsistency, B-link-tree relaxes the definition of B-Trees. As explained by Graefe \cite{goetz-tech}, B-link-tree divides node splitting into two independent steps: splittng the node and insertion of a new separator key in the parent node. Each node thus have a pointer a sibling at the same level of the tree, thus the name B-link-tree \cite{lehman}.
+
+\subsection{Prior Art}
+
+Previous GPU projects mentioned in \cite{awad} focused on query throughput and show poor incremental insertion performance or did not support updating on GPU at all and instead rebuilt the B-Tree on update.
+
+Fix et al. \cite{fix2011accelerating} measured substantial performance speedup compared to sequential CPU exection by running independent queries in each thread block, while creating the tree on CPU.
+
+Kaczmarski \cite{kaczmarski} utilized the relationship between sorted list and B-trees by sorting and bulk creation a B+tree on GPU, outlining optimalization of insert and creation beyond rebuilding structure on CPU.
+
+Awad et. al \cite{awad} proposed a GPU implementation of B-Tree which supports concurrent queries (single, range, successor) and updates (insertion, deletion), combining concurrency control provided by B-link-tree with proactive splitting and Warp Cooperative Work Sharing proposed by \cite{ashkiani2018dynamic}.
+
 
 \section{Theory}
 
@@ -94,43 +136,37 @@ The library makes a great use of template meta-programming to create an unified 
 
 Some of its classes have been used during implementation:
 
+\subsubsection{Devices and Allocators}
+
+TODO
+
 \subsubsection{Views}
 
-TODO
+We should, alongside parallelism, take care of how we work with memory in CUDA. CUDA only offers low-level primitives for allocating and deallocating memory, similar to languages like C. However, the programmer must also keep in mind the existence of two separate memories. What is allocated on CPUs is directly not accessible from GPUs and vice-versa. Thus, TNL includes a set of classes aiming to alleviate the work needed to address memories between the devices.
 
-\subsubsection{Allocator}
+TNL::Container::Array is a template container class for one-dimensional dynamic array. This class allows to specify on which device the data should be allocated.
 
-TODO
+- Host code can access data allocated on GPU. If the template argument is set to TNL::Devices::Host, the container behaves similar to std::vector. However, when the device is set to TNL::Devices::Cuda, all of the operations are implemented with parallelism in mind.
 
-\subsubsection{Devices}
+- Data can be accessed only from a device it was previously allocated on. In order to be able to read or write from a different device, copying of data must occur beforehand. These cross-device operations are however expensive and should be used sparingly.
 
-TODO
+- One common problem we ought to have is the ability of supplying instance of Array containers. As kernel invocations cannot pass the instance by reference, the contents are copied on GPU, thus creating significant overhead. In order to bypass this issue, a companion class TNL::Container::ArrayView is provided alongside Array. This class allows the user to read and write data into memory, but forbids allocating or resizing space.
 
+Vector
 
-\subsection{B-Tree}
-\begin{itemize}
-    \item Overview
-    \item Complexity
-    \item Search
-    \item Insertion
-    \item Balancing
-\end{itemize}
+StaticArray
 
-\subsection{B-Link-Tree}
-\begin{itemize}
-    \item Overview
-    \item Differences
-    \item Complexity
-\end{itemize}
+getView, getConstView
 
 \section{Your Approach}
+
 \begin{itemize}
-    \item Seach
-    \item Insertion
+    \item Proactive splitting / top down splitting
+    \item Warp Cooperative Work Sharing
+    \item Warp based opeartions
+    \item Debugging tool
+    \item Search
     \item Removal
-    \item Add latching mechanism
-    \item Add debugging tool
-    \item Utilize Warp Cooperative Work Scheduling work balance
 \end{itemize}
 
 \section{Conclusion}
