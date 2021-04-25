@@ -1,0 +1,38 @@
+\subsection{Data Structure and Memory Allocation}
+
+We present the proposed node data structure used thorough the implementation. Comments and helper methods were removed from the Code \ref{lst:bnode} for the sake of brevity.
+
+\begin{listing}[H]
+  \begin{minted}{cpp}
+template <
+  typename KeyType,
+  typename ValueType,
+  size_t Order,
+  size_t KeyInf
+>
+struct BNode {
+  BNode * mSibling;
+  KeyType mHighKey;
+
+  uint8_t mLeaf;
+  uint8_t mSize;
+
+  bool mWriteLock = false;
+
+  KeyType mKeys[Order];
+  ValueType mValues[Order];
+  BNode * mChildren[Order]; 
+
+  __cuda_callable__ size_t childSize() {
+    if (this->mLeaf == false && this->mSize > 0) {
+      return this->mSize + 1;
+    }
+    return this->mSize;
+  }
+}
+    \end{minted}
+  \caption{The \code{BNode} struct}\label{lst:bnode}
+\end{listing}
+
+As our allocator, we have chosen to implement a bump allocator (also known as stack allocator). It allocates a continuous linear section in memory and works by increasing a pointer at the next unused memory. We used atomic instructions and thread barriers to ensure serializability in case of concurrent invocations from different threads. Implementation of the bump allocator can be found in \code{/src/Utils/BumpAllocator.hpp}.
+

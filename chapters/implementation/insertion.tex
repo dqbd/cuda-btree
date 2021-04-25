@@ -1,0 +1,4 @@
+\subsection{Insertion}
+
+During insertion, a single kernel is executed from the host. We follow the Work Cooperative Work-Sharing strategy; thus, a single thread (with assigned key-value pair) is chosen from a queue using \code{cg::tiled\_partition<32>.ballot()}, and all threads in a warp cooperate to complete the insertion.
+

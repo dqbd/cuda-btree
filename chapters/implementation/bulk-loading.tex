@@ -1,0 +1,25 @@
+\subsection{Bulk Loading}
+
+As a B-Link-Tree internally stores its key-value pairs in nodes, we can avoid inserting these pairs individually. Instead, we construct the tree in a bottom-up approach, creating all nodes of a level at once, which can be seen in Algorithm \ref{alg:bulk-loading}.
+
+\begin{algorithm}[H]
+  \caption{Bulk Loading}\label{alg:bulk-loading}
+  \SetKwInOut{Input}{Input}
+  \SetKw{return}{return}
+  \SetKwRepeat{Do}{do}{until}
+
+  \textit{sortByKeyKernel(inputKeys, inputValues)}\\
+  (keys, children) $\gets$ \textit{CreateLeafKernel(inputKeys, inputValues)}\\
+  \While{\textit{children.len()} $> 1$}{
+    (keys, children) $\gets$ \textit{CreateInternalKernel(keys, children)}
+  }
+  \textit{setRootNode(children[0])}
+\end{algorithm}
+
+We sort the key-value pairs with the \code{thrust::sort} function, as the TNL library does not have a sort function yet. Multiple kernel invocations are used to create appropriate nodes for each level.
+
+The expected node count for each level is calculated by dividing the number of pairs by the desired node size. A fixed offset is chosen to make sure each node is not immediately full.
+
+$$\mathit{nodeCount} = \ceil{\frac{|\mathit{inputKeys}|}{\mathit{Order} - \mathit{Offset}}},\quad \begin{aligned} \mathit{Order} > 0\end{aligned}$$
+
+

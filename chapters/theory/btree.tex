@@ -1,0 +1,34 @@
+\subsection{B-Tree}
+
+Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases and file systems, where a performant self-balancing external index for large blocks of data is required.
+
+
+
+There are three kind of nodes found in a B-tree: root node, leaf nodes and internal nodes. Formally, as described by Knuth \cite{knuth1998art}:
+
+\begin{definition}[B-Tree]\label{def:btree}
+  B-Tree is a self-balanced tree supporting searching, insertion, deletion, and updates in logarithmic time.
+
+  B-Tree of order $m$ is a tree with these properties:
+  \begin{enumerate}
+    \item Every node has at most m children.
+    \item Every internal node has at least $m/2$ children.
+    \item The root node has at least two children, except if it is a leaf node.
+    \item All leaf nodes appear at the same height.
+    \item Non-leaf nodes with k children contain $k - 1$ keys.
+  \end{enumerate}
+\end{definition}
+
+Internally, the structure keeps the records sorted and operations preserve the sort order within the node.
+
+There are various variants spurred from the original B-tree:
+
+\begin{definition}[B$^+$Tree]\label{def:bplustree}
+  All of the keys are stored in leaf nodes. Separator keys may not match to keys contained in leaf nodes and may be freely chosen, with the only requirement being they point to correct subtree during a search. Deletion thus can affect only leave nodes. Leaf nodes may also include a pointer to its sibling.
+\end{definition}
+
+\begin{definition}[B$^\ast$Tree]\label{def:bstartree}
+  Each internal node must be at least $\frac{2}{3}$ full rather than $\frac{1}{2}$ full.
+\end{definition}
+
+- As described by Graefe \cite{goetz-tech}, there is a strong relationship between B-Trees and sorting, which can be exploited. Optimal construction of B-Tree shall forgo incremental insertion in favor of building the tree from a presorted list.

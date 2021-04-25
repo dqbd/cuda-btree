@@ -1,0 +1,9 @@
+\section{Prior Art}
+
+Previous GPU projects mentioned in \cite{awad} focused on query throughput, thus showing poor incremental insertion performance or did not support updating on GPU at all, and instead chose to rebuild the structure on the CPU.
+
+Fix et al. \cite{fix2011accelerating} measured substantial performance speedup compared to sequential CPU execution by running independent queries in each thread block. Insertion and deletion are not optimized, as the tree rebuilds itself on the CPU and copies the memory contents back to the GPU.
+
+Kaczmarski \cite{kaczmarski} exploited the relationship between a sorted list and demonstrated improved insertion time by presorting keys and proposing a novel bottom-up approach when constructing a tree. The work also explored several methods of searching within a tree node.
+
+Awad et al. \cite{awad} proposed a GPU implementation of B-Tree that supports concurrent queries (single, range, successor), insertion, and deletion. To achieve state-of-art performance, B-Link-Tree has been coupled with proactive splitting and Warp Cooperative Work Sharing as proposed by \cite{ashkiani2018dynamic}.

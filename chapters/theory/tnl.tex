@@ -1,0 +1,17 @@
+\subsection{TNL}
+
+Template Numerical Library (TNL) is a \CC\ library offering robust tools for high-performance computing and computational science. The primary goal of this project is to provide a familiar API akin to \code{STL} while offering significant performance uplift by exploiting the parallel nature of GPUs.
+
+The library makes extensive use of template meta-programming to create a unified interface for both CPU and GPU, which stays the same regardless of the selected execution target device. This interface allows the programmer to enable or disable invocation on GPU without significant rewrites. This programming pattern heavily influenced the design of the implementation.
+
+\subsubsection{Views}
+
+- We should, alongside parallelism and contention, take care of how we work with memory in CUDA. CUDA only offers low-level primitives for allocating and deallocating memory, similar to languages like C. However, the programmer must also keep in mind the existence of two separate memories. What is allocated on CPUs is directly not accessible from GPUs and vice-versa. Thus, TNL includes a set of classes aiming to alleviate the work needed to address memories between the devices.
+
+\code{TNL::Container::Array} is a template container class for one-dimensional dynamic array. This class allows the programmer to specify where the memory shall be allocated.
+
+- Host code can access data allocated on GPU. If the template argument is set to \code{TNL::Devices::Host}, the container behaves similar to \code{std::vector}. However, when the device is set to \code{TNL::Devices::Cuda}, all of the operations are implemented with parallelism in mind.
+
+- Data can be accessed only from a device it was previously allocated on. In order to be able to read or write from a different device, copying of data must occur beforehand. These cross-device operations are considerably expensive and should be used sparingly.
+
+- One common problem we ought to have is the ability of supplying instance of Array containers. As kernel invocations cannot pass the instance by reference, the contents are copied on GPU, thus creating significant overhead. In order to bypass this issue, a companion class \code{TNL::Container::ArrayView} is provided alongside Array. This class allows the user to read and write data into memory, but forbids allocating or resizing space.
