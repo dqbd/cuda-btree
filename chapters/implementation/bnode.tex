@@ -1,14 +1,12 @@
-\subsection{Data Structure and Memory Allocation}
+\section{Data Structure and Memory Allocation}
 
-We present the proposed node data structure used thorough the implementation. Comments and helper methods were removed from the Code \ref{lst:bnode} for the sake of brevity.
+We present the proposed node data structure used thorough the implementation. Comments and helper methods were removed from the Listing \ref{lst:bnode} for the sake of brevity.
 
-\begin{listing}[H]
+\begin{listing}
   \begin{minted}{cpp}
 template <
-  typename KeyType,
-  typename ValueType,
-  size_t Order,
-  size_t KeyInf
+  typename KeyType, typename ValueType,
+  size_t Order, size_t KeyInf
 >
 struct BNode {
   BNode * mSibling;

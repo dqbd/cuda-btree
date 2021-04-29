@@ -1,19 +1,17 @@
-\subsection{Concurrency Control}
+\section{Concurrency Control}
 
-Primary goal of concurrency control is to ensure correctness of results after concurrent operations are performed on the structure. Concurrency control can mean two things, either the correctness and serializability of logical contents or serializability among threads modifying data structure in memory.
+The primary goal of concurrency control is to ensure the correctness of results after concurrent operations are performed on the structure. Concurrency control can mean two things, either the correctness and serializability of logical contents or serializability among threads modifying data structure in memory.
 
-In databases, the primary concern is to protech database contents, regardless of internal representation of said contents. Locks are utilzed to separate concurrent transactions. These locks have sophisticated acquiring and releasing mechanisms, usually handled by a lock manager with support of prioritization and queuing. As these locks ensure the serializability of database contents but not their representation, a B-Tree does not require locks of all non-leaf pages.
+In databases, the primary concern is to protect database contents, regardless of the internal representation of said contents. Locks are utilized to separate concurrent transactions. These locks have sophisticated acquiring and releasing mechanisms, usually handled by a lock manager with the support of prioritization and queuing. As these locks ensure the serializability of database contents but not their representation, a B-Tree does not require locks of all non-leaf pages.
 
-In our case we must ensure the operations modifying the data structure in memory are serializable and do not create an invalid or incomplete state of the entire structure, not just its contents. Latches are commonly used, resembling critical sections implemented by mutexes and semaphores. They have a benefit of lower overhead, as these can be implemented with handful of instructions in comparison to full fledged lock managers.
+In our case, we must ensure the operations modifying the data structure in memory are serializable and do not create an invalid or incomplete state of the entire tree, not just its contents. Latches are commonly used, resembling critical sections implemented by mutexes and semaphores. They have the benefit of lower overhead, as these can be implemented with a handful of instructions in comparison to full-fledged lock managers.
 
-More specifically, splitting an full node is a major challenge for concurrent updates of B-Trees. As one thread is splitting a full B-Tree node, all the other threads must not observe any intermediate or incomplete state of data structure. Two latches on differnt levels must be acquired to atomically serialize changes to the full node, its new sibling and the parent of said full node. Even so, a splitting might propagate towards the root, as a split operation might cause the parent node to subsequently become full, further bottlenecking the concurrency on the entire tree.
+More specifically, splitting a full node is a major challenge for concurrent updates of B-Trees. As one thread is splitting a full B-Tree node, all the other threads must not observe any intermediate or incomplete state of data structure. Two latches on different levels must be acquired to atomically serialize changes to the split node, its new sibling, and the parent of a said split node. Even so, a splitting might propagate towards the root, as a split operation might cause the parent node to subsequently become full, further bottlenecking the concurrency on the entire tree.
 
-Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which albeit straighforward severely reduced concurrency.
+Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which, albeit straightforward, severely reduced concurrency.
 
-In order to alleviate the bottleneck without risking inconsistency, B-link-tree relaxes the definition of B-Trees.
+In order to alleviate the bottleneck without risking inconsistency, \textit{B-Link-Tree} relaxes the definition of B-Trees. As explained by Graefe \cite{goetz-tech}:
 
-As explained by Graefe \cite{goetz-tech}:
-
-\begin{definition}[B-Link-Tree]
-  B-Link-Tree divides node splitting into two independent steps: splittng the node and insertion of a new separator key in the parent node. Each node thus have a pointer a sibling at the same level of the tree.
-\end{definition}
+% \begin{definition}[B-Link-Tree]
+%   B-Link-Tree divides node splitting into two independent steps: splitting the node and inserting a new separator key in the parent node. Each node thus has a pointer a sibling at the same level of the tree.
+% \end{definition}

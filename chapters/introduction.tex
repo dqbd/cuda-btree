@@ -1,8 +1,3 @@
-- GPGPU zrychluje instrukce
-- Index struktury na GPU -> proč? Rychlý přístup, vkládání, mazání
-- Faster than Thrust
-- Insertion is slow
+With the advent of programmable shaders and support for floating-point operations, General-purpose computing on Graphical Processing Units (GPU) became suitable for scientific computing. Since then, GPUs have gained significant adoption for various computational tasks, such as deep learning, and became an essential staple for enabling high-performance computing for the masses.
 
-- GPUs are different than CPUs. Instead of reducing the latency and increasing speed of executing instructions, GPUs are achieving better performance by increasing throughput of instructions. Multiple execution streams achieve are able to process much more data with proper techniques utilizing parallel computations at the cost of efficiency on sequential operations.
-
-- GPUs are now really powerful. Much more than GPUs. We can utilize their parallel nature to reduce the latencies found in CPUs. Most of the common usages of GPUs are related towards vector and matrix based operations. With the increasing memory sizes found in GPUs it opens a possibility of storing large quantity of data in GPUs directly. Having strong and general data structures open up potential savings which might be useful in database systems.
+Nevertheless, the toolbox for general purpose data structures is lacking. One such data structure commonly used in classical CPU systems is B-Tree. Widely used in database systems and file systems, they became the default data structure used for reading and writing a large amount of arbitrary data of an unknown domain. Optimizing such data structure for GPU would allow us to utilize the parallel nature of GPU to accelerate searching and insertion previously unachievable in CPUs.

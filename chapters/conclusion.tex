@@ -1,20 +1,17 @@
 \section{Conclusion}
 
-The goal of this work was to study
+The purpose of this work was to understand the programming of GPGPU using CUDA, create a GPU B-Tree key-value store on top of Template Numerical Library, test the implemented tree, and compare performance between the CPU and GPU version and between other CUDA implementations.
 
-- Dílčí cíle
-- Kontext práce
+We studied the core concepts behind the CUDA programming model -- how it allows the programmer to execute code on the GPU and how threads behave during execution. We also got familiar with Template Numerical Library and how templating metaprogramming provides a unified interface for different devices.
 
-The resulting work contains a working implementation of B-tree
+Later on, this thesis delved into understanding the behavior of B-Trees and the nature of concurrency control for parallel access and writing. We explored various methods of latching and ensuring the integrity of the tree and explained the reasoning behind choosing B-Link-Tree as our underlying structure.
 
-Why we did it?
+Next, we explained how we avoid significant contention issues with proactive splitting, which limits the node modifications to two tree levels at most. This allows us to avoid implementing a stack to keep track of parent nodes.
 
-For whom we did this task? Context
+We outlined the principles behind the Warp Cooperative Work Sharing strategy and per-warp processing and how it helps us improve the performance of insertion and search by eliminating unnecessary branch divergence and improving coalesced memory access.
 
-Partial achievements completed alongside the primary goal.
+Both GPU B-Tree and its CPU counterpart were implemented on top of TNL, which takes care of actual memory allocations and data exchange between devices. Multiple \code{GoogleTest} based units were written to ensure proper functionality. We have also developed a complementary web tool written in React to visualize operations done in a multithreaded environment, where the lack of debug tools makes debugging issues hard. Performance of both of the classes were compared against \code{STL::map}, \code{TLX::BTree} and other state-of-the-art GPU implementations.
 
-Our implementation of B-tree supports bulk creation with known key-value pairs and we measure significant performance gains compared to incremental insertion.
+Our implementation demonstrated a significant performance uplift compared to our CPU counterpart, 50$\times$ during searching, 5$\times$ during incremental insertion. When compared to state-of-the-art GPU implementations, our work is 3$\times$ slower in searching and insertion, which we see as a tradeoff for a more general-purpose data structure capable of storing data of different data types.
 
-Measured against Owengroup, TLX, STL. Measured significant performance speedup in comparison to CPU implementation. Performance compared to state-of-art implementation.
-
-Improvements: reduce contention and reduce the memory access, cross-device GPU devices.
+Future works will begin by providing a locked-down version of our B-Tree, limiting the choice of data types. This version enables us to access nodes in a coalesced manner and helps us to reduce the number of load-and-store instructions in exchange for warp shuffling.

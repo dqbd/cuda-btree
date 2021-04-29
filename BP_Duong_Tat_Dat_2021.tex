@@ -1,35 +1,52 @@
-% arara: xelatex
-% arara: xelatex
-% arara: xelatex
-
-
-% options:
-% thesis=B bachelor's thesis
-% thesis=M master's thesis
-% czech thesis in Czech language
-% english thesis in English language
-% hidelinks remove colour boxes around hyperlinks
-
 \documentclass[thesis=B,english]{FITthesis}[2019/12/23]
 
-%\usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
-% \usepackage[latin2]{inputenc} % LaTeX source encoded as ISO-8859-2
-% \usepackage[cp1250]{inputenc} % LaTeX source encoded as Windows-1250
+\usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
+\usepackage{dirtree} 
+\usepackage{tikz}
+\usepackage{tikz-qtree, tikz-qtree-compat}
+\usepackage{multicol}
+\usepackage{linguex} 
+\usepackage{braket}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{minted}
+\usepackage[linesnumbered,algosection,ruled,vlined]{algorithm2e}
+\usepackage{amsmath,amsthm}
+\usepackage{amssymb}
+\usepackage{subfig}
+\usepackage{todonotes}
+\usepackage{graphicx}
+\usepackage{csquotes}
+\usepackage{hyperref}
+\usepackage{url}
 
-% \usepackage{subfig} %subfigures
-% \usepackage{amsmath} %advanced maths
-% \usepackage{amssymb} %additional math symbols
+\usepackage{biblatex}
+\addbibresource{sources.bib}
 
-\usepackage{dirtree} %directory tree visualisation
+\newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-3}{\textbf{++}}}}
+\newcommand{\code}{\texttt}
 
-% % list of acronyms
-% \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
-% \iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
-% \makeglossaries
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% EDIT THIS
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+\usetikzlibrary{arrows.meta, calc, chains, positioning, shapes.multipart}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem{note}{Note}
+
+% list of acronyms
+\usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
+\makeglossaries
+
+\input{components/acronyms.tex}
 
 \department{Department of Computer Science}
 \title{Implementation of B-trees on GPU}
@@ -42,131 +59,72 @@
 \abstractEN{Summarize the contents and contribution of your work in a few sentences in English language.}
 \abstractCS{V n{\v e}kolika v{\v e}t{\' a}ch shr{\v n}te obsah a p{\v r}{\' i}nos t{\' e}to pr{\' a}ce v {\v c}esk{\' e}m jazyce.}
 \placeForDeclarationOfAuthenticity{Prague}
-\keywordsCS{Replace with comma-separated list of keywords in Czech.}
-\keywordsEN{Replace with comma-separated list of keywords in English.}
-\declarationOfAuthenticityOption{1} %select as appropriate, according to the desired license (integer 1-6)
-% \website{http://site.example/thesis} %optional thesis URL
-
+\keywordsCS{\input{components/keywordsCS.tex}}
+\keywordsEN{\input{components/keywordsEN.tex}}
+\declarationOfAuthenticityOption{1} 
 
 \begin{document}
 
-% \newacronym{CVUT}{{\v C}VUT}{{\v C}esk{\' e} vysok{\' e} u{\v c}en{\' i} technick{\' e} v Praze}
-% \newacronym{FIT}{FIT}{Fakulta informa{\v c}n{\' i}ch technologi{\' i}}
-
 \setsecnumdepth{part}
+
 \chapter{Introduction}
 
-\subsection{Motivation}
-\begin{itemize}
-	\item Application of B-Tree and its' ubiquitousness
-\end{itemize}
+\section{Motivation}
 
-\subsection{Structure of Work}
-The purpose of this bachelor thesis is to familiarize with GPU programming using CUDA, study and analyze the Template Numerical Library and introduce a valid implementation of B-Tree data structure performing its' operation on GPU.
+\input{chapters/introduction.tex}
 
-Performance is measured against implementations found in standard C++ STL library, state-of-the-art CPU data structures as well as similar GPU implementations of B-Tree and other data structures, such as hash table.
-
+\section{Structure of Work}
 
 \setsecnumdepth{all}
+
 \chapter{State-of-the-art}
 
-\chapter{Analysis and design}
+\input{chapters/prior-art.tex}
 
-\subsection{GPU hardware architecture}
+\chapter{Theory}
 
-The GPU is composed of an array of compute units called streaming multiprocessors.
-
-\subsection{GPU memory hiearchy}
-
-Memory in GPU is divided into several regions:
-
-\begin{itemize}
-	\item Registers
-	\item Local memory
-	\item Shared memory
-	\item Constant memory
-	\item Global memory
-	\item Texture memory
-\end{itemize}
-
-\subsection{CUDA programming model}
-In order to simplify development on general-purpose GPUs, NVIDIA introduced CUDA programming model in November 2006. With CUDA, users can write applications exploiting the parallel nature of GPU using familiar high-level programming languages such as C/C++.
-
-The core idea behind CUDA is that parallel threads running on GPU are created and invoked by a coprocessor. This relationship between a CPU and GPU is modeled in CUDA as two separate entities: Host (CPU) and Device (GPU). A program is run by the host, which then launches parallel threads designed to be run on the device.
-
-CUDA allows the programmer to define functions, called kernels, which can be executed multiple times in parallel by different CUDA threads. These threads need to be grouped into thread blocks, as these blocks are later assigned to a specific SM limited in the number of processors. Thus, in order to invoke a kernel function, we need to pass additional parameters describing the number of thread blocks and the size of each thread block.
-
-Internally, only a few threads can execute at once by a streaming multiprocessor. Threads inside a thread block are thus partitioned into groups of 32 parallel threads called warps. Each thread inside a warp have their own registry state and instruction address counter the threads can execute each instruction independently. This architecture is called SIMT - single instruction, multiple threads.
-
-Warps are at their peak efficiency when all of their threads execute the same instructions. However, if a thread needs to take a path caused by a data-dependent branch, all other threads not on that same path are disabled, hindering the performance.
-
-\subsection{TNL}
-
-\subsubsection{TNL ArrayView}
-\begin{itemize}
-	\item How it works
-	\item Array, ArrayView
-\end{itemize}
-
-\subsection{B-Tree}
-\begin{itemize}
-	\item What is is
-	\item How it is described
-	\item Complexity
-\end{itemize}
-
-\subsection{B-Link-Tree}
-\begin{itemize}
-	\item Why we decided for it
-	\item Differences
-	\item Complexity
-	\item Yahman, Leo concurrency control
-\end{itemize}
-
+\input{chapters/theory/btree.tex}
+\input{chapters/theory/concurrency.tex}
+\input{chapters/theory/cuda.tex}
+\input{chapters/theory/tnl.tex}
+\input{chapters/theory/proactive-splitting.tex}
+\input{chapters/theory/wcws.tex}
 
 \chapter{Realisation}
 
-\begin{itemize}
-	\item Implementing CPU implementation
-	\item Experiment with potential splitting techniques
-	\item Add latching mechanism
-	\item Add debugging tool
-	\item Utilize Warp Cooperative Work Scheduling work balance
-\end{itemize}
+In this chapter, we are going to present implementation details and design choices made to construct a B-Tree implementation on GPU. The entire implementation is written in \acrshort{cuda} \CC.
+
+\input{chapters/implementation/bnode.tex}
+\input{chapters/implementation/bulk-loading.tex}
+\input{chapters/implementation/insertion.tex}
+\input{chapters/implementation/search-delete.tex}
 
 \setsecnumdepth{part}
+
 \chapter{Conclusion}
 
+\input{chapters/conclusion.tex}
 
-\bibliographystyle{plain}
-\bibliography{sources}
+\printbibliography
 
 \setsecnumdepth{all}
 \appendix
 
-\chapter{Acronyms}
-% \printglossaries
-\begin{description}
-	\item[GUI] Graphical user interface
-	\item[XML] Extensible markup language
-\end{description}
-
+\printglossary[type=\acronymtype]
 
 \chapter{Contents of enclosed CD}
 
-%change appropriately
-
-% \begin{figure}
-% 	\dirtree{%
-% 		.1 readme.txt\DTcomment{the file with CD contents description}.
-% 		.1 exe\DTcomment{the directory with executables}.
-% 		.1 src\DTcomment{the directory of source codes}.
-% 		.2 wbdcm\DTcomment{implementation sources}.
-% 		.2 thesis\DTcomment{the directory of \LaTeX{} source codes of the thesis}.
-% 		.1 text\DTcomment{the thesis text directory}.
-% 		.2 thesis.pdf\DTcomment{the thesis text in PDF format}.
-% 		.2 thesis.ps\DTcomment{the thesis text in PS format}.
-% 	}
-% \end{figure}
+\begin{figure}
+	\dirtree{%
+		.1 readme.txt\DTcomment{the file with CD contents description}.
+		.1 exe\DTcomment{the directory with executables}.
+		.1 src\DTcomment{the directory of source codes}.
+		.2 wbdcm\DTcomment{implementation sources}.
+		.2 thesis\DTcomment{the directory of \LaTeX{} source codes of the thesis}.
+		.1 text\DTcomment{the thesis text directory}.
+		.2 thesis.pdf\DTcomment{the thesis text in PDF format}.
+		.2 thesis.ps\DTcomment{the thesis text in PS format}.
+	}
+\end{figure}
 
 \end{document}
