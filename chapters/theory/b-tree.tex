@@ -1,41 +1,87 @@
 \section{B-Tree}
 
-B-Tree is a self-balanced binary search tree used for storing large blocks of data. It captures and maintains the sort order of data and supports searching, sequential retrieval, insertion, and deletion in logarithmic time.
+B-Tree is a balanced search tree used for storing large blocks of data. It captures and maintains the sort order of data and supports searching, sequential retrieval, insertion, and deletion in logarithmic time.
 
 Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases and file systems, where a performant self-balancing external index for large blocks of data is required.
 
 Formally, as described by Knuth \cite{knuth1998art}:
 
-\begin{definition}[B-Tree]\label{def:btree}
-  B-Tree of order $m$ is a tree with these properties:
+\begin{definition}\label{def:btree}
+  B-Tree of order $2m$ is a tree with these properties:
   \begin{enumerate}
-    \item Every node has at most m children.
-    \item Every internal node has at least $m/2$ children.
+    \item Every node has at most $2m$ children.
+    \item Every internal node has at least $m$ children.
     \item The root node has at least two children, except if it is a leaf node.
     \item All leaf nodes appear at the same height.
-    \item Non-leaf nodes with k children contain $k - 1$ keys.
+    \item Non-leaf nodes with $k$ children contain $k - 1$ keys.
   \end{enumerate}
 \end{definition}
 
-\input{components/assets/b-tree.tex}
+Each node has a variable amount of keys inside. In internal nodes, these keys act as separators to divide the tree into smaller subtrees. 
 
-\todo{B-Tree with order = 1 is a binary search tree}
+\todo{Add more formal definition of separator keys}
 
-\todo{B-Tree with order = 3 is a 2-3 tree}
+\input{components/figure/b-tree.tex}
 
-B-Trees strike a resembling similarity compared to more known Binary Search Trees. And it does make sense, as Binary Search Trees are generalized variants of B-Trees. It raises the question, though, why B-Trees are used for on-disk data, and BSTs, such as AVL Trees or Red-Black trees, are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by filling the block with the entire node.
+\begin{lemma}
+  Every B-Tree with $n$ keys has height equal $\Theta(\log{n})$
+\end{lemma}
+
+\todo{Add proof}
+
+B-Trees strike a resembling similarity compared to more known Binary Search Trees. And it does make sense, as Binary Search Trees are generalized variants of B-Trees. It raises the question, though, why B-Trees are used for on-disk data and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by filling the block with the entire node.
 
 This optimization was initially proposed for disk-based storage, but it still yields significant improvements even when storing data in memory; as with CPU caches and memory line caches, we can treat the memory as a block-access device.
 
+The main benefit of B-Trees is their shallow height even with many keys inserted; thus, the number of disk accesses to traverse the tree is also low.
+
 \subsection{Search}
 
-\begin{itemize}
-  \item Search within node, binary search or warp search
-  \item If internal node, navigate to the child pointer
-  \item If leaf node, obtain result
-\end{itemize}
+The search algorithm for B-Trees is trivial but crucial, similar to the search algorithm for binary search trees. Starting from the root node, we compare the keys in every node and decide the subtree to continue the search. The search ends if we find the desired key or if we end up in a leaf node.
+
+\begin{algorithm}
+  \caption{B-Tree Search}\label{alg:b-tree-search}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+
+  \SetKwFunction{Search}{Search}
+  \SetKwFunction{UpperBound}{UpperBound}
+
+  \SetKwProg{Fn}{Function}{:}{}
+  \Fn{\Search{$node$, $key$}}{
+    $i \gets 0$\;
+
+    \While{$i < node.size$ $\&\&$ $key > node.keys[i]$}{
+      $i \gets i + 1$\;
+    }
+
+    \If{$node.keys[i]$ = $key$}{
+      \KwRet{$($$node$, $i$$)$}\;
+    }
+
+    \If{node.leaf = \textbf{true}}{
+      \KwRet{null}\;
+    }
+
+    \KwRet \Search{$node[i]$, $key$}\;
+  }
+\end{algorithm}
+
+Line 3--4 in the sample Alogirhtm \ref{alg:b-tree-search} can be replaced with a binary search or parallelized search in CUDA, which yields better performance when searching.
 
 \subsection{Insertion}
+
+When inserting, we need to make sure of rebalancing the tree, which is why we need to perform a split operation if the node has gone full.
+
+\begin{algorithm}
+  \caption{B-Tree Insert}\label{alg:b-tree-insert}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+
+  
+
+\end{algorithm}
 
 \begin{itemize}
   \item Traverse to leaf node
