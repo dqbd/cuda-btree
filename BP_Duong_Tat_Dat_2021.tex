@@ -1,5 +1,6 @@
 \documentclass[thesis=B,english]{FITthesis}[2019/12/23]
 
+\usepackage{pdfpages}
 \usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
 \usepackage{dirtree} 
 \usepackage{tikz}
@@ -21,10 +22,10 @@
 \usepackage{hyperref}
 \usepackage{url}
 
-\usepackage{biblatex}
+\usepackage[style=iso-numeric]{biblatex}
 \addbibresource{sources.bib}
 
-\newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-3}{\textbf{++}}}}
+\newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.25ex}{\relsize{-2}{\textbf{++}}}}
 \newcommand{\code}{\texttt}
 
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
@@ -81,12 +82,16 @@
 
 \input{chapters/prior-art.tex}
 
+\chapter{Preliminaries}
+
+\input{chapters/preliminaries/gpu.tex}
+\input{chapters/preliminaries/cuda.tex}
+\input{chapters/preliminaries/tnl.tex}
+
 \chapter{Theory}
 
 \input{chapters/theory/btree.tex}
 \input{chapters/theory/concurrency.tex}
-\input{chapters/theory/cuda.tex}
-\input{chapters/theory/tnl.tex}
 \input{chapters/theory/proactive-splitting.tex}
 \input{chapters/theory/wcws.tex}
 
@@ -95,19 +100,19 @@
 In this chapter, we are going to present implementation details and design choices made to construct a B-Tree implementation on GPU. The entire implementation is written in \acrshort{cuda} \CC.
 
 \input{chapters/implementation/bnode.tex}
-\input{chapters/implementation/bulk-loading.tex}
-\input{chapters/implementation/insertion.tex}
-\input{chapters/implementation/search-delete.tex}
+\input{chapters/implementation/create.tex}
+\input{chapters/implementation/insert.tex}
+\input{chapters/implementation/query.tex}
+\input{chapters/implementation/delete.tex}
 
 \setsecnumdepth{part}
-
 \chapter{Conclusion}
 
 \input{chapters/conclusion.tex}
 
 \printbibliography
-
 \setsecnumdepth{all}
+
 \appendix
 
 \printglossary[type=\acronymtype]

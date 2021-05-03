@@ -1,6 +1,13 @@
-\subsection{B-Tree}
+\section{B-Tree}
 
-Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases and file systems, where a performant self-balancing external index for large blocks of data is required.
+Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. 
+
+They can be found in various forms in databases and file systems, where a performant self-balancing external index for large blocks of data is required.
+
+\begin{definition}[B-Tree]
+  
+\end{definition}
+
 
 \begin{figure}
   \centering
@@ -41,8 +48,6 @@ Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already c
 
     \draw[->](a.east) -- (b.west);
 
-
-
     \draw[->](root.two split south) -- +(1,-1)
     node[bnode, anchor=north](c) {
         \nodepart{one} $17$
@@ -62,8 +67,6 @@ Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already c
       };
 
     \draw[->](c.east) -- (d.west);
-
-
 
   \end{tikzpicture}
   \caption{B-Tree with $\mathit{Order} = 5$}
