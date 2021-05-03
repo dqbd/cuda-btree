@@ -10,6 +10,7 @@ jobs:
         uses: xu-cheng/latex-action@v2
         with:
           root_file: BP_Duong_Tat_Dat_2021.tex
+          latexmk_shell_escape: true
       - uses: actions/upload-artifact@v2
         with:
           name: PDF
