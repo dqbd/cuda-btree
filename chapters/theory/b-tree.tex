@@ -1,0 +1,41 @@
+\section{B-Tree}
+
+B-Tree is a self-balanced binary search tree used for storing large blocks of data. It captures and maintains the sort order of data and supports searching, sequential retrieval, insertion, and deletion in logarithmic time.
+
+Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases and file systems, where a performant self-balancing external index for large blocks of data is required.
+
+Formally, as described by Knuth \cite{knuth1998art}:
+
+\begin{definition}[B-Tree]\label{def:btree}
+  B-Tree of order $m$ is a tree with these properties:
+  \begin{enumerate}
+    \item Every node has at most m children.
+    \item Every internal node has at least $m/2$ children.
+    \item The root node has at least two children, except if it is a leaf node.
+    \item All leaf nodes appear at the same height.
+    \item Non-leaf nodes with k children contain $k - 1$ keys.
+  \end{enumerate}
+\end{definition}
+
+\input{components/assets/b-tree.tex}
+
+\todo{B-Tree with order = 1 is a binary search tree}
+
+\todo{B-Tree with order = 3 is a 2-3 tree}
+
+B-Trees strike a resembling similarity compared to more known Binary Search Trees. And it does make sense, as Binary Search Trees are generalized variants of B-Trees. It raises the question, though, why B-Trees are used for on-disk data, and BSTs, such as AVL Trees or Red-Black trees, are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by filling the block with the entire node.
+
+This optimization was initially proposed for disk-based storage, but it still yields significant improvements even when storing data in memory; as with CPU caches and memory line caches, we can treat the memory as a block-access device.
+
+\subsection{Search}
+
+\todo{Add search}
+
+\subsection{Insertion}
+
+\todo{Add insertion splitting}
+
+\subsection{Deletion}
+
+\todo{Add deletion and merging}
+

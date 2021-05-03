@@ -1,0 +1,9 @@
+\section{B-Link-Tree}
+
+Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which, albeit straightforward, severely reduced concurrency.
+
+In order to alleviate the bottleneck without risking inconsistency, \textit{B-Link-Tree} relaxes the definition of B-Trees. As explained by Graefe \cite{goetz-tech}:
+
+\begin{definition}[B-Link-Tree]
+  B-Link-Tree divides node splitting into two independent steps: splitting the node and inserting a new separator key in the parent node. Each node thus has a pointer a sibling at the same level of the tree.
+\end{definition}

@@ -1,0 +1,61 @@
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+      bnode/.style = {
+          draw,
+          text width=1em,
+          align=center,
+          rectangle split,
+          rectangle split horizontal,
+          rectangle split parts= 3,
+        },
+    ]
+    \node[bnode](root) {
+      \nodepart{one}    $1$
+      \nodepart{two}    $2$
+      \nodepart{three}  $3$
+      \nodepart{four}   $4$
+      \nodepart{five}
+    };
+
+    \draw[->](root.south west) -- +(-3,-1)
+    node[bnode, anchor=north](a){
+        \nodepart{one} $3$
+        \nodepart{two} $9$
+        \nodepart{three} $10$
+        \nodepart{four} $12$
+      };
+
+    \draw[->](root.one split south) -- +(-1,-1)
+    node[bnode, anchor=north](b) {
+        \nodepart{one} $13$
+        \nodepart{two} $14$
+        \nodepart{three} $15$
+        \nodepart{four}
+      };
+
+    \draw[->](a.east) -- (b.west);
+
+    \draw[->](root.two split south) -- +(1,-1)
+    node[bnode, anchor=north](c) {
+        \nodepart{one} $17$
+        \nodepart{two} $18$
+        \nodepart{three}
+        \nodepart{four}
+      };
+
+    \draw[->](b.east) -- (c.west);
+
+    \draw[->](root.south east) -- +(3,-1)
+    node[bnode, anchor=north](d) {
+        \nodepart{one} $21$
+        \nodepart{two} $29$
+        \nodepart{three}
+        \nodepart{four}
+      };
+
+    \draw[->](c.east) -- (d.west);
+
+  \end{tikzpicture}
+  \caption{B-Tree with $\mathit{Order} = 5$}
+\end{figure}

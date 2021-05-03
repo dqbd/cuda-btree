@@ -90,15 +90,17 @@
 
 \chapter{Theory}
 
-\input{chapters/theory/btree.tex}
+\input{chapters/theory/b-tree.tex}
+\input{chapters/theory/b+tree.tex}
 \input{chapters/theory/concurrency.tex}
-\input{chapters/theory/proactive-splitting.tex}
-\input{chapters/theory/wcws.tex}
+\input{chapters/theory/b-link-tree.tex}
 
 \chapter{Realisation}
 
 In this chapter, we are going to present implementation details and design choices made to construct a B-Tree implementation on GPU. The entire implementation is written in \acrshort{cuda} \CC.
 
+\input{chapters/implementation/proactive-splitting.tex}
+\input{chapters/implementation/wcws.tex}
 \input{chapters/implementation/bnode.tex}
 \input{chapters/implementation/create.tex}
 \input{chapters/implementation/insert.tex}
@@ -111,10 +113,9 @@ In this chapter, we are going to present implementation details and design choic
 \input{chapters/conclusion.tex}
 
 \printbibliography
+
 \setsecnumdepth{all}
-
 \appendix
-
 \printglossary[type=\acronymtype]
 
 \chapter{Contents of enclosed CD}

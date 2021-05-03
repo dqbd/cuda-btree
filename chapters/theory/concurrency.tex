@@ -7,11 +7,3 @@ In databases, the primary concern is to protect database contents, regardless of
 In our case, we must ensure the operations modifying the data structure in memory are serializable and do not create an invalid or incomplete state of the entire tree, not just its contents. Latches are commonly used, resembling critical sections implemented by mutexes and semaphores. They have the benefit of lower overhead, as these can be implemented with a handful of instructions in comparison to full-fledged lock managers.
 
 More specifically, splitting a full node is a major challenge for concurrent updates of B-Trees. As one thread is splitting a full B-Tree node, all the other threads must not observe any intermediate or incomplete state of data structure. Two latches on different levels must be acquired to atomically serialize changes to the split node, its new sibling, and the parent of a said split node. Even so, a splitting might propagate towards the root, as a split operation might cause the parent node to subsequently become full, further bottlenecking the concurrency on the entire tree.
-
-Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which, albeit straightforward, severely reduced concurrency.
-
-In order to alleviate the bottleneck without risking inconsistency, \textit{B-Link-Tree} relaxes the definition of B-Trees. As explained by Graefe \cite{goetz-tech}:
-
-% \begin{definition}[B-Link-Tree]
-%   B-Link-Tree divides node splitting into two independent steps: splitting the node and inserting a new separator key in the parent node. Each node thus has a pointer a sibling at the same level of the tree.
-% \end{definition}

@@ -4,6 +4,8 @@ To simplify development on general-purpose GPUs, NVIDIA introduced \acrfull{cuda
 
 In \acrshort{cuda}, the CPU and GPU and their memory are referred to as \textit{host} and \textit{device}. A host manages the memory of both the device and the host itself, and it launches user-defined functions, called \textit{kernels}, which the device executes. A program thus usually executes serial code on the host and parallel code on the device.
 
+\subsection{Thread hiearchy}
+
 Multiple parallel threads execute these kernels on the GPU. The programmer or the compiler groups these threads into \textit{thread blocks} and \textit{grids} to be scheduled on GPU for execution. A GPU scheduler maps these abstractions to concrete hardware units: A grid is mapped to a GPU, a thread block is mapped to a streaming multiprocessor (SM), and a thread is mapped to a streaming processor (SP / CUDA core). Note that thread blocks must be independent; they could be executed out of order, in series, or parallel.
 
 Every thread in a thread block has its identifier exposed as a constant variable: \code{threadIdx}. The programmer can choose to address the threads in a one, two, or a three-dimensional way for convenience's sake, especially when dealing with vectors, matrices, or volumes. The same thing goes with addressing thread blocks in a grid; each thread block can be identified with the index of a block, \code{blockIdx}, and the dimensions of the block itself, \code{blockDim}.
@@ -11,6 +13,8 @@ Every thread in a thread block has its identifier exposed as a constant variable
 Each block has its shared memory accessible for every thread in a thread block. Thus, threads in a thread block can cooperate by sharing data via the shared memory and thread barriers via \code{\_\_syncthreads()} method to coordinate memory read and write between threads.
 
 To launch a kernel function, the programmer must specify how many threads a thread block has and the number of thread blocks in a grid in \code{<<<numBlocks, blockSize>>>} syntax. Note that the number of threads in a block must not exceed 1024 in current GPUs. If the number of required threads exceeds this limit, more thread blocks shall cover the threads needed for the launch. One must not also forget about the synchronization options.
+
+\subsection{SIMT architecture}
 
 Only a few threads from a thread block are executed at once by a streaming multiprocessor. Before execution, the SM schedules threads in a group of 32, called a \textit{warp}. A warp scheduler then picks a warp and executes a single instruction with different data on all threads in a warp. This architecture is called \acrfull{simt}.
 

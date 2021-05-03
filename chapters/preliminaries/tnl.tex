@@ -6,10 +6,16 @@ The library makes extensive use of template meta-programming to create a unified
 
 \subsection{Views}
 
+\todo{Improve wording and reasoning behind memory management}
+
 Alongside parallelism and contention, the programmer must take care of proper memory management. CUDA only offers low-level primitives for allocating and deallocating memory, similar to languages like C. However, the programmer must also keep in mind the existence of two separate memories. What is allocated on CPUs is directly not accessible from GPUs and vice-versa. Thus, TNL includes classes aiming to alleviate the work needed to address memories between the devices.
 
 \code{TNL::Container::Array} is a template container class for one-dimensional dynamic array. By specifying a type in a template, this class allows the programmer to choose where the data will reside. If the template argument is set to \code{TNL::Devices::Host}, the container behaves similar to \code{std::vector}. However, when the device is set to \code{TNL::Devices::Cuda}, all of the operations are implemented with parallelism in mind.
 
 Data can be directly accessed only from a device where it was previously allocated. To read or write from a different device, copying of data must occur between memories. These cross-device operations are considerably expensive and should thus be used sparingly.
 
-% - One common problem we ought to have is the ability to supply an instance of Array containers. As kernel invocations cannot pass the instance by reference, the contents are copied on GPU, thus creating significant overhead. In order to bypass this issue, a companion class \code{TNL::Container::ArrayView} is provided alongside Array. This class allows the user to read and write data into memory, but forbids allocating or resizing space.
+One common problem we ought to have is the ability to supply an instance of Array containers. As kernel invocations cannot pass the instance by reference, the contents are copied on GPU, thus creating significant overhead. To bypass this issue, a companion class \code{TNL::Container::ArrayView} is provided alongside Array. This class allows the user to read and write data into memory but forbids allocating or resizing space.
+
+\subsection{ParallelFor, Scan}
+
+\todo{Add more data about scanning and such}

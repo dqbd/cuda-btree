@@ -1,0 +1,56 @@
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+      bnode/.style = {
+          draw,
+          text width=1em,
+          align=center,
+          rectangle split,
+          rectangle split horizontal,
+          rectangle split parts = 4,
+        },
+    ]
+    \node[bnode](root) {
+      \nodepart{one} $60$
+      \nodepart{two} $70$
+      \nodepart{three} $75$
+      \nodepart{four}
+      \nodepart{five}
+    };
+
+    \draw[->](root.south west) -- +(-3.3,-1)
+    node[bnode, anchor=north](a){
+        \nodepart{one} $51$
+        \nodepart{two} $52$
+        \nodepart{three}
+        \nodepart{four}
+      };
+
+    \draw[->](root.one split south) -- +(-1.1,-1)
+    node[bnode, anchor=north](b) {
+        \nodepart{one} $65$
+        \nodepart{two} $68$
+        \nodepart{three}
+        \nodepart{four}
+      };
+
+    \draw[->](root.two split south) -- +(1.1,-1)
+    node[bnode, anchor=north](c) {
+        \nodepart{one} $72$
+        \nodepart{two} $73$
+        \nodepart{three}
+        \nodepart{four}
+      };
+
+
+    \draw[->](root.three split south) -- +(3.3,-1)
+    node[bnode, anchor=north](c) {
+        \nodepart{one} $77$
+        \nodepart{two} $78$
+        \nodepart{three} $79$
+        \nodepart{four}
+      };
+
+  \end{tikzpicture}
+  \caption{B-Tree with $\mathit{Order} = 5$}
+\end{figure}
