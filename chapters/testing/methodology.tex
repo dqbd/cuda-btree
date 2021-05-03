@@ -1,6 +1,17 @@
 \section{Methodology}
 
-Tested on the following system:
+The tests are performed on a machine with following specifications:
 
-Version of compiler:
+\begin{itemize}
+  \item[CPU]{AMD Ryzen 5 1600 @ 3.200\,GHz \\ (6-core, 12-thread processor, 20\,032\,KiB total cache)}
+  \item[GPU]{NVIDIA GeForce GTX 1650 Super, 3\,903\,MiB, Driver: 460.56}
+  \item[RAM]{32\,GB (4$\times$8\,GB @ 2\,400\,MHz)}
+  \item[OS]{Ubuntu 20.04.2 LTS x86\_64}
+\end{itemize}
+
+In terms of compiler configuration, \code{g++ 9.3.0} was used as the host compiler and \code{nvcc v11.0.211} was used as the device compiler.
+
+After measuring execution times from chosen implementations, we calculate the speedup as the ratio of serial execution time on the CPU and parallel execution time on the GPU.
+
+$$\mathit{Speedup} = \frac{\tau_{\mathit{CPU}}}{\tau_{\mathit{GPU}}}$$
 
