@@ -4,14 +4,14 @@
 
 Generally speaking, CPUs are low latency, low throughput processors, whereas GPUs are high latency, high throughput processors. A traditional CPU is optimized to execute instructions as fast as possible by reducing \textit{latency} -- the duration from the start of the instruction until the availability of results. To achieve this, CPUs have to implement complex strategies such as speculative branch execution, out-of-order execution, and large memory caches. This architecture works well on workflows, which are sequential by nature, where the execution speed of a single thread has a more noticeable impact on overall execution time.
 
-In contrast, a GPU focuses on hiding the latency instead of reducing it by focusing more on \textit{throughput} -- the amount of work completed per unit of time. The workflows GPUs are most suited for are abundant in parallelism, for example, image processing or matrix multiplication. This assumption drives the design of a GPU to sacrifice the execution speed of a single thread in favor of the sheer amount of processing cores to increase throughput. The difference in design philosphies can be seen in Figure \ref{figure:cpu-vs-gpu}.
+In contrast, a GPU focuses on hiding the latency instead of reducing it by focusing more on \textit{throughput} -- the amount of work completed per unit of time. The workflows GPUs are most suited for are abundant in parallelism, for example, image processing or matrix multiplication. This assumption drives the design of a GPU to sacrifice the execution speed of a single thread in favor of the sheer amount of processing cores to increase throughput. The difference in design philosophies can be seen in Figure \ref{figure:cpu-vs-gpu}.
 
 Thus, even if the \acrshort{cpu} excels at sequential tasks, the \acrshort{gpu} can outperform the CPU in highly parallel computations, as the sheer number of cores GPU uses compared to CPU execution amortizes the cost of using a slower one \cite{cudaprog}.
 
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{components/assets/cpu-vs-gpu.png}
-  \caption{Comparison of a typical CPU and GPU structure. Source \cite{cudaprog}.}
+  \caption{Comparison of a typical CPU and GPU structure \cite{cudaprog}}
   \label{figure:cpu-vs-gpu}
 \end{figure}
 
@@ -33,7 +33,7 @@ Newer architectures include more specialized cores, for example, \textit{tensor 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{components/assets/ampere-sm.png}
-  \caption{Ampere GA10x Streaming Multiprocessor. Source \cite{nvidiaampere}.}
+  \caption{Ampere GA10x Streaming Multiprocessor \cite{nvidiaampere}}
   \label{figure:ampere-sm}
 \end{figure}
 

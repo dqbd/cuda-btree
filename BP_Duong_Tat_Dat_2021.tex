@@ -28,6 +28,8 @@
 \newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.25ex}{\relsize{-2}{\textbf{++}}}}
 \newcommand{\code}{\texttt}
 
+\renewcommand{\thefootnote}{\alph{footnote}}
+
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
@@ -47,8 +49,6 @@
 \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
 \makeglossaries
 
-\input{components/acronyms.tex}
-
 \department{Department of Computer Science}
 \title{Implementation of B-trees on GPU}
 \authorGN{Tat Dat} %author's given name/names
@@ -63,6 +63,8 @@
 \keywordsCS{\input{components/keywordsCS.tex}}
 \keywordsEN{\input{components/keywordsEN.tex}}
 \declarationOfAuthenticityOption{1} 
+
+\input{components/acronyms.tex}
 
 \begin{document}
 
@@ -123,11 +125,11 @@ In this chapter, we are going to present implementation details and design choic
 \appendix
 \printglossary[type=\acronymtype]
 
-\chapter{Contents of enclosed CD}
+\chapter{Contents of enclosed SD card}
 
 \begin{figure}
 	\dirtree{%
-		.1 readme.txt\DTcomment{the file with CD contents description}.
+		.1 readme.txt\DTcomment{the file with SD card contents description}.
 		.1 exe\DTcomment{the directory with executables}.
 		.1 src\DTcomment{the directory of source codes}.
 		.2 wbdcm\DTcomment{implementation sources}.

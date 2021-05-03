@@ -29,13 +29,36 @@ This optimization was initially proposed for disk-based storage, but it still yi
 
 \subsection{Search}
 
-\todo{Add search}
+\begin{itemize}
+  \item Search within node, binary search or warp search
+  \item If internal node, navigate to the child pointer
+  \item If leaf node, obtain result
+\end{itemize}
 
 \subsection{Insertion}
 
-\todo{Add insertion splitting}
+\begin{itemize}
+  \item Traverse to leaf node
+  \item Insert into leaf node, insert at correct index
+  \item If full, perform a split
+  \item Move items from sibling and insert to the parent
+  \item If parent is full, split is performed until root
+  \item Create a new root if needed
+\end{itemize}
+
+\todo{Add explanation how split works}
 
 \subsection{Deletion}
 
-\todo{Add deletion and merging}
+\begin{itemize}
+  \item Remove from node
+  \item If less than half, perform a merge
+  \item If merging a leaf node - attempt to merge sibling node or move excess keys
+  \item If merging internal node - replace the node with successor from a leaf
+  \item Fix the leaf if required
+\end{itemize}
+
+\todo{Add explanation how key spillage works}
+
+\todo{Add explanation how merging works}
 
