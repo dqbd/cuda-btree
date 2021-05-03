@@ -35,8 +35,6 @@
         \nodepart{four}
       };
 
-    \draw[->](a.east) -- (b.west);
-
     \draw[->](root.two split south) -- +(1.2,-1)
     node[bnode, anchor=north](c) {
         \nodepart{one} $72$
@@ -44,8 +42,6 @@
         \nodepart{three}
         \nodepart{four}
       };
-
-    \draw[->](b.east) -- (c.west);
 
     \draw[->](root.three split south) -- +(3.6,-1)
     node[bnode, anchor=north](d) {
@@ -55,8 +51,6 @@
         \nodepart{four}
       };
 
-    \draw[->](c.east) -- (d.west);
-
   \end{tikzpicture}
-  \caption{B-Link-Tree with $\mathit{Order} = 5$}
+  \caption{B+Tree with $\mathit{Order} = 5$}
 \end{figure}

@@ -1,5 +1,13 @@
 \section{B$^+$Tree}
 
+\todo{Why B+Tree?}
+
+\todo{Benefits of B+Tree}
+
 \begin{definition}[B$^+$Tree]
-  All of the keys are stored in leaf nodes. Separator keys may not match to keys contained in leaf nodes and may be freely chosen, with the only requirement being they point to correct subtree during a search. Deletion thus can affect only leave nodes. Leaf nodes include a pointer to its sibling.
+  B$^+$Tree is a B-Tree where keys are stored exclusively in leaf nodes.
 \end{definition}
+
+All of the keys are stored in leaf nodes. Separator keys may not match to keys contained in leaf nodes and may be freely chosen, with the only requirement being they point to correct subtree during a search. Deletion thus can affect only leave nodes. Leaf nodes include a pointer to its sibling.
+
+\input{components/assets/b+tree.tex}
