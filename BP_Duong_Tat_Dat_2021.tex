@@ -16,7 +16,6 @@
 \usepackage{amsmath,amsthm}
 \usepackage{amssymb}
 \usepackage{subfig}
-\usepackage{todonotes}
 \usepackage{graphicx}
 \usepackage{csquotes}
 \usepackage{hyperref}
@@ -28,13 +27,14 @@
 
 \newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.25ex}{\relsize{-2}{\textbf{++}}}}
 \newcommand{\code}{\texttt}
+\newcommand{\todo}{\marginpar}
 
 \renewcommand{\thefootnote}{\alph{footnote}}
 
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
-\usetikzlibrary{arrows.meta, calc, chains, positioning, shapes.multipart}
+\usetikzlibrary{arrows.meta, calc, chains, positioning, shapes.multipart, fit, matrix}
 
 \theoremstyle{definition}
 \newtheorem{theorem}{Theorem}

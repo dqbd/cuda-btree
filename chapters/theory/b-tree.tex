@@ -7,25 +7,32 @@ Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already c
 Formally, as described by Knuth \cite{knuth1998art}:
 
 \begin{definition}\label{def:btree}
-  B-Tree of order $2m$ is a tree with these properties:
+  B-Tree of order $m$ is a tree with these properties:
   \begin{enumerate}
-    \item Every node has at most $2m$ children.
-    \item Every internal node has at least $m$ children.
+    \item Every node has at most $m$ children.
+    \item Every internal node has at least $\ceil{\frac{m}{2}}$ children.
     \item The root node has at least two children, except if it is a leaf node.
     \item All leaf nodes appear at the same height.
     \item Non-leaf nodes with $k$ children contain $k - 1$ keys.
   \end{enumerate}
 \end{definition}
 
-Each node has a variable amount of keys inside. In internal nodes, these keys act as separators to divide the tree into smaller subtrees. 
+\todo{Add disclaimer about order and leaf inconsistencies}
 
-\todo{Add more formal definition of separator keys}
+Each node has a variable amount of keys inside. In internal nodes, these keys act as separators to divide the tree into smaller subtrees.
+
+\todo{Add more formal definition of separator keys and leaves}
 
 \input{components/figure/b-tree.tex}
 
 \begin{lemma}
   Every B-Tree with $n$ keys has height equal $\Theta(\log{n})$
 \end{lemma}
+
+\begin{proof}
+  As every internal node must
+  As every node must have at least $\ceil{\frac{m}{2}}$ keys, thus the first level must have at least 1 key, level $i$ must have $2\ceil{\frac{m}{2}}^{i-1}$ keys.
+\end{proof}
 
 \todo{Add proof}
 
@@ -78,10 +85,9 @@ When inserting, we need to make sure of rebalancing the tree, which is why we ne
   \caption{B-Tree Insert}\label{alg:b-tree-insert}
   \SetKwInOut{Input}{Input}
   \SetKwInOut{Output}{Output}
-
-  
-
 \end{algorithm}
+
+Hello world
 
 \begin{itemize}
   \item Traverse to leaf node
