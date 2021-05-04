@@ -11,7 +11,22 @@ jobs:
         with:
           root_file: BP_Duong_Tat_Dat_2021.tex
           latexmk_shell_escape: true
-      - uses: actions/upload-artifact@v2
+      - name: Create Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: PDF
-          path: BP_Duong_Tat_Dat_2021.pdf
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ./BP_Duong_Tat_Dat_2021.pdf
+          asset_name: BP_Duong_Tat_Dat_2021.pdf
+          asset_content_type: application/pdf
