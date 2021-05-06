@@ -3,61 +3,46 @@
   \begin{tikzpicture}[
       bnode/.style = {
           draw,
+          text width=1em,
           align=center,
           rectangle split,
           rectangle split horizontal,
-          rectangle split parts = 3,
-          anchor=north
-        },
-      bleaf/.style = {
-          draw,
-          minimum size=0.5mm,
-          align=center,
-          circle,
-          anchor=north
+          rectangle split parts = 4,
         },
     ]
+
     \node[bnode](root) {
-      \nodepart{one} 4
-      \nodepart{two} 7
+      \nodepart{one} $4$
+      \nodepart{two} $7$
       \nodepart{three}
+      \nodepart{four}
+      \nodepart{five}
     };
 
     \draw[->](root.south west) -- +(-2.2,-1)
-    node[bnode](a){
-        \nodepart{one} 1
-        \nodepart{two} 2
-        \nodepart{three} 3
+    node[bnode, anchor=north](a){
+        \nodepart{one} $1$
+        \nodepart{two} $2$
+        \nodepart{three} $3$
         \nodepart{four}
       };
 
     \draw[->](root.one split south) -- +(0,-1)
-    node[bnode](b) {
-        \nodepart{one} 5
-        \nodepart{two} 6
+    node[bnode, anchor=north](b) {
+        \nodepart{one} $5$
+        \nodepart{two} $6$
         \nodepart{three}
+        \nodepart{four}
       };
 
     \draw[->](root.two split south) -- +(2.2,-1)
-    node[bnode](c) {
-        \nodepart{one} 8
-        \nodepart{two} 9
+    node[bnode, anchor=north](c) {
+        \nodepart{one} $8$
+        \nodepart{two} $9$
         \nodepart{three}
+        \nodepart{four}
       };
 
-    \draw[->](a.south west) -- +(0, -0.5) node[bleaf] {};
-    \draw[->](a.one split south) -- +(0, -0.5) node[bleaf] {};
-    \draw[->](a.two split south) -- +(0, -0.5) node[bleaf] {};
-    \draw[->](a.south east) -- +(0, -0.5) node[bleaf] {};
-
-    \draw[->](b.south west) -- +(0, -0.5) node[bleaf] {};
-    \draw[->](b.one split south) -- +(0, -0.5) node[bleaf] {};
-    \draw[->](b.two split south) -- +(0, -0.5) node[bleaf] {};
-
-    \draw[->](c.south west) -- +(0, -0.5) node[bleaf] {};
-    \draw[->](c.one split south) -- +(0, -0.5) node[bleaf] {};
-    \draw[->](c.two split south) -- +(0, -0.5) node[bleaf] {};
-
   \end{tikzpicture}
-  \caption{B-Tree with $\mathit{Order} = 4$}
+  \caption{B-Tree with $\mathit{Order} = 5$}
 \end{figure}

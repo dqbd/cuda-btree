@@ -1,14 +1,26 @@
 \section{B-Link-Tree}
 
+
+
 Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which, albeit straightforward, severely reduced concurrency.
 
-In order to alleviate the bottleneck without risking inconsistency, \textit{B-Link-Tree} relaxes the definition of B-Trees. As explained by Graefe \cite{goetz-tech}:
+In order to alleviate the bottleneck without risking inconsistency, \textit{B-Link-Tree} relaxes the definition of B$^+$Trees. As explained by Graefe \cite{goetz-tech}:
 
 \begin{definition}
-  B-Link-Tree divides node splitting into two independent steps: splitting the node and inserting a new separator key in the parent node. Each node thus has a pointer a sibling at the same level of the tree.
+  B-Link-Tree is a B$^+$Tree with following properties:
+  \begin{enumerate}
+    \item Each node $x$ has additional attributes:
+          \begin{itemize}
+            \item $x.sibling$, a pointer to a right sibling node at the same depth,
+            \item $x.highkey$, the maximum value found in the subtree rooted by $x$ (every key found in $x$ is less then $x.highkey$).
+          \end{itemize}
+    \item Does not require locks nor latches for reading.
+  \end{enumerate}
 \end{definition}
 
 \input{components/figure/b-link-tree.tex}
+
+Splitting during node insertion is divided into two independent steps: splitting the node and inserting a new separator key to the parent node.
 
 \todo{Add explanation how high key is computed when splitting}
 
