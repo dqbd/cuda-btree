@@ -67,7 +67,6 @@ The main benefit of B-Trees is their shallow height even with many keys inserted
 
 As search, insertion, and deletion on a single node takes $\Theta{(1)}$, time complexity of every operation is $\Theta{(\log{n})}$. The space complexity for B-Tree is $\Theta{(n)}$.
 
-
 \subsection{Search}
 
 The search algorithm for B-Trees is trivial but crucial, similar to the search algorithm for binary search trees. We compare the keys in every node and decide the subtree to continue the search starting from the root node. The search ends if we find the desired key or if we end up in a leaf node.

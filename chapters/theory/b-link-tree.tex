@@ -12,7 +12,7 @@ In order to alleviate the bottleneck without risking inconsistency, \textit{B-Li
     \item Each node $x$ has additional attributes:
           \begin{itemize}
             \item $x.sibling$, a pointer to a right sibling node at the same depth,
-            \item $x.highkey$, the maximum value found in the subtree rooted by $x$ (every key found in $x$ is less then $x.highkey$).
+            \item $x.highkey$, the upper bound of all keys found in the subtree rooted by $x$ (every key found in $x$ is less then $x.highkey$).
           \end{itemize}
     \item Does not require locks nor latches for reading.
   \end{enumerate}
@@ -20,8 +20,8 @@ In order to alleviate the bottleneck without risking inconsistency, \textit{B-Li
 
 \input{components/figure/b-link-tree.tex}
 
-Splitting during node insertion is divided into two independent steps: splitting the node and inserting a new separator key to the parent node.
+Splitting during node insertion is divided into two independent steps: splitting a node and inserting the split node with its new separator key to the parent node. When splitting node $x$, a new right sibling node $y$ is created. The node $y$ inherits the high key from the split node $x$, whereas the first key of $y.keys$ is used as a new $x.highkey$. Thus, an internal node does exist without a parent in between the operations. $x.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
 
-\todo{Add explanation how high key is computed when splitting}
+As the final step of node splitting, the separator key and the newly split node $y$ are inserted in the parent node. 
 
-\todo{Add explanation how links are used during traversal}
+Tree traversal is modified to honor $x.highkey$ by returning the node at $x.sibling$ when the target key $k$ is larger or equal than $x.highkey$.
