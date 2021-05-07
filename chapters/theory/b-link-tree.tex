@@ -22,6 +22,10 @@ In order to alleviate the bottleneck without risking inconsistency, \textit{B-Li
 
 Splitting during node insertion is divided into two independent steps: splitting a node and inserting the split node with its new separator key to the parent node. When splitting node $x$, a new right sibling node $y$ is created. The node $y$ inherits the high key from the split node $x$, whereas the first key of $y.keys$ is used as a new $x.highkey$. Thus, an internal node does exist without a parent in between the operations. $x.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
 
+\todo{Add insertion pseudocode}
+
 As the final step of node splitting, the separator key and the newly split node $y$ are inserted in the parent node. 
+
+\todo{Add search pseudocode}
 
 Tree traversal is modified to honor $x.highkey$ by returning the node at $x.sibling$ when the target key $k$ is larger or equal than $x.highkey$.
