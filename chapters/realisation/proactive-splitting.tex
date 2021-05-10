@@ -1,3 +1,7 @@
 \section{Proactive Splitting}
 
-\todo{Add reasoning behind proactive splitting, because we avoid having a stack}
+As specified in Algorithm \ref{alg:b-tree-insert} and Algorithm \ref{alg:b-tree-delete}, we first traverse to the node to perform the node update and any potential balancing is performed in a bottom-up manner. In our implementation, we decided to opt-in to the top-down approach by splitting any full nodes directly when traversing.
+
+\todo{Explain what is the difference and introduce examples}
+
+With this approach, we are not required to preserve a stack of parent nodes, as we are guaranteeing every operation will update nodes in at most two depths.

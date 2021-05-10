@@ -27,7 +27,9 @@
 
 \newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.25ex}{\relsize{-2}{\textbf{++}}}}
 \newcommand{\code}{\texttt}
-\newcommand{\todo}{\marginpar}
+\overfullrule=5pt
+
+\newcommand{\todo}[1]{\textcolor{red}{[[TODO: #1]]}\PackageWarning{TODO:}{#1!}}
 
 \renewcommand{\thefootnote}{\alph{footnote}}
 

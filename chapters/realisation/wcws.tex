@@ -1,3 +1,7 @@
 \section{Warp Cooperative Work Sharing strategy}
 
-\todo{Add reasoning why WCWS is used and how search and insertion is greatly optimized}
+Warp-cooperative work-sharing strategy (WCWS) is used to improve the performance of each operation by exploiting the behavior of NVIDIA GPUs and how threads are executed in each SM. As SMs have a limited number of cores, threads are organized into groups of 32 threads called \textit{warps} (see Chapter \ref{label:cuda}).
+
+As threads can communicate with each other in a warp using warp-wide communication primitives in CUDA, these threads can synchronize with each other and work on a single task.
+
+This strategy is thoroughly used in all of our B-Tree operations, especially during updates. We can achieve better memory coalescing and unlock vector load and stored by utilizing every thread in a warp. As a side effect, the order of a B-Tree is upper bound by the number of threads available in a warp, which is 32 in contemporary GPUs.
