@@ -1,6 +1,13 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
-\usetheme{metropolis}
+\usepackage{polyglossia}
+\usepackage{csquotes}
+\usepackage{libertine}
+\usepackage[libertine]{newtxmath}
+\usepackage{biblatex}
+
+\setdefaultlanguage{czech}
+\usetheme[progressbar=foot]{metropolis}
 
 \definecolor{ctu}{HTML}{0072c6}
 \definecolor{ctufit}{HTML}{f0ab00}
@@ -10,70 +17,90 @@
 \setbeamercolor*{palette primary}{use=structure,fg=white,bg=structure.fg}
 \setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=ctufit}
 \setbeamercolor*{palette quaternary}{fg=white,bg=black}
+\setbeamercolor*{progress bar}{fg=ctufit}
 
-\title{Implementation of B-trees on GPU}
-\author{Duong Tat Dat, supervised by Ing.\,Tomáš Obenhuber,\,Ph.D.}
-\institute{Czech Technical University in Prague, Faculty of Information Technology}
+\makeatletter
+\setlength{\metropolis@titleseparator@linewidth}{2pt}
+\setlength{\metropolis@progressonsectionpage@linewidth}{2pt}
+\setlength{\metropolis@progressinheadfoot@linewidth}{2pt}
+\makeatother
+
+\title{Implementace B-stromů na GPU}
+\author{Duong Tat Dat, vedoucí: Ing. Tomáš Obenhuber, Ph.D.}
+\institute{České vysoké učení technické v Praze, Fakulta informačních technologií}
 \date{\today}
 
 \begin{document}
 
 \titlegraphic{
-  \vspace*{1em}
-  \includegraphics[width=0.3\textwidth]{images/fit-cvut-logo}
+  \vspace*{0.25em}
+  \includegraphics[width=0.25\textwidth]{images/fit-cvut-logo-cz}
+}
+
+{
+  \metroset{progressbar=none}
+  \begin{frame}
+    \vspace*{2.25em}
+    \titlepage
+  \end{frame}
 }
 
 \begin{frame}
-  \vspace*{2em}
-  \titlepage
-\end{frame}
-
-\begin{frame}
-  \frametitle{Motivation}
+  \frametitle{Motivace}
   \begin{itemize}
-    \item GPUs are powerful
-    \item Not so many data structures for GPUs
+    \item Grafické karty jsou mnohem výkonnější
+    \item Poskrovnu datových struktur pro GPU
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{B-Tree}
+  \frametitle{Cíle}
   \begin{itemize}
-    \item Specialization of $(a,b)$-tree
-    \item Used in databases and file systems
+    \item Představit implementaci B-stromů
+    \item TODO: přidat vtipnou ukázku git commitu
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Goals}
+  \frametitle{B-stromy}
   \begin{itemize}
     \item Specialization of $(a,b)$-tree
-    \item Used in databases and file systems
+    \item Použita v databázích, souborových systémech
+    \item Great for storing large amount of data
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{State-of-the-art}
+  \frametitle{CUDA}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{components/figure/cpu-vs-gpu.png}
+    \caption{Rozdíl mezi CPU a GPU}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Řešení}
   \begin{itemize}
-    \item Specialization of $(a,b)$-tree
-    \item Used in databases and file systems
+    \item B+Tree
+    \item Warp Cooperative Work Sharing
+    \item B-Link-Tree
+    \item
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Solution}
+  \frametitle{Závěr}
   \begin{itemize}
-    \item Specialization of $(a,b)$-tree
-    \item Used in databases and file systems
+    \item 15x až 30x rychlejší operace při vkládání a načítání dat
+    \item Debugovací nástroj
+    \item Du budoucna: srovnat se state-of-art
   \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Summary}
-  \begin{itemize}
-    \item Specialization of $(a,b)$-tree
-    \item Used in databases and file systems
-  \end{itemize}
-\end{frame}
+{
+  \begin{frame}[noframenumbering,plain,standout]
+    \LARGE{Děkuji za pozornost.}
+  \end{frame}
+}
 
 \end{document}
