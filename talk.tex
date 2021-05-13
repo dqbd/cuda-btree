@@ -6,6 +6,79 @@
 \usepackage[libertine]{newtxmath}
 \usepackage{biblatex}
 
+\usepackage[bigfiles]{pdfbase}
+\ExplSyntaxOn
+\NewDocumentCommand\embedvideo{smm}{
+  \group_begin:
+  \leavevmode
+  \tl_if_exist:cTF{file_\file_mdfive_hash:n{#3}}{
+    \tl_set_eq:Nc\video{file_\file_mdfive_hash:n{#3}}
+  }{
+    \IfFileExists{#3}{}{\GenericError{}{File~`#3'~not~found}{}{}}
+    \pbs_pdfobj:nnn{}{fstream}{{}{#3}}
+    \pbs_pdfobj:nnn{}{dict}{
+      /Type/Filespec/F~(#3)/UF~(#3)
+      /EF~<</F~\pbs_pdflastobj:>>
+    }
+    \tl_set:Nx\video{\pbs_pdflastobj:}
+    \tl_gset_eq:cN{file_\file_mdfive_hash:n{#3}}\video
+  }
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Type/RichMediaInstance/Subtype/Video
+    /Asset~\video
+    /Params~<</FlashVars (
+      source=#3&
+      skin=SkinOverAllNoFullNoCaption.swf&
+      skinAutoHide=true&
+      skinBackgroundColor=0x5F5F5F&
+      skinBackgroundAlpha=0.75
+    )>>
+  }
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Type/RichMediaConfiguration/Subtype/Video
+    /Instances~[\pbs_pdflastobj:]
+  }
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Type/RichMediaContent
+    /Assets~<<
+      /Names~[(#3)~\video]
+    >>
+    /Configurations~[\pbs_pdflastobj:]
+  }
+  \tl_set:Nx\rmcontent{\pbs_pdflastobj:}
+  %
+  \pbs_pdfobj:nnn{}{dict}{
+    /Activation~<<
+      /Condition/\IfBooleanTF{#1}{PV}{XA}
+      /Presentation~<</Style/Embedded>>
+    >>
+    /Deactivation~<</Condition/PI>>
+  }
+  %
+  \hbox_set:Nn\l_tmpa_box{#2}
+  \tl_set:Nx\l_box_wd_tl{\dim_use:N\box_wd:N\l_tmpa_box}
+  \tl_set:Nx\l_box_ht_tl{\dim_use:N\box_ht:N\l_tmpa_box}
+  \tl_set:Nx\l_box_dp_tl{\dim_use:N\box_dp:N\l_tmpa_box}
+  \pbs_pdfxform:nnnnn{1}{1}{}{}{\l_tmpa_box}
+  %
+  \pbs_pdfannot:nnnn{\l_box_wd_tl}{\l_box_ht_tl}{\l_box_dp_tl}{
+    /Subtype/RichMedia
+    /BS~<</W~0/S/S>>
+    /Contents~(embedded~video~file:#3)
+    /NM~(rma:#3)
+    /AP~<</N~\pbs_pdflastxform:>>
+    /RichMediaSettings~\pbs_pdflastobj:
+    /RichMediaContent~\rmcontent
+  }
+  \phantom{#2}
+  \group_end:
+}
+\ExplSyntaxOff
+
+
 \setdefaultlanguage{czech}
 \usetheme[progressbar=foot]{metropolis}
 
@@ -26,8 +99,8 @@
 \makeatother
 
 \title{Implementace B-stromů na GPU}
-\author{Duong Tat Dat, vedoucí: Ing. Tomáš Obenhuber, Ph.D.}
-\institute{České vysoké učení technické v Praze, Fakulta informačních technologií}
+\author{Duong Tat Dat, vedoucí: Ing. Tomáš Oberhuber, Ph.D.}
+\institute{České vysoké učení technické v Praze, Fakulta informačních technologií\\Katedra teoretické informatiky}
 \date{\today}
 
 \begin{document}
@@ -46,61 +119,110 @@
 }
 
 \begin{frame}
-  \frametitle{Motivace}
+  \frametitle{Cíle práce}
   \begin{itemize}
-    \item Grafické karty jsou mnohem výkonnější
-    \item Poskrovnu datových struktur pro GPU
+    \item Seznámit se s programováním GPU s pomocí NVIDIA CUDA
+    \item Implementace B-stromu s přepínatelným prostředím
+    \item Porovnat výsledky se stávajícími CPU a GPU implementacemi
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Cíle}
+  \frametitle{B-strom}
   \begin{itemize}
-    \item Představit implementaci B-stromů
-    \item TODO: přidat vtipnou ukázku git commitu
+    \item Vyhledávací strom s proměnlivým počtem klíčů a potomků ve vrcholu
+    \item Minimální a maximální počet klíčů ve vrcholu
+    \item Vkládání, mazání a vyhledávání je $\Theta{(\log n)}$
+    \item Nejčastěji v databázích a souborových systémech
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{B-stromy}
+  \frametitle{CUDA a TNL}
+  \textbf{CUDA} -- Compute Unified Device Architecture
   \begin{itemize}
-    \item Specialization of $(a,b)$-tree
-    \item Použita v databázích, souborových systémech
-    \item Great for storing large amount of data
+    \item Architektura pro programování GPU
+    \item Umožňuje definovat \textit{kernely} -- funkce vykonávané na GPU
+    \item Cílem je vysoká propustnost, skrývání latence
+  \end{itemize}
+
+  \textbf{TNL} -- Template Numerical Library
+  \begin{itemize}
+    \item C++ matematická knihovna vyvíjena na FJFI ČVUT
+    \item Robustní šablony usnadňující vývoj GPU akcelerovaných aplikací
+    \item Správa GPU paměti a základní datové struktury
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{CUDA}
+  \frametitle{Implementace}
+
+  B+strom
+  \begin{itemize}
+    \item Klíče striktně na nejnižší hladině
+    \item Zjednodušené operace na úkor zvýšené paměťové náročnosti
+  \end{itemize}
+
+  B-link-strom
+  \begin{itemize}
+    \item Každý vrchol má navíc:
+          \begin{itemize}
+            \item maximální klíč v podstromu,
+            \item ukazatel na sousední vrchol
+          \end{itemize}
+    \item Dělení plného vrcholu rozdělené na samostatné operace
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Implementace}
+  \begin{itemize}
+    \item Proaktivní dělení plných vrcholů
+    \item Závory pro prevenci časově závislých chyb
+    \item Warp Cooperative Work Sharing strategie
+          \begin{itemize}
+            \item Warp -- skupina 32 vláken, které jádro GPU dokáže zpracovat naráz
+            \item Všechna vlákna ve warpu spolupracují na jedné operaci
+          \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Debugger}
   \begin{figure}
-    \includegraphics[width=0.8\textwidth]{components/figure/cpu-vs-gpu.png}
-    \caption{Rozdíl mezi CPU a GPU}
+    \embedvideo{\includegraphics[width=0.7\textwidth]{components/media/debugger.png}}{components/media/debugger.mov}
+    \caption{Webová aplikace pro vizualizaci a ladění B-stromů}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Řešení}
-  \begin{itemize}
-    \item B+Tree
-    \item Warp Cooperative Work Sharing
-    \item B-Link-Tree
-    \item
-  \end{itemize}
+  \frametitle{Výsledky - vyhledávání}
+  \begin{figure}
+    \resizebox{0.9\linewidth}{!}{\input{components/figure/query-speed.pgf}}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Výsledky - vkládání}
+  \begin{figure}
+    \resizebox{0.9\linewidth}{!}{\input{components/figure/insert-speed.pgf}}
+  \end{figure}
 \end{frame}
 
 \begin{frame}
   \frametitle{Závěr}
   \begin{itemize}
-    \item 15x až 30x rychlejší operace při vkládání a načítání dat
-    \item Debugovací nástroj
-    \item Du budoucna: srovnat se state-of-art
+    \item Splnili jsme všechny cíle zadání
+    \item B-strom implementace na TNL s přepínatelným prostředím
+    \item 60x až 180x rychlejší oproti CPU při vkládání a vyhledávání
+    \item Doplňující webová aplikace pro vizualizaci a ladění
   \end{itemize}
 \end{frame}
 
 {
-  \begin{frame}[noframenumbering,plain,standout]
-    \LARGE{Děkuji za pozornost.}
-  \end{frame}
+\begin{frame}[noframenumbering,plain,standout]
+  \LARGE{Děkuji za pozornost.}
+\end{frame}
 }
 
 \end{document}
