@@ -288,3 +288,4 @@ TSWLatexianTemp*
 !components/*.pdf
 
 *.ist
+.vscode/
