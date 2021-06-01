@@ -1,11 +1,10 @@
 \section{Prior Art}
 
-Previous GPU projects mentioned in Awad et al. \cite{awad} focused on search throughput. Until recently, the general approach for updating is either to perform such updates on the CPU or to rebuild the structure from scratch.
+Previous projects related to GPU implementation of B-trees focused on query throughput. Fix et al. \cite{fix2011accelerating} measured substantial performance speedup compared to sequential CPU execution by running independent queries in each thread block. Until recently, the general approach for updating is either to perform such updates on the CPU or to rebuild the structure from scratch, which is the case of Fix et al. implementation.
 
-Fix et al. \cite{fix2011accelerating} measured substantial performance speedup compared to sequential CPU execution by running independent queries in each thread block. Insertion and deletion are not optimized, as the tree rebuilds itself on the CPU and copies the memory contents back to the GPU.
+Kaczmarski \cite{kaczmarski} utilized the relationship between a sorted list and demonstrated improved insertion time by presorting keys and proposing a novel bottom-up approach when constructing a tree. The work also explored several methods of key searching within a tree node.
 
-Kaczmarski \cite{kaczmarski} utilized the relationship between a sorted list and demonstrated improved insertion time by presorting keys and proposing a novel bottom-up approach when constructing a tree. The work also explored several methods of searching within a tree node.
+In Yan et al. \cite{harmonia}, instead of having the keys and children of a node in one instance, they are stored into separate arrays. Keys are stored in a one-dimensional array, and children are stored in a prefix-sum array. Storing keys and children into separate array improve memory locality and thus decreasing memory latency.
 
-Awad et al. \cite{awad} proposed a GPU implementation of B-Tree that supports concurrent queries (single, range, successor), insertion, and deletion. To achieve state-of-art performance, B-Link-Tree has been coupled with proactive splitting and Warp Cooperative Work Sharing as proposed by Ashkiani et al. \cite{ashkiani2018dynamic}.
+Awad et al. \cite{awad} proposed the most comprehensive GPU implementation of B-Tree to date. Their implementation supports concurrent queries (single, range, successor), insertion, and deletion. To achieve state-of-art performance, B-Link-Tree has been coupled with proactive splitting and Warp Cooperative Work Sharing as proposed by Ashkiani et al. \cite{ashkiani2018dynamic}.
 
-\todo{Add better explanation to Harmonia}

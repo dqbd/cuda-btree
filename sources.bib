@@ -231,3 +231,21 @@
   pages     = {419-429},
   doi       = {10.1109/IPDPS.2018.00052}
 }
+
+@inproceedings{harmonia,
+  author    = {Yan, Zhaofeng and Lin, Yuzhe and Peng, Lu and Zhang, Weihua},
+  title     = {Harmonia: A High Throughput B+tree for GPUs},
+  year      = {2019},
+  isbn      = {9781450362252},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3293883.3295704},
+  doi       = {10.1145/3293883.3295704},
+  abstract  = {B+tree is one of the most important data structures and has been widely used in different fields. With the increase of concurrent queries and data-scale in storage, designing an efficient B+tree structure has become critical. Due to abundant computation resources, GPUs provide potential opportunities to achieve high query throughput for B+tree. However, prior methods cannot achieve satisfactory performance results due to low resource utilization and poor memory performance.In this paper, we first identify the gaps between B+tree and GPUs. Concurrent B+tree queries involve many global memory accesses and different divergences, which mismatch with GPU features. Based on this observation, we propose Harmonia, a novel B+tree structure to bridge the gap. In Harmonia, a B+tree structure is divided into a key region and a child region. The key region stores the nodes with its keys in a breadth-first order. The child region is organized as a prefix-sum array, which only stores each node's first child index in the key region. Since the prefix-sum child region is small and the children's index can be retrieved through index computations, most of it can be stored in on-chip caches, which can achieve good cache locality. To make it more efficient, Harmonia also includes two optimizations: partially-sorted aggregation and narrowed thread-group traversal, which can mitigate memory and warp divergence and improve resource utilization. Evaluations on a TITAN V GPU show that Harmonia can achieve up to 3.6 billion queries per second, which is about 3.4X faster than that of HB+Tree [39], a recent state-of-the-art GPU solution.},
+  booktitle = {Proceedings of the 24th Symposium on Principles and Practice of Parallel Programming},
+  pages     = {133–144},
+  numpages  = {12},
+  keywords  = {GPU, high-throughput, B+tree},
+  location  = {Washington, District of Columbia},
+  series    = {PPoPP '19}
+}

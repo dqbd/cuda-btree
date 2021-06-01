@@ -14,8 +14,9 @@ Alongside parallelism and contention, the programmer must take care of proper me
 
 Data can be directly accessed only from a device where it was previously allocated. To read or write from a different device, copying of data must occur between memories. These cross-device operations are considerably expensive and should thus be used sparingly.
 
-One common problem we ought to have is the ability to supply an instance of Array containers. As kernel invocations cannot pass the instance by reference, the contents are copied on GPU, thus creating significant overhead. To bypass this issue, a companion class \code{TNL::Container::ArrayView} is provided alongside Array. This class allows the user to read and write data into memory but forbids allocating or resizing space.
+One common problem we ought to have is the ability to supply an instance of Array containers. As kernel invocations cannot pass the instance by reference, the contents  are deep-copied on GPU, thus creating significant overhead. To bypass this issue, a companion class \code{TNL::Container::ArrayView} is provided alongside Array. This class allows the user to read and write data into memory but forbids allocating or resizing space.
 
 \subsection{ParallelFor, Scan}
 
 \todo{Add more data about scanning and such}
+\todo{Proxy objekty - náhrada za reference a lépe }

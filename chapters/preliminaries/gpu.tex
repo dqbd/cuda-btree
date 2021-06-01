@@ -11,7 +11,7 @@ Thus, even if the \acrshort{cpu} excels at sequential tasks, the \acrshort{gpu} 
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{components/figure/cpu-vs-gpu.png}
-  \caption{Comparison of a typical CPU and GPU structure \cite{cudaprog}}
+  \caption{Comparison of a typical CPU and GPU structure \cite{cudaprog}.}
   \label{figure:cpu-vs-gpu}
 \end{figure}
 
@@ -19,7 +19,7 @@ As the staggering performance of a \acrshort{gpu} has not gone unnoticed by the 
 
 \subsection{Hardware architecture}
 
-As the implementation is based on CUDA (see Chapter \ref{label:cuda}), we're focusing on NVIDIA \acrshort{gpu} and its architecture in this work. Since the introduction of unified shared architecture with GeForce 8 Series in 2006, a single NVIDIA GPU comprises an array of \textit{streaming multiprocessors} (SM). The power of a single GPU card depends on the number of these streaming multiprocessors, which may vary between models. Each \acrshort{sm} in general have these components:
+As the implementation of both B+Tree and B-Link-Tree is based on CUDA (see Chapter \ref{label:cuda}), we're focusing on NVIDIA \acrshort{gpu} and its architecture in this work. Since the introduction of unified shared architecture with GeForce 8 Series in 2006, a single NVIDIA GPU comprises an array of \textit{streaming multiprocessors} (SM). The power of a single GPU card depends on the number of these streaming multiprocessors, which may vary between models. Each \acrshort{sm} in general have these components:
 \begin{itemize}
   \item \textit{Streaming processors}\footnote{Also known as a \textit{CUDA core}}, each containing an arithmetic logic unit (ALU) for integer operations and floating-point unit (FPU) for floating-point operations.
   \item \textit{Register file}, where threads store their local variables. This register file is shared between all threads running in the SM. The number of available registers per thread is defined by architecture.

@@ -2,7 +2,7 @@
 
 To simplify development on general-purpose GPUs, NVIDIA introduced \acrfull{cuda} programming model in November 2006. As mentioned previously, GPUs are suited for parallel workloads optimizing in total throughput, sacrificing the performance of serial operations. However, not all programs are fully parallel in nature, and some problems are difficult, if not impossible, to formulate in a manner that would benefit the GPU. Thus, a sane idea would be to utilize both CPU and GPU, using GPU in workloads, where parallelism yields significant performance uplift. With CUDA, programmers can write applications run on the CPU and accelerate parallel workloads with the GPU while using familiar C/\CC\ programming language for both processors.
 
-In \acrshort{cuda}, the CPU and GPU and their memory are referred to as \textit{host} and \textit{device}. A host manages the memory of both the device and the host itself, and it launches user-defined functions, called \textit{kernels}, which the device executes. A program thus usually executes serial code on the host and parallel code on the device.
+In \acrshort{cuda}, the CPU and GPU and their memory are referred to as \textit{host} and \textit{device} respectively. A host manages the memory of both the device and the host itself, and it launches user-defined functions, called \textit{kernels}, which the device executes. A program thus usually executes serial code on the host and parallel code on the device.
 
 \subsection{Thread hiearchy}
 
