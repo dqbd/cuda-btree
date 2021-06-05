@@ -1,6 +1,6 @@
 \section {GPU architecture}
 
-\acrfull{gpu} is a type of coprocessor designed to work alongside the \acrshort{cpu}, offloading intensive tasks to the coprocessor, accelerating overall system performance.
+\acrfull{gpu} is a type of coprocessor designed to work alongside the \acrshort{cpu}, offloading intensive tasks to the coprocessor, accelerating the overall system performance.
 
 Generally speaking, CPUs are low latency, low throughput processors, whereas GPUs are high latency, high throughput processors. A traditional CPU is optimized to execute instructions as fast as possible by reducing \textit{latency} -- the duration from the start of the instruction until the availability of results. To achieve this, CPUs have to implement complex strategies such as speculative branch execution, out-of-order execution, and large memory caches. This architecture works well on workflows, which are sequential by nature, where the execution speed of a single thread has a more noticeable impact on overall execution time.
 
@@ -11,7 +11,7 @@ Thus, even if the \acrshort{cpu} excels at sequential tasks, the \acrshort{gpu} 
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{components/figure/cpu-vs-gpu.png}
-  \caption{Comparison of a typical CPU and GPU structure \cite{cudaprog}.}
+  \caption{Comparison of a typical CPU and GPU structure \cite{cudaprog}}
   \label{figure:cpu-vs-gpu}
 \end{figure}
 
@@ -28,7 +28,7 @@ As the implementation of both B+Tree and B-Link-Tree is based on CUDA (see Chapt
   \item \textit{L1 / Texture cache}, which is used to store local memory of the thread or to serve as a texture cache for image data.
 \end{itemize}
 
-Newer architectures include more specialized cores, for example, \textit{tensor cores} in every SP, capable of executing 4x4 matrix multiplication instructions. Or \textit{RT cores} in every SM, accelerating raytracing, found in recent Ampere architecture (see Figure \ref{figure:ampere-sm}).
+Newer architectures include more specialized cores. For example, \textit{tensor cores} in every SP, capable of executing 4x4 matrix multiplication instructions, or \textit{RT cores} in every SM, accelerating raytracing, found in recent Ampere architecture (see Figure \ref{figure:ampere-sm}).
 
 \begin{figure}[H]
   \centering
@@ -39,7 +39,7 @@ Newer architectures include more specialized cores, for example, \textit{tensor 
 
 \subsection{Memory hiearchy} \label{label:gpu:mem}
 
-Each \acrshort{gpu} has its own memory with its memory hierarchy separate from the rest of the system. Every thread has access to its registry and local memory. Local memory is used to store variables for which we do not have space in registers (registry spilling), or we cannot determine if we do have space (like arrays). The registry and the local memory are not directly accessible to the programmer and are managed by the compiler instead.
+The \acrshort{gpu} has its own memory with its memory hierarchy separate from the rest of the system. Every thread has access to its registry and local memory. Local memory is used to store variables for which we do not have space in registers (registry spilling), or we cannot determine if we do have space (like arrays). The registry and the local memory are not directly accessible to the programmer and are managed by the compiler instead.
 
 Each thread also has access to shared memory, which is shared with all threads executing on the same thread block (see Chapter \ref{label:cuda}). As the memory resides on-chip itself, it has higher throughput and lower latency compared to the global memory. It can be considered a user-managed cache, as the application itself takes care of allocation and access to the cache.
 
