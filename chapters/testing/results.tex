@@ -2,9 +2,17 @@
 
 \input{components/table/query-speedup.tex}
 
+\printinunitsof{in}\prntlen{\linewidth}
+\printinunitsof{in}\prntlen{\textwidth}
+
 \begin{figure}
-  \resizebox{\linewidth}{!}{\input{components/figure/query-speed.pgf}}
+  \input{components/figure/query-speed.pgf}
+  \caption{Query performance comparison}
+\end{figure}
+
+\begin{figure}
+  \input{components/figure/insert-speed.pgf}
+  \caption{Insert performance comparison}
 \end{figure}
 
 \input{components/table/insert-speedup.tex}
-
