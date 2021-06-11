@@ -110,11 +110,44 @@ If a node after insertion has subsequently become full after insertion, a split 
 
 When the root node needs to be split, a new node with the separator as its only key and two subtrees as its children, which the definition \ref{def:btree} permits (only internal nodes must contain at least $\floor{\nicefrac{m}{2}}$ keys).
 
-\todo{Add pseudocode of \code{3897b53d0e42}}
 \begin{algorithm}
   \caption{B-Tree Insert}\label{alg:b-tree-insert}
   \SetKwInOut{Input}{Input}
   \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+
+  \SetKwFunction{SplitNode}{SplitNode}
+  \SetKwFunction{AllocateNode}{AllocateNode}
+  \SetKwFunction{Insert}{Insert}
+  \SetKwProg{Fn}{Function}{:}{}∆
+  \SetKw{Break}{break}
+
+  \Fn{\SplitNode{$x$}}{
+    $median \gets \ceil{\nicefrac{x.size}{2}}$\;
+
+    $x_1 \gets \AllocateNode{}$\;
+    $x_1.keys \gets (x.key_1, \dots, x.key_{median - 1})$\;
+    $x_1.child \gets (x.child_1, \dots, x.child_{median})$\;
+
+    $x_2 \gets \AllocateNode{}$\;
+    $x_2.keys \gets x.key_{median + 1}, \dots, x.key_{x.size}$\;
+    $x_2.child \gets x.child_{median + 1}, \dots, x.child_{x.size + 1}$\;
+
+    \KwRet $(x_1,\ x.key_{median},\ x_2)$\;
+  }
+
+  \Fn{\Insert{$root$, $key$}}{
+    $x \gets root$\;
+    \While{$x \neq null$}{
+      \If{$\exists i$, $x.key_i = key$}{
+        \Break
+      }
+
+      $i \gets i$, which points to the first key where $x.keys_i > key$
+    }
+  }
+
+
 \end{algorithm}
 
 \subsection{Deletion}
@@ -129,7 +162,7 @@ Rebalancing of node $x$ is performed when $x.size = \floor{\nicefrac{m}{2}} - 1$
 
 If the sibling node $l$ has at least $\floor{\nicefrac{m}{2}} + 1$ keys, we can perform the borrowing operation; the key $i$ is prepended to the node $x$ and the last key of $l$ detaches from $l$ and replaces the key $i$. Last child of $l$ is also detached and prepended to $x$.
 
-However, if neither the sibling nodes have enough keys, a merge operation occurs. Both the $x$ node and its sibling $l$ are deleted, and a new node is created instead. This new node contains keys and children of both $x$ and $l$, with key $i$ in the middle. Deletion is, thus, propagated upwards. In the event of a root with no keys and a single child, the single child becomes the new root.
+However, if neither the sibling nodes have enough keys, a merge operation occus. Both the $x$ node and its sibling $l$ are deleted, and a new node is created instead. This new node contains keys and children of both $x$ and $l$, with key $i$ in the middle. Deletion is, thus, propagated upwards. In the event of a root with no keys and a single child, the single child becomes the new root.
 
 \begin{algorithm}
   \caption{B-Tree Delete}\label{alg:b-tree-delete}

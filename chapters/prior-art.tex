@@ -1,5 +1,9 @@
 \section{Prior Art}
 
+\todo{Add CPU state-of-art}
+
+\todo{Add FAST/palmtree, Adaptive Radix Tree, OpenBw-tree, TLX/STX, R-Trees}
+
 Previous projects related to GPU implementation of B-trees focused on query throughput. Fix et al. \cite{fix2011accelerating} measured substantial performance speedup compared to sequential CPU execution by running independent queries in each thread block. Until recently, the general approach for updating is either to perform such updates on the CPU or to rebuild the structure from scratch, which is the case of Fix et al. implementation.
 
 Kaczmarski \cite{kaczmarski} utilized the relationship between a sorted list and demonstrated improved insertion time by presorting keys and proposing a novel bottom-up approach when constructing a tree. The work also explored several methods of key searching within a tree node.

@@ -10,6 +10,8 @@ Multiple parallel threads execute these kernels on the GPU. The programmer or th
 
 Every thread in a thread block has its identifier exposed as a constant variable: \code{threadIdx}. The programmer can choose to address the threads in a one, two, or a three-dimensional way for convenience's sake, especially when dealing with vectors, matrices, or volumes. The same thing goes with addressing thread blocks in a grid; each thread block can be identified with the index of a block, \code{blockIdx}, and the dimensions of the block itself, \code{blockDim}.
 
+\todo{Improve on thread synchronization}
+
 Each block has its shared memory accessible for every thread in a thread block. Thus, threads in a thread block can cooperate by sharing data via the shared memory and thread barriers via \code{\_\_syncthreads()} method to coordinate memory read and write between threads.
 
 To launch a kernel function, the programmer must specify how many threads a thread block has and the number of thread blocks in a grid in \code{<<<numBlocks, blockSize>>>} syntax. Note that the number of threads in a block must not exceed 1024 in current GPUs. If the number of required threads exceeds this limit, more thread blocks shall cover the threads needed for the launch. One must not also forget about the synchronization options.
