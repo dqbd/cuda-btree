@@ -36,4 +36,4 @@ struct BNode {
 
 As our allocator, we have chosen to implement a bump allocator (also known as stack allocator). It allocates a continuous linear section in memory and works by increasing a pointer at the next unused memory. We used atomic instructions and thread barriers to ensure serializability in case of concurrent invocations from different threads. Implementation of the bump allocator can be found in \code{/src/Utils/BumpAllocator.hpp}.
 
-To further optimize the performance and reduce the amount of unnecessary operations, \code{asm} is sporadically used to enforce a specific PTX instruction instead of relying on the \code{nvcc} compiler.
+To further optimize the performance and reduce the number of unnecessary operations, \code{asm} is sporadically used to enforce a specific PTX instruction instead of relying on the \code{nvcc} compiler.

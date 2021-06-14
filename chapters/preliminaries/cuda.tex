@@ -8,7 +8,7 @@ In \acrshort{cuda}, the CPU and GPU and their memory are referred to as \textit{
 
 Multiple parallel threads execute these kernels on the GPU. The programmer or the compiler groups these threads into \textit{thread blocks} and \textit{grids} to be scheduled on GPU for execution. A GPU scheduler maps these abstractions to concrete hardware units: A grid is mapped to a GPU, a thread block is mapped to a streaming multiprocessor (SM), and a thread is mapped to a streaming processor (SP / CUDA core). Note that thread blocks must be independent; they could be executed out of order, in series, or parallel.
 
-Every thread in a thread block has its identifier exposed as a constant variable: \code{threadIdx}. The programmer can choose to address the threads in a one, two, or a three-dimensional way for convenience's sake, especially when dealing with vectors, matrices, or volumes. The same thing goes with addressing thread blocks in a grid; each thread block can be identified with the index of a block, \code{blockIdx}, and the dimensions of the block itself, \code{blockDim}.
+Every thread in a thread block has its identifier exposed as a constant variable: \code{threadIdx}. The programmer can choose to address the threads in a one, two, or three-dimensional way for convenience's sake, especially when dealing with vectors, matrices, or volumes. The same thing goes with addressing thread blocks in a grid; each thread block can be identified with the index of a block, \code{blockIdx}, and the dimensions of the block itself, \code{blockDim}.
 
 \todo{Improve on thread synchronization}
 
