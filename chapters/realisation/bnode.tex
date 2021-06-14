@@ -32,5 +32,8 @@ struct BNode {
   \caption{The \code{BNode} struct}\label{lst:bnode}
 \end{listing}
 
+\code{uint16\_t} have been chosen instead of smaller data types, as internally, CUDA translates smaller data types into \code{short int} anyway. In B-Link-Tree variant, \code{mSibling} and \code{mChildren} have the \code{volative} keyword set to prevent incorrect caching behavior and to mitigate the potential risk of an invalid state of the tree.
+
 As our allocator, we have chosen to implement a bump allocator (also known as stack allocator). It allocates a continuous linear section in memory and works by increasing a pointer at the next unused memory. We used atomic instructions and thread barriers to ensure serializability in case of concurrent invocations from different threads. Implementation of the bump allocator can be found in \code{/src/Utils/BumpAllocator.hpp}.
 
+To further optimize the performance and reduce the amount of unnecessary operations, \code{asm} is sporadically used to enforce a specific PTX instruction instead of relying on the \code{nvcc} compiler.

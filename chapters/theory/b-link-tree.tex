@@ -27,3 +27,17 @@ As the final step of node splitting, the separator key and the newly split node 
 \todo{Add search pseudocode}
 
 Tree traversal is modified to honor $x.highkey$ by returning the node at $x.sibling$ when the target key $k$ is larger or equal than $x.highkey$.
+
+\todo{Add interaction correctness proof}
+
+Prove a case of colliding insertion and search operation. We need to consider the case of search operation before insertion is complete (eg: search operation S reads node n insertion operation I modifies the node from n to n', search operation S continues with contents based on n).
+
+Three types of split:
+- simple insertion of value/pointer pair
+- splitting of a node, insertion to the left (same) node
+- splitting of a node, insertion to the right (new) node
+
+Simple insertion into a non-full node. Leaf nodes are trivial, internal nodes inserting a pair. Newly inserted node can be acceseed via the side pointers.
+
+Search while split. If searching in a node mid-split, the search stays the same except for the newly inserted node, which won't be found. If searching in an internal node, \todo{Explain, why nodes below the split node are correct}. 
+
