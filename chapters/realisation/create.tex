@@ -10,7 +10,8 @@ As a B-Link-Tree internally stores its key-value pairs in nodes, we can avoid in
   \SetKw{return}{return}
   \SetKwRepeat{Do}{do}{until}
 
-  \textit{sortByKeyKernel(inputKeys, inputValues)}\\
+  \textit{SortByKeyKernel(inputKeys, inputValues)}\\
+
   (keys, children) $\gets$ \textit{CreateLeafKernel(inputKeys, inputValues)}\\
   \While{\textit{children.len()} $> 1$}{
     (keys, children) $\gets$ \textit{CreateInternalKernel(keys, children)}
@@ -18,10 +19,13 @@ As a B-Link-Tree internally stores its key-value pairs in nodes, we can avoid in
   \textit{setRootNode(children[0])}
 \end{algorithm}
 
-We sort the key-value pairs with the \code{thrust::sort} function, as the TNL library does not have a sort function yet. Multiple kernel invocations are used to create appropriate nodes for each level.
-
-The expected node count for each level is calculated by dividing the number of pairs by the desired node size. A fixed offset is chosen to make sure each node is not immediately full.
+First, the key-value pairs are sorted by the \code{thrust::sort} function. \acrshort{tnl} does not have a sort function yet. Sorted pairs are passed to the \code{CreateLeafKernel}, which will divide the pairs and fit them into nodes. A fixed offset is chosen to make sure each node is not immediately full. 
+The expected node count is then calculated by dividing the number of pairs by the desired node size.  
 
 $$\mathit{nodeCount} = \ceil{\frac{|\mathit{inputKeys}|}{\mathit{Order} - \mathit{Offset}}},\quad \begin{aligned} \mathit{Order} > 0\end{aligned}$$
+
+Each kernel invocation will return separator keys and pointers of the created nodes. These keys and children nodes are passed back to the kernel to create an additional level until the kernel creates only one node. This node then becomes the root of the tree.
+
+A significant additional benefit of constructing the tree in bulk is the improved memory locality of the tree. Nodes at the same level are created and inserted into memory simultaneously and thus reside in the memory near each other.
 
 

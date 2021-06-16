@@ -1,6 +1,6 @@
-\section{Methodology}
+\section{Environment}
 
-The tests are performed on a machine with following specifications:
+The measurements are captured on a machine with following specifications:
 
 \begin{itemize}
   \item[CPU]{AMD Ryzen 5 1600 @ 3.200\,GHz \\ (6-core, 12-thread processor, 20\,032\,KiB total cache)}
@@ -11,7 +11,22 @@ The tests are performed on a machine with following specifications:
 
 In terms of compiler configuration, \code{g++ 9.3.0} was used as the host compiler and \code{nvcc v11.0.211} was used as the device compiler.
 
+\section{Testing methodology}
+
+GTest, executing tests on different FJFI systems. Can we prove the implementation is error-proof? Not likely, as the execution is not deterministic. Both the internal state of the node and the results of the operations are tested.
+
+\section{Benchmarking methodology}
+
 After measuring execution times from chosen implementations, we calculate the speedup as the ratio of serial execution time on the CPU and parallel execution time on the GPU.
 
 $$\mathit{Speedup} = \frac{\tau_{\mathit{CPU}}}{\tau_{\mathit{GPU}}}$$
 
+What order of nodes is used for testing insertion / searching: increasing, decreasing, Knuth shuffled, gaussian, Zipf.
+
+What timers are used? Host code uses \code{std::chrono::high\_resolution\_clock::now}, device based implementations are measured using CUDA events and CUDA runtime API (\code{cudaEvent*}). Time spent on copying inputs and outputs are not included. \todo{Is this a good idea?}
+
+Increasing data sizes from $2^10$ until $2^25$ using 4-byte keys and values. Each measurement is captured 10 times and the results are averaged.
+
+Synchronization does not seem to be an issue, memory access is key to improving performace. Randomized memory access, disordered memory access. 
+
+\todo{Add an explanation why \cite{awad} is 2-3 times faster than our implementation.} Improved memory access

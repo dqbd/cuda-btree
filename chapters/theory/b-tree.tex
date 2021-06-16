@@ -1,4 +1,4 @@
-\section{B-Tree}
+\section{B-Tree}\label{section:b-tree}
 
 B-Tree is a balanced search tree used for storing large blocks of data. It captures and maintains the sort order of data and supports searching, sequential retrieval, insertion, and deletion in logarithmic time.
 
@@ -6,7 +6,7 @@ Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already c
 
 B-Trees are a specialization of $(a,b)$-Trees, where a B-Tree is either an $(a, 2a)$-tree or $(a, 2a + 1)$-tree depending on the oddness / evenness of $a$. This is also why 2-3-4-trees (which in turn are similar to RB-Trees) are B-Trees with an order of 3.
 
-It raises the question, though, why B-Trees are used for on-disk data and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by having its node be as large as a whole block.
+However, it raises why B-Trees are used for on-disk data, and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by having its node be as large as a whole block.
 
 B-Trees are exceptionally useful for secondary disk-based storage, but it still yields significant improvements even when storing data in memory; as with CPU caches and memory line caches, we can treat the memory as a block-access device.
 
@@ -100,7 +100,7 @@ The search algorithm for B-Trees is trivial but crucial, similar to the search a
   }
 \end{algorithm}
 
-Line 3--4 in the sample Algorithm \ref{alg:b-tree-search} can be replaced with a binary search or parallelized search in CUDA, which yields better performance when searching.
+Line 3--4 in the sample Algorithm \ref{alg:b-tree-search} can be replaced with a binary search or parallelized search in CUDA, which is more suited towards SIMD systems.
 
 \subsection{Insertion}
 
@@ -109,45 +109,6 @@ First, we traverse the tree for the existence of the key. The algorithm will end
 If a node after insertion has subsequently become full after insertion, a split operation must occur to preserve the invariants of the B-Tree \ref{def:btree}. The node is considered \textit{full} if the node contains exactly $m - 1$ keys. The median key is chosen as the separator, and the node is split into two smaller nodes based on that separator. The separator is inserted into the parent of the split node, which might trigger the split operation again.
 
 When the root node needs to be split, a new node with the separator as its only key and two subtrees as its children, which the definition \ref{def:btree} permits (only internal nodes must contain at least $\floor{\nicefrac{m}{2}}$ keys).
-
-\begin{algorithm}
-  \caption{B-Tree Insert}\label{alg:b-tree-insert}
-  \SetKwInOut{Input}{Input}
-  \SetKwInOut{Output}{Output}
-  \DontPrintSemicolon
-
-  \SetKwFunction{SplitNode}{SplitNode}
-  \SetKwFunction{AllocateNode}{AllocateNode}
-  \SetKwFunction{Insert}{Insert}
-  \SetKwProg{Fn}{Function}{:}{}
-  \SetKw{Break}{break}
-
-  \Fn{\SplitNode{$x$}}{
-    $median \gets \ceil{\nicefrac{x.size}{2}}$\;
-
-    $x_1 \gets \AllocateNode{}$\;
-    $x_1.keys \gets (x.key_1, \dots, x.key_{median - 1})$\;
-    $x_1.child \gets (x.child_1, \dots, x.child_{median})$\;
-
-    $x_2 \gets \AllocateNode{}$\;
-    $x_2.keys \gets x.key_{median + 1}, \dots, x.key_{x.size}$\;
-    $x_2.child \gets x.child_{median + 1}, \dots, x.child_{x.size + 1}$\;
-
-    \KwRet $(x_1,\ x.key_{median},\ x_2)$\;
-  }
-
-  \Fn{\Insert{$root$, $key$}}{
-    $x \gets root$\;
-    \While{$x \neq null$}{
-      \If{$\exists i$, $x.key_i = key$}{
-        \Break
-      }
-
-      $i \gets i$, which points to the first key where $x.keys_i > key$
-    }
-  }
-
-\end{algorithm}
 
 \subsection{Deletion}
 
@@ -161,13 +122,7 @@ Rebalancing of node $x$ is performed when $x.size = \floor{\nicefrac{m}{2}} - 1$
 
 If the sibling node $l$ has at least $\floor{\nicefrac{m}{2}} + 1$ keys, we can perform the borrowing operation; the key $i$ is prepended to the node $x$ and the last key of $l$ detaches from $l$ and replaces the key $i$. Last child of $l$ is also detached and prepended to $x$.
 
-However, if neither the sibling nodes have enough keys, a merge operation occus. Both the $x$ node and its sibling $l$ are deleted, and a new node is created instead. This new node contains keys and children of both $x$ and $l$, with key $i$ in the middle. Deletion is, thus, propagated upwards. In the event of a root with no keys and a single child, the single child becomes the new root.
+However, if neither the sibling nodes have enough keys, a merge operation occurs. Both the $x$ node and its sibling $l$ are deleted, and a new node is created instead. This new node contains keys and children of both $x$ and $l$, with key $i$ in the middle. Deletion is, thus, propagated upwards. In the event of a root with no keys and a single child, the single child becomes the new root.
 
-\begin{algorithm}
-  \caption{B-Tree Delete}\label{alg:b-tree-delete}
-  \SetKwInOut{Input}{Input}
-  \SetKwInOut{Output}{Output}
-\end{algorithm}
-
-Many implementations forgo rebalancing the tree in favor of deleting the key instead or leaving a ghost entry, which can be utilized to alleviate the cost of inserting a new key to a sorted list. Rebalancing the tree can be postponed and executed later.
+Many implementations forgo rebalancing the tree in favor of deleting the key instead of leaving a ghost entry, which can be utilized to alleviate the cost of inserting a new key into a sorted list. Rebalancing the tree can be postponed and executed later.
 

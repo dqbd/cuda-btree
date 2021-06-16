@@ -99,7 +99,7 @@
 
 \chapter{Realisation}\label{chapter:realisation}
 
-In this chapter, we are going to present implementation details and design choices made to construct a B-Tree implementation on GPU. The entire implementation is written in \acrshort{cuda} \CC.
+In this chapter, implementation details and design choices made to construct a B-Tree implementation on GPU are presented. The entire implementation is written in \acrshort{cuda} \CC\ with the usage of \acrshort{tnl}.
 
 \input{chapters/realisation/proactive-splitting.tex}
 \input{chapters/realisation/wcws.tex}
@@ -130,14 +130,15 @@ In this chapter, we are going to present implementation details and design choic
 
 \begin{figure}
 	\dirtree{%
-		.1 readme.txt\DTcomment{the file with SD card contents description}.
-		.1 exe\DTcomment{the directory with executables}.
-		.1 src\DTcomment{the directory of source codes}.
-		.2 wbdcm\DTcomment{implementation sources}.
-		.2 thesis\DTcomment{the directory of \LaTeX{} source codes of the thesis}.
-		.1 text\DTcomment{the thesis text directory}.
-		.2 thesis.pdf\DTcomment{the thesis text in PDF format}.
-		.2 thesis.ps\DTcomment{the thesis text in PS format}.
+		.1 README.md\DTcomment{description of content}.
+		.1 benchmark\DTcomment{directory of the benchmarking suite}.
+		.1 debugger\DTcomment{sources of the complementary B-Tree debugger}.
+		.1 implementation\DTcomment{implementation sources}.
+		.2 scripts\DTcomment{hotfix scripts for editor support}.
+		.2 src\DTcomment{source code of the implementation}.
+		.2 test\DTcomment{integration tests}.
+		.2 unittest\DTcomment{unit tests}.
+		.1 thesis\DTcomment{sources of the thesis}.
 	}
 \end{figure}
 
