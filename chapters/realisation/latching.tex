@@ -2,8 +2,8 @@
 
 For our implementation of B-Trees, an additional attribute $x.writelock$ is used to prevent multiple threads from writing to the same node at the same time.
 
-In the B$^+$Tree implementation of insertion, traversal is prevented if encountering a node with a write lock to ensure data serializability, as the node with a lock is most likely not in a correct state and may lead the traversal operation to an incorrect subtree. Thus, to solve this issue, the search is restarted from the start if reaching a node with a lock, implementing a back-off lock.
+In the B$^+$Tree implementation of insertion, traversal is prevented if encountering a node with a write lock to ensure data serializability, as the node with a lock is most likely not in a correct state and may lead the traversal operation to an incorrect subtree. Thus, to solve this issue, the search is restarted from the start if reaching a node with a lock, sharing the the properties of a back-off lock.
 
-B-Link-Tree has this limitation lifted, as the tree is always traversable, even if the node is locked for writing. As described in Chapter \todo{Add chapter}, each node has a $x.sibling$ pointer referencing next at the same depth. At every depth, the nodes are essentially chained in a linked list. With this addition, a correct node is always found with the help of the additional path to reach every node.
+B-Link-Tree has this limitation lifted, as the tree is always traversable, even if the node is locked for writing. As described in Section \ref{section:b-link-tree}, each node has a $x.sibling$ pointer referencing next at the same depth. At every depth, the nodes are essentially chained in a linked list. With this addition, a correct node is always found with the help of the additional path to reach every node.
 
 In both of the implementations, \code{warp.sync()} and \code{\_\_threadfence} is sporadically needed to ensure correct order of instructions used for memory access.

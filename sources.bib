@@ -249,3 +249,93 @@
   location  = {Washington, District of Columbia},
   series    = {PPoPP '19}
 }
+
+@inproceedings{hb+tree,
+  author    = {Shahvarani, Amirhesam and Jacobsen, Hans-Arno},
+  title     = {A Hybrid B+-Tree as Solution for In-Memory Indexing on CPU-GPU Heterogeneous Computing Platforms},
+  year      = {2016},
+  isbn      = {9781450335317},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/2882903.2882918},
+  doi       = {10.1145/2882903.2882918},
+  abstract  = {An in-memory indexing tree is a critical component of many databases. Modern many-core processors, such as GPUs, are offering tremendous amounts of computing power making them an attractive choice for accelerating indexing. However, the memory available to the accelerating co-processor is rather limited and expensive in comparison to the memory available to the CPU. This drawback is a barrier to exploit the computing power of co-processors for arbitrarily large index trees. In this paper, we propose a novel design for a B+-tree based on the heterogeneous computing platform and the hybrid memory architecture found in GPUs. We propose a hybrid CPU-GPU B+-tree, "HB+-tree," which targets high search throughput use cases. Unique to our design is the joint and simultaneous use of computing and memory resources of CPU-GPU systems. Our experiments show that our HB+-tree can perform up to 240 million index queries per second, which is 2.4X higher than our CPU-optimized solution.},
+  booktitle = {Proceedings of the 2016 International Conference on Management of Data},
+  pages     = {1523–1538},
+  numpages  = {16},
+  keywords  = {indexing, heterogeneous computing, in-memory database, B+-tree},
+  location  = {San Francisco, California, USA},
+  series    = {SIGMOD '16}
+}
+
+@inproceedings{openbw-tree,
+  author    = {Wang, Ziqi and Pavlo, Andrew and Lim, Hyeontaek and Leis, Viktor and Zhang, Huanchen and Kaminsky, Michael and Andersen, David G.},
+  title     = {Building a Bw-Tree Takes More Than Just Buzz Words},
+  year      = {2018},
+  isbn      = {9781450347037},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3183713.3196895},
+  doi       = {10.1145/3183713.3196895},
+  abstract  = {In 2013, Microsoft Research proposed the Bw-Tree (humorously termed the "Buzz Word Tree''), a lock-free index that provides high throughput for transactional database workloads in SQL Server's Hekaton engine. The Buzz Word Tree avoids locks by appending delta record to tree nodes and using an indirection layer that allows it to atomically update physical pointers using compare-and-swap (CaS). Correctly implementing this techniques requires careful attention to detail. Unfortunately, the Bw-Tree papers from Microsoft are missing important details and the source code has not been released.This paper has two contributions: First, it is the missing guide for how to build a lock-free Bw-Tree. We clarify missing points in Microsoft's original design documents and then present techniques to improve the index's performance. Although our focus here is on the Bw-Tree, many of our methods apply more broadly to designing and implementing future lock-free in-memory data structures. Our experimental evaluation shows that our optimized variant achieves 1.1--2.5\texttimes{} better performance than the original Microsoft proposal for highly concurrent workloads. Second, our evaluation shows that despite our improvements, the Bw-Tree still does not perform as well as other concurrent data structures that use locks.},
+  booktitle = {Proceedings of the 2018 International Conference on Management of Data},
+  pages     = {473–488},
+  numpages  = {16},
+  keywords  = {multicore, lock-free, bw-tree, main memory oltp, database index},
+  location  = {Houston, TX, USA},
+  series    = {SIGMOD '18}
+}
+
+@inproceedings{bw-tree,
+  author    = {Levandoski, Justin J. and Lomet, David B. and Sengupta, Sudipta},
+  title     = {The Bw-Tree: A B-Tree for New Hardware Platforms},
+  year      = {2013},
+  isbn      = {9781467349093},
+  publisher = {IEEE Computer Society},
+  address   = {USA},
+  url       = {https://doi.org/10.1109/ICDE.2013.6544834},
+  doi       = {10.1109/ICDE.2013.6544834},
+  abstract  = {The emergence of new hardware and platforms has led to reconsideration of how data management systems are designed. However, certain basic functions such as key indexed access to records remain essential. While we exploit the common architectural layering of prior systems, we make radically new design decisions about each layer. Our new form of B-tree, called the Bw-tree achieves its very high performance via a latch-free approach that effectively exploits the processor caches of modern multi-core chips. Our storage manager uses a unique form of log structuring that blurs the distinction between a page and a record store and works well with flash storage. This paper describes the architecture and algorithms for the Bw-tree, focusing on the main memory aspects. The paper includes results of our experiments that demonstrate that this fresh approach produces outstanding performance.},
+  booktitle = {Proceedings of the 2013 IEEE International Conference on Data Engineering (ICDE 2013)},
+  pages     = {302–313},
+  numpages  = {12},
+  series    = {ICDE '13}
+}
+
+@article{fast,
+  author     = {Kim, Changkyu and Chhugani, Jatin and Satish, Nadathur and Sedlar, Eric and Nguyen, Anthony D. and Kaldewey, Tim and Lee, Victor W. and Brandt, Scott A. and Dubey, Pradeep},
+  title      = {Designing Fast Architecture-Sensitive Tree Search on Modern Multicore/Many-Core Processors},
+  year       = {2011},
+  issue_date = {December 2011},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {36},
+  number     = {4},
+  issn       = {0362-5915},
+  url        = {https://doi.org/10.1145/2043652.2043655},
+  doi        = {10.1145/2043652.2043655},
+  abstract   = {In-memory tree structured index search is a fundamental database operation. Modern processors provide tremendous computing power by integrating multiple cores, each with wide vector units. There has been much work to exploit modern processor architectures for database primitives like scan, sort, join, and aggregation. However, unlike other primitives, tree search presents significant challenges due to irregular and unpredictable data accesses in tree traversal. In this article, we present FAST, an extremely fast architecture-sensitive layout of the index tree. FAST is a binary tree logically organized to optimize for architecture features like page size, cache line size, and Single Instruction Multiple Data (SIMD) width of the underlying hardware. FAST eliminates the impact of memory latency, and exploits thread-level and data-level parallelism on both CPUs and GPUs to achieve 50 million (CPU) and 85 million (GPU) queries per second for large trees of 64M elements, with even better results on smaller trees. These are 5X (CPU) and 1.7X (GPU) faster than the best previously reported performance on the same architectures. We also evaluated FAST on the Intel$^tinytextregistered$ Many Integrated Core architecture (Intel$^tinytextregistered$ MIC), showing a speedup of 2.4X--3X over CPU and 1.8X--4.4X over GPU. FAST supports efficient bulk updates by rebuilding index trees in less than 0.1 seconds for datasets as large as 64M keys and naturally integrates compression techniques, overcoming the memory bandwidth bottleneck and achieving a 6X performance improvement over uncompressed index search for large keys on CPUs.},
+  journal    = {ACM Trans. Database Syst.},
+  month      = dec,
+  articleno  = {22},
+  numpages   = {34},
+  keywords   = {Tree search, many-core, GPU, multicore, compression, single instruction multiple data (SIMD), CPU}
+}
+
+@article{palm,
+  author     = {Sewall, Jason and Chhugani, Jatin and Kim, Changkyu and Satish, Nadathur and Dubey, Pradeep},
+  title      = {PALM: Parallel Architecture-Friendly Latch-Free Modifications to B+ Trees on Many-Core Processors},
+  year       = {2011},
+  issue_date = {August 2011},
+  publisher  = {VLDB Endowment},
+  volume     = {4},
+  number     = {11},
+  issn       = {2150-8097},
+  url        = {https://doi.org/10.14778/3402707.3402719},
+  doi        = {10.14778/3402707.3402719},
+  abstract   = {Concurrency control on B+ trees is primarily achieved with latches, but serialization and contention can hinder scalability. As core counts on current processors increase, it is imperative to develop scalable latch-free techniques for concurrency control.We present PALM, a novel technique for performing multiple concurrent queries on in-memory B+ trees. PALM is based on the Bulk Synchronous Parallel model, which guarantees freedom from deadlocks and race conditions. Input queries are grouped and processed in atomic batches, and work proceeds in stages that preclude contention. Transitions between stages are accomplished with scalable point-to-point communication. PALM exploits data-and thread-level parallelism on modern many-core architectures, and performs 40M1 updates/second on trees with 128M keys, and 128M updates/second on trees with 512K keys on the latest CPU architectures. Our throughput is 2.3X--19X that of state-of-the-art concurrent update algorithms on in-memory B+ trees. PALM obtains close to peak throughput at very low response times of less than 350μs, even for large trees. We also evaluate PALM on the Intel® Many Integrated Core (Intel® MIC) architecture, and demonstrate a speedup of 1.5--2.1X for out-of-cache tree sizes on an Intel® Knights Ferry over a pair of Intel® Xeon® processors DP X5680 (Westmere-EP) in a dual-socket configuration.},
+  journal    = {Proc. VLDB Endow.},
+  month      = aug,
+  pages      = {795–806},
+  numpages   = {12}
+}
