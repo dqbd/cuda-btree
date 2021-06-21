@@ -1,22 +1,14 @@
 \section{Motivation}
 
-B-tree is a well known data structure. What it is used for? (Online Analytical Processing - OLAP, decision making systems such as DSS, data mining)
+B-Tree is a well-known data structure often used as an index, a critical primitive used in various applications, such as data mining, decision support systems, and Online analytical processing (OLAP). Widely found in database systems and file systems, B-Tree became the de facto data structure used when dealing with a large amount of arbitrary data of an unknown domain.
 
-Computing performance per price makes GPU improtant for scientific computing.
+Thanks to the self-balancing nature of this data structure by keeping the tree height as small as possible, regardless of arbitrary updates, lookup, insertion, and deletion in the tree are in $\mathcal{O}(\log{n})$. Naively, operating on multiple items will thus perform in $\mathcal{O}(n \log{n})$.
 
-Utilizing GPU to accelerate processing and index search yields great potential, demonstrated by 
+This can be improved upon by enabling parallel processing and computation on such data structure, the most popular method of the parallel computational platform being the Graphical Processing Units (GPU). With the advent of programmable shaders and support for floating-point operations, General-purpose computing on GPU became suitable for high-performance computing. Thanks to their superior computing performance to price ratio, GPUs became an essential staple for enabling high-performance computing for the masses.
 
-High GPU bandwidth, problem arises with good GPU utilization and proper allocation of resources.
+Although GPUs have carved their niche and adopted some computational tasks, such as deep learning or cryptocurrency mining, a performant GPU implementation of B-tree is challenging. Proper care must be taken when implementing concurrency control to allow high-throughput GPU performance without compromising correctness.
 
-
-
-With the advent of programmable shaders and support for floating-point operations, General-purpose computing on Graphical Processing Units (GPU) became suitable for scientific computing. Their superior computing performance to price ratio makes 
-
-Since then, GPUs have gained significant adoption for various computational tasks, such as deep learning, and became an essential staple for enabling high-performance computing for the masses.
-
-Nevertheless, the toolbox for general purpose data structures is lacking. One such data structure commonly used in classical CPU systems is a B-Tree. B-Tree is a search tree data structure widely used in database systems and file systems. They became the de facto default data structure used to read a large amount of arbitrary data of an unknown domain.
-
-Thanks to the self-balancing nature of this data structure by keeping the tree height as small as possible, regardless of arbitrary updates, lookup, insertion, and deletion in the tree are in $\mathcal{O}(\log{n})$. Naive updates of multiple items thus will run in $\mathcal{O}(n \log{n})$. Optimizing such data structure for GPU would allow us to utilize the parallel nature of GPU to accelerate querying and updating multiple items, unlocking potential performance gains in all applications using B-Trees for storing data.
+Nevertheless, optimizing such data structure for GPU would allow us to utilize the parallel nature of GPU to accelerate querying and updating multiple items, unlocking the potential performance gains in all applications using B-trees for operating on data.
 
 \section{Structure of Work}
 
