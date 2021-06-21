@@ -1,8 +1,6 @@
 \section{B-Link-Tree}\label{section:b-link-tree}
 
-Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which, albeit straightforward, severely reduced concurrency.
-
-In order to alleviate the bottleneck without risking inconsistency, \textit{B-Link-Tree} relaxes the definition of B$^+$Trees. As explained by Graefe \cite{goetz-tech}:
+Previous approaches include locking a subtree of highest affected node \cite{samadi1976b}, which, albeit straightforward, reduced concurrency. To alleviate the bottleneck without risking inconsistency, \textit{B-Link-Tree} relaxes the definition of B$^+$Trees. As explained by Graefe \cite{goetz-tech}:
 
 \begin{definition}
   B-Link-Tree is a B$^+$Tree with following properties:
@@ -16,13 +14,18 @@ In order to alleviate the bottleneck without risking inconsistency, \textit{B-Li
   \end{enumerate}
 \end{definition}
 
-\input{components/figure/b-link-tree.tex}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{components/figure/b-link-tree.png}
+  \caption{B-Link-Tree with $Order$ = 3}
+  \label{figure:b-link-tree}
+\end{figure}
 
 Splitting during node insertion is divided into two independent steps: splitting a node and inserting the split node with its new separator key to the parent node. When splitting node $x$, a new right sibling node $y$ is created. The node $y$ inherits the high key from the split node $x$, whereas the first key of $y.keys$ is used as a new $x.highkey$. Thus, an internal node does exist without a parent in between the operations. $x.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
 
 \todo{Add insertion pseudocode}
 
-As the final step of node splitting, the separator key and the newly split node $y$ are inserted in the parent node. 
+As the final step of node splitting, the separator key and the newly split node $y$ are inserted in the parent node.
 
 \todo{Add search pseudocode}
 
@@ -39,5 +42,5 @@ Three types of split:
 
 Simple insertion into a non-full node. Leaf nodes are trivial, internal nodes inserting a pair. Newly inserted node can be acceseed via the side pointers.
 
-Search while split. If searching in a node mid-split, the search stays the same except for the newly inserted node, which won't be found. If searching in an internal node, \todo{Explain, why nodes below the split node are correct}. 
+Search while split. If searching in a node mid-split, the search stays the same except for the newly inserted node, which won't be found. If searching in an internal node, \todo{Explain, why nodes below the split node are correct}.
 

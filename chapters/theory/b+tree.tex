@@ -6,7 +6,12 @@
 
 Separator keys may not match to keys contained in leaf nodes and may be freely chosen, with the only requirement being they point to correct subtree during a search. Leaf nodes may optionally include a pointer to the right sibling.
 
-\input{components/figure/b+tree.tex}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{components/figure/b+tree.png}
+  \caption{B+Tree with $Order$ = 3}
+  \label{figure:b+tree}
+\end{figure}
 
 By storing keys in leaf nodes, the branching factor of internal nodes is maximized, which results in lower tree height and fewer I/O operations.
 
