@@ -21,17 +21,13 @@ Previous approaches include locking a subtree of highest affected node \cite{sam
   \label{figure:b-link-tree}
 \end{figure}
 
-Splitting during node insertion is divided into two independent steps: splitting a node and inserting the split node with its new separator key to the parent node. When splitting node $x$, a new right sibling node $y$ is created. The node $y$ inherits the high key from the split node $x$, whereas the first key of $y.keys$ is used as a new $x.highkey$. Thus, an internal node does exist without a parent in between the operations. $x.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
+Splitting during node insertion is divided into two independent steps:  \textit{splitting a node} and inserting the split node with its new separator key to the parent node.
 
-\todo{Add insertion pseudocode}
+When splitting node $x$, a new right sibling node $y$ is created. The node $y$ inherits the high key from the split node $x$, whereas the first key of $y.keys$ is used as a new $x.highkey$. Thus, an internal node does exist without a parent in between the operations. $x.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
 
-As the final step of node splitting, the separator key and the newly split node $y$ are inserted in the parent node.
-
-\todo{Add search pseudocode}
+As the final step of node splitting, the separator key and the newly split node $y$ are inserted in the parent node. Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
 
 Tree traversal is modified to honor $x.highkey$ by returning the node at $x.sibling$ when the target key $k$ is larger or equal than $x.highkey$.
-
-\todo{Add interaction correctness proof}
 
 \subsection{Proof of correctness}
 
@@ -64,10 +60,10 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
 
   Therefore, insertion will not break the total ordering of nodes.
 
-  Latches for the nodes are acquired by following the ordering, thus once a latch is acquired for a node, no other latch will be acquired on any node below it, nor on any node on the same level.
+  Latches for the nodes are acquired by following the ordering; thus once a latch is acquired for a node, no other latch will be acquired on any node below it, nor on any node on the same level.
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{theorem:b-link-tree:modifications}
   \textit{Correct tree modifications} -- the tree must appear as a valid tree for all nodes at any time.
 \end{theorem}
 
@@ -85,7 +81,7 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
   Even though $writeNode(x^\prime)$ and subsequent $writeNode(x)$ operation are done in two writes, it can be shown, that these operations are equivalent to a single change in tree structure:
 
   \begin{itemize}
-    \item when $writeNode(x^\prime)$ is executed, no other node has a pointer at $x^\prime$. Therefore this operation will not modify the tree structure,
+    \item When $writeNode(x^\prime)$ is executed, no other node has a pointer at $x^\prime$. Therefore this operation will not modify the tree structure,
     \item when $writeNode(x)$ is subsequently executed, the $x.sibling$ is set to point to $x^\prime$. This operation therefore does both modify the node $x$ and introduce newly allocated node $x^\prime$ to the tree in a single operation.
   \end{itemize}
 \end{proof}
@@ -94,21 +90,33 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
   \textit{Correct interactions} -- concurrent operations do not interfere with one another.
 \end{theorem}
 
-\todo{Complete proof}
-
 \begin{proof}
-  We need to prove that concurrent operations do not interfere with one another. Reader/writer and writer/writer do not step on each other.
+  Assume $t_i$ is the time when the insertion process $I$ writes node $x$ to storage, and $t_r$ is the time when another operation $P$ reads the same node $x$. All of the operations are considered atomic, thus $t_i \neq t_r$.
 
-  Prove a case of colliding insertion and search operation. We need to consider the case of search operation before insertion is complete (eg: search operation S reads node n insertion operation I modifies the node from n to n', search operation S continues with contents based on n).
+  First, the case of $t_r > t_i$, where an operation $P$ is reading a node $x$ later than the insertion, is completed is considered; any changes that the insertion process $I$ does will preserve the correct tree structure, as proven in Theorem \ref{theorem:b-link-tree:modifications}.
 
-  Three types of split:
-  - simple insertion of value/pointer pair
-  - splitting of a node, insertion to the left (same) node
-  - splitting of a node, insertion to the right (new) node
+  In the case of $t_r < t_i$, where insertion $I$ happens after operation $P$ does a read. the proof is broken into three possible scenarios, which the insertion might perform:
 
-  Simple insertion into a non-full node. Leaf nodes are trivial, internal nodes inserting a pair. Newly inserted node can be acceseed via the side pointers.
+  \begin{enumerate}
+    \item Simple insertion of a key-pointer pair into node $x$ without splitting,
+    \item splitting of node $x$, where the inserted key is placed in the left node $x$, same as the node, which has been split,
+    \item splitting of node $x$, where the inserted key is placed in the right node $y$, the newly allocated node.
+  \end{enumerate}
 
-  Search while split. If searching in a node mid-split, the search stays the same except for the newly inserted node, which won't be found. If searching in an internal node, \todo{Explain, why nodes below the split node are correct}.
+  In the first scenario, $I$ performs the insertion in node $x$ without additional splitting. If it is inserting into a leaf node ($x.leaf = true$), no other pointers are inserted by the process $I$, and the operation $P$ behaves as if the read happened before insertion.
+
+  If the insertion happens on an internal node ($x.leaf = false$), a key-pointer pair created by splitting a lower-level node $z$ is inserted into the node $x$. As the node $z$ has already been split, as this is the only situation where a key-pointer pair could propagate upwards to node $x$, the operation $P$ will be able to utilize the link pointers $z.sibling$ to reach both the original node and the newly split node.
+
+  In the second and third scenarios, the process $I$ has split the node $x$ into two nodes $x_1$ and $x_2$. If the process is happening on leaf nodes, $P$ will continue as if no insertion has occurred. In non-leaf nodes, a key-pointer pair from the newly split node from the lower level is inserted into node $x$, which caused the node to be split. Both the insertion and search in the node below node $x$ will be correct thanks to Theorem \ref{theorem:b-link-tree:modifications}. It only remains to prove the correctness of split operation on node $x$.
+
+  Assume $z$ is the node, which has been created by splitting a node below $x$ and $z_l$ the node on the left of node $z$ ($z_l.sibling = z$).
+  If the search would not follow the pointer of $z$, the operation $P$ will proceed as usual because the nodes $x_1$ and $x_2$ contain the same set of pointers as node $x$ with the addition of the pointer to $z$. Otherwise, if the search would follow the pointer to $z$, had the process $P$ read the node $x$ after the split, the operation $P$ will proceed instead to the node left of the node $z$, $z_l$. The operation $P$ is then able to reach node $z$ by using the link pointer of node $z_l$.
+
+  If the process $P$ is another insertion process, it is either searching for the correct node, backtracking upwards, or attempting to insert into node $x$. In the case of searching, the proof is the same as if the process $P$ was a search operation.
+
+  In the case of backtracking, the node $n$ might have been split multiple times since the last read when traversing downwards in the search operation. In this scenario, the insertion process will find the proper target node for insertion using link pointers, as the order between nodes is preserved, and the newly split nodes of node $n$ will be found on the right side of node $n$.
+
+  Finally, the process $P$ can attempt to insert a key (or a key-pointer pair) into node $n$. In this scenario, only one process can hold a latch for the node $n$. After the latch has been acquired by one of the insertion processes, the other will attempt to read the node $n$ afterward. As the read occurs after write, Theorem \ref{theorem:b-link-tree:modifications} proves this interaction to be correct.
 
 \end{proof}
 
