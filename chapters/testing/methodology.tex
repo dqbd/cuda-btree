@@ -21,14 +21,21 @@ After measuring execution times from chosen implementations, we calculate the sp
 
 $$\mathit{Speedup} = \frac{\tau_{\mathit{CPU}}}{\tau_{\mathit{GPU}}}$$
 
-What order of nodes is used for testing insertion/searching: increasing, decreasing, Knuth shuffled, gaussian, Zipf.
+\section{Numerical network microbenchmark}
 
-What timers are used? Host code uses \code{std::chrono::high\_resolution\_clock::now}, device based implementations are measured using CUDA events and CUDA runtime API (\code{cudaEvent*}). Time spent on copying inputs and outputs are not included. \todo{Is this a good idea?}
+\todo{Add numerical mesh microbenchmark - numerical networks}
 
-Increasing data sizes from $2^10$ until $2^25$ using 4-byte keys and values. Each measurement is captured 10 times and the results are averaged.
+To determine the performance speedup between the GPU and the CPU implementation, a micro-benchmark is introduced with a simple use case. The benchmark consists of incremental inserting and querying unstructured numerical cube mesh.
 
-Synchronization does not seem to be an issue, memory access is key to improving performace. Randomized memory access, disordered memory access.
-
-\todo{Add an explanation why \cite{awad} is 2-3 times faster than our implementation.} Improved memory access
 
 \section{Comparison against known implementations}
+
+This section describes the comparison of the thesis implementation against other GPU and CPU based implementations. \todo{add cites}
+
+For all of the experiments, 32-bit keys and values are used. Different kinds of pair sequences were used as the input data and each implementation is executed and measured 10 times. Results presented here are averaged. Measurement of CPU based variants are measured using {std::chrono::high\_resolution\_clock::now}, whereas the GPU based ones are measured using CUDA runtime API. The time spent on copying the data from host to device is not included in the measurement.
+
+\todo{Add search benchmark}
+
+\todo{Add insertion benchmark}
+
+\todo{Add an explanation why \cite{awad} is 2-3 times faster than our implementation.} Improved memory access
