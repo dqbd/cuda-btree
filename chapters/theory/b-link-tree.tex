@@ -71,13 +71,23 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
   \textit{Correct tree modifications} -- the tree must appear as a valid tree for all nodes at any time.
 \end{theorem}
 
-\todo{Complete proof}
-
 \begin{proof}
-  The tree must appear as a valid tree for all threads at any time except for the modifying thread. Splitting happens atomically and writing happens only in three circumstances:
-  - writing to a non-full node - ok
-  - writing to a newly allocated   node - ok, no pointers are there
-  - writing to a split node - atomic transaction needs to happen to transfer the state of node
+  The tree must appear as a valid tree for all threads at any time except for the modifying thread. Assuming writing is done by invoking $writeNode$ function, which will write to the storage atomically.
+
+  The insertion operation, assuming performed on a node $x$ of the tree, will therefore write only in these circumstances:
+
+  \begin{enumerate}
+    \item $writeNode(x)$ -- if node $x$ is not considered full and is safe for rewriting,
+    \item $writeNode(x^\prime)$ -- writing a newly allocated node $x^\prime$, which was created in the process of splitting node $x$,
+    \item $writeNode(x)$ -- rewriting the node $x$ as part of the splitting process, $x.sibling$ is set to point at node $x^\prime$.
+  \end{enumerate}
+
+  Even though $writeNode(x^\prime)$ and subsequent $writeNode(x)$ operation are done in two writes, it can be shown, that these operations are equivalent to a single change in tree structure:
+
+  \begin{itemize}
+    \item when $writeNode(x^\prime)$ is executed, no other node has a pointer at $x^\prime$. Therefore this operation will not modify the tree structure,
+    \item when $writeNode(x)$ is subsequently executed, the $x.sibling$ is set to point to $x^\prime$. This operation therefore does both modify the node $x$ and introduce newly allocated node $x^\prime$ to the tree in a single operation.
+  \end{itemize}
 \end{proof}
 
 \begin{theorem}
