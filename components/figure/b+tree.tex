@@ -9,6 +9,7 @@
         anchor=north
       },
     bchild/.style = { -> },
+    bsibling/.style = { ->, dashed, red },
     bvalue/.style = { -{Circle[open]}, blue }
     ]
 
@@ -71,6 +72,13 @@
         \nodepart{one} $1$
       };
     \draw[bvalue](y2x6.one south) -- +(0,-0.5);
+
+    \draw[bsibling](y2x0.east) -- (y2x1.west);
+    \draw[bsibling](y2x1.east) -- (y2x2.west);
+    \draw[bsibling](y2x2.east) -- (y2x3.west);
+    \draw[bsibling](y2x3.east) -- (y2x4.west);
+    \draw[bsibling](y2x4.east) -- (y2x5.west);
+    \draw[bsibling](y2x5.east) -- (y2x6.west);
 
   \end{tikzpicture}
   \caption{B$^+$Tree with $\mathit{Order} = 3$}
