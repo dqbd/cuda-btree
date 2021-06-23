@@ -1,56 +1,77 @@
 \begin{figure}[H]
   \centering
   \begin{tikzpicture}[
-      bnode/.style = {
-          draw,
-          text width=1em,
-          align=center,
-          rectangle split,
-          rectangle split horizontal,
-          rectangle split parts = 4,
-        },
+    bnode/.style = {
+        draw,
+        rectangle split,
+        rectangle split horizontal,
+        rectangle split ignore empty parts,
+        anchor=north
+      },
+    bchild/.style = { -> },
+    bvalue/.style = { -{Circle[open]}, blue }
     ]
 
-    \node[bnode](root) {
-      \nodepart{one} $65$
-      \nodepart{two} $72$
-      \nodepart{three} $77$
-      \nodepart{four}
-      \nodepart{five}
+    % Level 0
+    \node[bnode](y0) {
+      \nodepart{one} $4$ \nodepart{two} $7$
     };
 
-    \draw[->](root.south west) -- +(-3.6,-1)
-    node[bnode, anchor=north](a){
-        \nodepart{one} $51$
-        \nodepart{two} $52$
-        \nodepart{three}
-        \nodepart{four}
+    % Level 1
+    \draw[bchild](y0.south west) -- +(-4,-1) node[bnode](y1x0){
+        \nodepart{one} $1$
       };
 
-    \draw[->](root.one split south) -- +(-1.2,-1)
-    node[bnode, anchor=north](b) {
-        \nodepart{one} $65$
-        \nodepart{two} $68$
-        \nodepart{three}
-        \nodepart{four}
+    \draw[bchild](y0.one split south) -- +(0,-1) node[bnode](y1x1){
+        \nodepart{one} $1$ \nodepart{two} $2$
       };
 
-    \draw[->](root.two split south) -- +(1.2,-1)
-    node[bnode, anchor=north](c) {
-        \nodepart{one} $72$
-        \nodepart{two} $73$
-        \nodepart{three}
-        \nodepart{four}
+    \draw[bchild](y0.south east) -- +(4,-1) node[bnode](y1x2){
+        \nodepart{one} $1$
       };
 
-    \draw[->](root.three split south) -- +(3.6,-1)
-    node[bnode, anchor=north](d) {
-        \nodepart{one} $77$
-        \nodepart{two} $78$
-        \nodepart{three} $79$
-        \nodepart{four}
+    % Level 2
+    \draw[bchild](y1x0.south west) -- +(-0.5,-1) node[bnode](y2x0){
+        \nodepart{one} $1$
       };
+    \draw[bvalue](y2x0.one south) -- +(0,-0.5);
+
+    \draw[bchild](y1x0.south east) -- +(0.5,-1) node[bnode](y2x1){
+        \nodepart{one} $1$ \nodepart{two} $2$
+      };
+    \draw[bvalue](y2x1.one south) -- +(0,-0.5);
+    \draw[bvalue](y2x1.two south) -- +(0,-0.5);
+
+    % ------
+    \draw[bchild](y1x1.south west) -- +(-1.5,-1) node[bnode](y2x2){
+        \nodepart{one} $1$
+      };
+    \draw[bvalue](y2x2.one south) -- +(0,-0.5);
+
+    \draw[bchild](y1x1.one split south) -- +(0,-1) node[bnode](y2x3){
+        \nodepart{one} $1$ \nodepart{two} $2$
+      };
+    \draw[bvalue](y2x3.one south) -- +(0,-0.5);
+    \draw[bvalue](y2x3.two south) -- +(0,-0.5);
+
+    \draw[bchild](y1x1.south east) -- +(1.5,-1) node[bnode](y2x4){
+        \nodepart{one} $1$ \nodepart{two} $2$
+      };
+    \draw[bvalue](y2x4.one south) -- +(0,-0.5);
+    \draw[bvalue](y2x4.two south) -- +(0,-0.5);
+
+    % ------
+    \draw[bchild](y1x2.south west) -- +(-0.5,-1) node[bnode](y2x5){
+        \nodepart{one} $1$ \nodepart{two} $2$
+      };
+    \draw[bvalue](y2x5.one south) -- +(0,-0.5);
+    \draw[bvalue](y2x5.two south) -- +(0,-0.5);
+
+    \draw[bchild](y1x2.south east) -- +(0.5,-1) node[bnode](y2x6){
+        \nodepart{one} $1$
+      };
+    \draw[bvalue](y2x6.one south) -- +(0,-0.5);
 
   \end{tikzpicture}
-  \caption{B+Tree with $\mathit{Order} = 5$}
+  \caption{B$^+$Tree with $\mathit{Order} = 3$}
 \end{figure}

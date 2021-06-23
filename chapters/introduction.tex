@@ -14,7 +14,7 @@ Nevertheless, optimizing such data structure for GPU would allow us to utilize t
 
 The thesis' main work is to introduce an implementation of a B-Tree built on top of the Template Numerical Library (TNL). This implementation shall have the ability to switch the environment in which the data resides and operations are performed. Either on the CPU or the GPU. The code has to be implemented in \CC\ and must support CUDA, as these are the prerequisites of the used library.
 
-First, in the theoretical section, hardware structure and software architecture will be introduced, alongside the general overview of prior art related to previous GPU implementations of B-Trees. A general primer of both the TNL library and the B-Tree data structure will also be present. Different variants and modifications of the data structure, such as B+Tree or B-Link-Tree, are explained and compared against the original B-Tree in the context of massively parallel execution on the GPU.
+First, in the theoretical section, hardware structure and software architecture will be introduced, alongside the general overview of prior art related to previous GPU implementations of B-Trees. A general primer of both the TNL library and the B-Tree data structure will also be present. Different variants and modifications of the data structure, such as B$^+$Tree or B-Link-Tree, are explained and compared against the original B-Tree in the context of massively parallel execution on the GPU.
 
 The realization section presented in Chapter \ref{chapter:realisation} will explain the design decision choices made for this GPU B-Tree and delve into the actual code of the implementation.
 

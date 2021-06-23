@@ -12,12 +12,7 @@ B-Trees are exceptionally useful for secondary disk-based storage, but it still 
 
 The main benefit of B-Trees is their shallow height even with many keys inserted; thus, the number of disk accesses to traverse the tree is also low.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{components/figure/b-tree.png}
-  \caption{B-Tree with $Order$ = 3}
-  \label{figure:b-tree}
-\end{figure}
+\input{components/figure/b-tree.tex}
 
 \begin{definition}\label{def:btree}
   B-Tree of order $m$ is a rooted tree with following properties:

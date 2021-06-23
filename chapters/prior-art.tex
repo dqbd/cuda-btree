@@ -6,7 +6,7 @@ Bw-Tree introduced by Levandoski et al. \cite{bw-tree} from Microsoft Research i
 
 Wang et al. \cite{openbw-tree} expanded the work done in \cite{bw-tree} by describing database specific implementation details regarding iterators and enabling non-unique key support.
 
-Sewall et al. \cite{palm} introduced novel modifications to B+Tree operations in the proposed PALM technique. This technique uses the Bulk Synchronous Parallel model, where queries are grouped and the work is distributed among threads. This work also optimizes synchronization by avoiding barriers in favour of communicating of adjacent threads in a point-to-point manner. Latches are avoided under condition that all search queries have been completed before insertions and a node may be written by exactly one thread.
+Sewall et al. \cite{palm} introduced novel modifications to B$^+$Tree operations in the proposed PALM technique. This technique uses the Bulk Synchronous Parallel model, where queries are grouped, and the work is distributed among threads. This work also optimizes synchronization by avoiding barriers in favor of communicating adjacent threads in a point-to-point manner. Latches are avoided under condition that all search queries have been completed before insertions, and a node may be written by exactly one thread.
 
 Previous projects related to GPU implementation of B-trees focused on query throughput. Fix et al. \cite{fix2011accelerating} measured substantial performance speedup compared to sequential CPU execution by running independent queries in each thread block. Until recently, the general approach for updating is either to perform such updates on the CPU or to rebuild the structure from scratch, which is the case of Fix et al. implementation.
 
@@ -14,7 +14,7 @@ Kim et al. proposed FAST \cite{fast}, a configurable high-performance tree optim
 
 Kaczmarski \cite{kaczmarski} utilized the relationship between a sorted list and demonstrated improved insertion time by presorting keys and proposing a novel bottom-up approach when constructing a tree. The work also explored several methods of key searching within a tree node.
 
-Shahvarani et al. \cite{hb+tree} created a B+Tree variant utilizing the heterogeneous nature of the CPU and the GPU during a search operation. This approach has the benefit of removing the memory capacity restrictions, as the key-value pairs are residing on the host, whereas internal nodes are present on the device.
+Shahvarani et al. \cite{hb+tree} created a B$^+$Tree variant utilizing the heterogeneous nature of the CPU and the GPU during a search operation. This approach has the benefit of removing the memory capacity restrictions, as the key-value pairs are residing on the host, whereas internal nodes are present on the device.
 
 In Yan et al. \cite{harmonia}, instead of having the keys and children of a node in one instance, they are stored into separate arrays. Keys are stored in a one-dimensional array, and children are stored in a prefix-sum array. Storing keys and children into separate array improve memory locality and thus decreasing memory latency.
 
