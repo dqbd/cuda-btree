@@ -25,24 +25,26 @@ The measurements are captured on the \code{gp1} system provided by Faculty of Nu
   \label{table:env-gp1}
 \end{table}
 
-As for the compilation itself, optimalization flag is set to \code{-O3}.  \CC\,dialect is set to \CC17 when benchmarking against different implementations, although \CC14 is supported as well.
+Furthermore, the optimization flag is set to \code{-O3}. \CC\,dialect is set to \CC17 when benchmarking against different implementations, although \CC14 is supported as well.
 
 \section{Testing methodology}
 
-As the execution of code on device is not deterministic, it is hard to prove complete absence of errors and bugs of the solution. Nevertheless, for each of the B-Tree implementations a set of unit tests is prepared. These unit tests rigorously examine if each operation preserves the valid tree state, which has proved to be helpful when optimizing the performance of the tree without sacrificing correctness. \code{GoogleTest} framework \cite{gtest} is the framework of choice used for writing these unit test suites.
+As the execution of code on the device is not deterministic, it is hard to prove the complete absence of errors and bugs of the solution. Nevertheless, for each of the B-Tree implementations, a set of unit tests is prepared. This unit test suite rigorously examines if each operation preserves the valid tree state, which has proved to be helpful when optimizing the performance of the tree without sacrificing correctness. \code{GoogleTest} framework \cite{gtest} is the framework of choice used for writing these unit test suites.
 
-For the host implementation, unit tests do include assertions of internal states of a node to aid the development and catch bugs early on. On the device side though, assertions on the device code are limited and unit tests make their assertions only on the result after operation completion. \code{GoogleTest} is unfortunately not supported on the device code.
+For the host implementation, unit tests do include assertions of the internal states of a node to aid the development and catch bugs early on. On the device side, though, asserts on the device code are limited, and unit tests make their assertions only on the result after operation completion, as \code{GoogleTest} is unfortunately not supported on the device code.
 
-To better understand the behavior of operations done on a GPU B-Tree, a complementary web-based visual debugger \ref{figure:debugger} has been developed, which takes the logs from standard output enabled by a flag as the input and render the state of the tree visually. Finding bugs and concurrency issues is significantly easier with the aid of the visual debugger.
+Even though \code{cuda-gdb} does work on GPU-specific code, debugging of a kernel is a pain-staking process. Pinpointing race conditions can be difficult, especially without any prior context, and any potential issues might arise only when dealing with a large number of items in B-Tree. To better understand the behavior of GPU B-Tree operations and help find concurrency issues easier, a complimentary web-based visual debugger has been developed in React, seen in Figure \ref{figure:debugger}.
+
+Macro functions have been inserted through the implementations, which are enabled by defining \code{DEBUGGER} in the source code. With this flag, the implementation will emit debugging commands into the standard output, which can be inserted into the web app.
 
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{components/figure/debugger.png}
-  \caption{Web based visual debugger displaying the internal state of a tree.}
+  \caption{Web based visual debugger displaying the internal state of a tree. Red boxes denote split nodes not yet inserted to the parent node. Yellow-highlighted node addresses indicate that a thread has latched that node.}
   \label{figure:debugger}
 \end{figure}
 
-In the case of multiple B-Tree variants, to avoid duplicating tests and ensure correctness of both of the implementations, typed tests are used to repeat the same logic over a list of types \cite{gtest-advanced}, as seen in Listing \ref{lst:gtest-typed}. The \code{typename} of each class will be available as a static field within \code{TestFixture} itself.
+In the case of multiple B-Tree variants, to avoid duplicating tests and ensure the correctness of both implementations, typed tests are used to repeat the same logic over a list of types \cite{gtest-advanced}, as seen in Listing \ref{lst:gtest-typed}. The \code{typename} of each class will be available as a static field within \code{TestFixture} itself.
 
 \begin{listing}
   \begin{minted}{cpp}
@@ -71,6 +73,7 @@ $$\mathit{Speedup} = \frac{\tau_{\mathit{CPU}}}{\tau_{\mathit{GPU}}}$$
 \section{Numerical network microbenchmark}
 
 \todo{Add numerical mesh microbenchmark - numerical networks}
+
 
 To determine the performance speedup between the GPU and the CPU implementation, a micro-benchmark is introduced with a simple use case. The benchmark consists of incremental inserting and querying unstructured numerical cube mesh.
 
