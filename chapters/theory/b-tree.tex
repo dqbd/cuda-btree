@@ -106,7 +106,7 @@ Line 3--4 in the sample Algorithm \ref{alg:b-tree-search} can be replaced with a
 
 First, we traverse the tree for the existence of the key. The algorithm will end up in a leaf node if the key is not found. Thus, we need to add the key to the parent of the found node
 
-If a node after insertion has subsequently become full after insertion, a split operation must occur to preserve the invariants of the B-Tree \ref{def:btree}. The node is considered \textit{full} if the node contains exactly $m - 1$ keys. The median key is chosen as the separator, and the node is split into two smaller nodes based on that separator. The separator is inserted into the parent of the split node, which might trigger the split operation again.
+If a node after insertion has subsequently become full after insertion, a split operation must occur to preserve the rules of the B-Tree \ref{def:btree}. The node is considered \textit{full} if the node contains exactly $m - 1$ keys. The median key is chosen as the separator, and the node is split into two smaller nodes based on that separator. The separator is inserted into the parent of the split node, which might trigger the split operation again.
 
 When the root node needs to be split, a new node with the separator as its only key and two subtrees as its children, which the definition \ref{def:btree} permits (only internal nodes must contain at least $\floor{\nicefrac{m}{2}}$ keys).
 

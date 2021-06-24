@@ -14,4 +14,4 @@ In most implementations, leaf nodes may include an additional pointer to a right
 
 All operations on the B$^+$Tree are simplified thanks to storing the keys exclusively in leaf nodes, as the end state when traversing a tree is always a leaf node.
 
-Tree rebalancing operations in B$^+$Tree, such as splitting full nodes and merging free nodes, are the same as in B-Tree, with the only difference is the removal of the median key in leaf nodes. The median key is only propagated to the parent node after a split; the key itself is preserved in the leaf node, ensuring the invariants of B$^+$Tree are not broken.
+Tree rebalancing operations in B$^+$Tree, such as splitting full nodes and merging free nodes, are the same as in B-Tree, with the only difference is the removal of the median key in leaf nodes. The median key is only propagated to the parent node after a split; the key itself is preserved in the leaf node, ensuring the rules of B$^+$Tree are not broken.

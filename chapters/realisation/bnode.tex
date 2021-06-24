@@ -22,8 +22,8 @@ struct BNode {
   \caption{The \code{BNode} struct}\label{lst:bnode}
 \end{listing}
 
-\code{uint16\_t} have been chosen in favor of smaller data types, as in most cases, smaller data types are converted to larger data types. In the B-Link-Tree variant, \code{mSibling} and \code{mChildren} are using the volatile qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.
+\code{uint16\_t} have been chosen in favor of smaller data types, as in most cases, smaller data types are converted to larger data types \todo{Explain more}. In the B-Link-Tree variant, \code{mSibling} and \code{mChildren} are using the volatile qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.
 
 As the allocator for the data structure, a bump allocator is used (also known as stack allocator). The bump allocator allocates a continuous linear section of memory and works by increasing a pointer at the next unused memory. Atomic instructions are used to ensure the serializability of the operations, as the allocator is invoked concurrently from different threads.
 
-To further reduce the number of instructions executed and cycles used, \code{asm} with specific PTX instructions is used instead of relying on compiler optimizations.
+To further reduce the number of instructions executed and cycles used, \code{asm} statement with specific PTX instructions is used instead of relying on compiler optimizations.

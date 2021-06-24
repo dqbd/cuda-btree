@@ -1,19 +1,66 @@
 \section{Environment}
 
-The measurements are captured on a machine with following specifications:
+The measurements are captured on the \code{gp1} system provided by Faculty of Nuclear Sciences and Physical Engineering, Czech Technical University with following specifications \ref{table:env-gp1}:
 
-\begin{itemize}
-  \item[CPU]{AMD Ryzen 5 1600 @ 3.200\,GHz \\ (6-core, 12-thread processor, 20\,032\,KiB total cache)}
-  \item[GPU]{NVIDIA GeForce GTX 1650 Super, 3\,903\,MiB, Driver: 460.56}
-  \item[RAM]{32\,GB (4$\times$8\,GB @ 2\,400\,MHz)}
-  \item[OS]{Ubuntu 20.04.2 LTS x86\_64}
-\end{itemize}
+\begin{table}[H]
+  \centering
+  \begin{tabular}{ | l | l | }
+    \hline
+    CPU             & Intel Xeon CPU E5-2630 v3 (2.40\,GHz)    \\
+    \hline
+    GPU             & NVIDIA Quadro P6000 (24\,GB, CUDA 6.1)   \\
+    \hline
+    RAM             & 128\,GB                                  \\
+    \hline
+    Driver          & 465.31                                   \\
+    \hline
+    OS              & Arch Linux (kernel 4.12.9, KPTI enabled) \\
+    \hline
+    Host compiler   & GCC g++ 11.1.0                           \\
+    \hline
+    Device compiler & nvcc v11.3.58                            \\
+    \hline
+  \end{tabular}
+  \caption{Hardware and software specification of the \code{gp1} system.}
+  \label{table:env-gp1}
+\end{table}
 
-In terms of compiler configuration, \code{g++ 9.3.0} was used as the host compiler and \code{nvcc v11.0.211} was used as the device compiler.
+As for the compilation itself, optimalization flag is set to \code{-O3}.  \CC\,dialect is set to \CC17 when benchmarking against different implementations, although \CC14 is supported as well.
 
 \section{Testing methodology}
 
-GTest, executing tests on different CTU FNSPE systems. Can we prove the implementation is error-proof? Not likely, as the execution is not deterministic. Both the internal state of the node and the results of the operations are tested.
+As the execution of code on device is not deterministic, it is hard to prove complete absence of errors and bugs of the solution. Nevertheless, for each of the B-Tree implementations a set of unit tests is prepared. These unit tests rigorously examine if each operation preserves the valid tree state, which has proved to be helpful when optimizing the performance of the tree without sacrificing correctness. \code{GoogleTest} framework \cite{gtest} is the framework of choice used for writing these unit test suites.
+
+For the host implementation, unit tests do include assertions of internal states of a node to aid the development and catch bugs early on. On the device side though, assertions on the device code are limited and unit tests make their assertions only on the result after operation completion. \code{GoogleTest} is unfortunately not supported on the device code.
+
+To better understand the behavior of operations done on a GPU B-Tree, a complementary web-based visual debugger \ref{figure:debugger} has been developed, which takes the logs from standard output enabled by a flag as the input and render the state of the tree visually. Finding bugs and concurrency issues is significantly easier with the aid of the visual debugger.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{components/figure/debugger.png}
+  \caption{Web based visual debugger displaying the internal state of a tree.}
+  \label{figure:debugger}
+\end{figure}
+
+In the case of multiple B-Tree variants, to avoid duplicating tests and ensure correctness of both of the implementations, typed tests are used to repeat the same logic over a list of types \cite{gtest-advanced}, as seen in Listing \ref{lst:gtest-typed}. The \code{typename} of each class will be available as a static field within \code{TestFixture} itself.
+
+\begin{listing}
+  \begin{minted}{cpp}
+template <typename C> class TestSuite : public testing::Test {
+public:
+  using Implementation = C;
+};
+
+using TypeList = ::testing::Types<A, B>;
+TYPED_TEST_SUITE(TestSuite, TypeList);
+
+TYPED_TEST(TestSuite, Test) {
+  typename TestFixture::Implementation impl;
+  // ... rest of test implementation
+}
+    \end{minted}
+  \caption{Snippet of a \code{GoogleTest} typed test}\label{lst:gtest-typed}
+\end{listing}
 
 \section{Benchmarking methodology}
 
@@ -26,7 +73,6 @@ $$\mathit{Speedup} = \frac{\tau_{\mathit{CPU}}}{\tau_{\mathit{GPU}}}$$
 \todo{Add numerical mesh microbenchmark - numerical networks}
 
 To determine the performance speedup between the GPU and the CPU implementation, a micro-benchmark is introduced with a simple use case. The benchmark consists of incremental inserting and querying unstructured numerical cube mesh.
-
 
 \section{Comparison against known implementations}
 
