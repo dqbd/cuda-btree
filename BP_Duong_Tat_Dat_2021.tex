@@ -62,11 +62,9 @@
 \author{Tat Dat Duong} %author's name without academic degrees
 \authorWithDegrees{Tat Dat Duong} %author's name with academic degrees
 \supervisor{Ing. Tomáš Oberhuber, Ph.D.}
-\acknowledgements{I want to thank my supervisor Ing.\ Tomáš Oberhuber, Ph.D., for his guidance, advice, and supervision through the work done on creating this bachelor thesis.
-
-My gratitude extends towards my family and friends for encouraging and helping me during my studies, especially in these trying times.}
-\abstractEN{Summarize the contents and contribution of your work in a few sentences in English language.}
-\abstractCS{Tato práce se zabývá implementací B-stromů vhodné pro paraleliní systémy, jako je GPU. Jako jazyk byl zvolen \CC. Výsledné implementace byly řádně otestované, změřené a srovnané s existujícími implementaci dostupné pro CPU a GPU.}
+\acknowledgements{\input{components/acknowledgements.tex}}
+\abstractEN{\input{components/abstractEN.tex}}
+\abstractCS{\input{components/abstractCS.tex}}
 \placeForDeclarationOfAuthenticity{Prague}
 \keywordsCS{\input{components/keywordsCS.tex}}
 \keywordsEN{\input{components/keywordsEN.tex}}
@@ -77,50 +75,16 @@ My gratitude extends towards my family and friends for encouraging and helping m
 \begin{document}
 
 \setsecnumdepth{part}
-
-\chapter{Introduction}
-
 \input{chapters/introduction.tex}
 
 \setsecnumdepth{all}
-
-\chapter{State-of-the-art}
-
-\input{chapters/prior-art.tex}
-
-\chapter{Preliminaries}
-
-\input{chapters/preliminaries/gpu.tex}
-\input{chapters/preliminaries/cuda.tex}
-\input{chapters/preliminaries/tnl.tex}
-
-\chapter{Theory}
-
-\input{chapters/theory/b-tree.tex}
-\input{chapters/theory/b+tree.tex}
-\input{chapters/theory/concurrency.tex}
-\input{chapters/theory/b-link-tree.tex}
-
-\chapter{Realisation}\label{chapter:realisation}
-
-In this chapter, implementation details and design choices made to construct a B-Tree implementation on GPU are presented. The entire implementation is written in \acrshort{cuda} \CC\ with the usage of \acrshort{tnl}.
-
-\input{chapters/realisation/proactive-splitting.tex}
-\input{chapters/realisation/wcws.tex}
-\input{chapters/realisation/latching.tex}
-\input{chapters/realisation/bnode.tex}
-\input{chapters/realisation/create.tex}
-\input{chapters/realisation/query.tex}
-\input{chapters/realisation/insert.tex}
-
-\chapter{Testing}
-
-\input{chapters/testing/testing.tex}
-\input{chapters/testing/benchmarking.tex}
+\input{chapters/state-of-art.tex}
+\input{chapters/preliminaries.tex}
+\input{chapters/theory.tex}
+\input{chapters/realisation.tex}
+\input{chapters/testing.tex}
 
 \setsecnumdepth{part}
-\chapter{Conclusion}
-
 \input{chapters/conclusion.tex}
 
 \printbibliography

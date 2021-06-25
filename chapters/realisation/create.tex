@@ -2,7 +2,7 @@
 
 As described by Graefe \cite{goetz-tech}, there is a strong relationship between B-Trees and sorting, which we can utilize. Optimal construction of B-Tree shall forgo incremental insertion in favor of building the tree from a presorted list.
 
-As a B-Link-Tree internally stores its key-value pairs in nodes, we can avoid inserting these pairs individually. Instead, we construct the tree in a bottom-up approach, creating all nodes of a level at once, which can be seen in Algorithm \ref{alg:bulk-loading}.
+As a B-Link-Tree internally stores its key-value pairs in nodes, we can avoid inserting these pairs individually. Instead, we construct the tree in a bottom-up approach, creating all nodes of a level at once, which can be seen in \cref{alg:bulk-loading}.
 
 \begin{algorithm}[H]
   \caption{Bulk Loading}\label{alg:bulk-loading}

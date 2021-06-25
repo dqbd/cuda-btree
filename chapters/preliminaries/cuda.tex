@@ -1,6 +1,6 @@
 \section{CUDA programming model} \label{label:cuda}
 
-To simplify development on general-purpose GPUs, NVIDIA introduced \acrfull{cuda} programming model in November 2006. As mentioned previously, GPUs are suited for parallel workloads optimizing in total throughput, sacrificing the performance of serial operations. However, not all programs are fully parallel in nature, and some problems are difficult, if not impossible, to formulate in a manner that would benefit the GPU. Thus, a sane idea would be to utilize both CPU and GPU, using GPU in workloads, where parallelism yields significant performance uplift. With CUDA, programmers can write applications run on the CPU and accelerate parallel workloads with the GPU while using familiar C/\CC\ programming language for both processors.
+To simplify development on general-purpose GPUs, NVIDIA introduced the \acrfull{cuda} programming model in November 2006. As mentioned previously, GPUs are suited for parallel workloads optimizing in total throughput, sacrificing the performance of serial operations. However, not all programs are fully parallel in nature, and some problems are difficult, if not impossible, to formulate in a manner that would benefit the GPU. Thus, a sane idea would be to utilize both CPU and GPU, using GPU in workloads, where parallelism yields significant performance uplift. With CUDA, programmers can write applications run on the CPU and accelerate parallel workloads with the GPU while using familiar C/\CC\ programming language for both processors.
 
 In \acrshort{cuda}, the CPU and GPU and their memory are referred to as \textit{host} and \textit{device} respectively. A host manages the memory of both the device and the host itself, and it launches user-defined functions, called \textit{kernels}, which the device executes. A program thus usually executes serial code on the host and parallel code on the device.
 
@@ -8,7 +8,7 @@ In \acrshort{cuda}, the CPU and GPU and their memory are referred to as \textit{
 
 Multiple parallel threads execute these kernels on the GPU. These threads are grouped by the programmer or compiler into \textit{thread blocks} and \textit{grids}, which the GPU uses to schedule work. A GPU scheduler maps these abstractions to concrete hardware units: A grid is mapped to a GPU, a thread block is mapped to a \textit{streaming multiprocessor} (SM), and a thread is mapped to a \textit{streaming processor} (SP / CUDA core).
 
-From the implementation side, to launch a kernel function, a programmer must specify the number of threads in a single thread block and the number of thread blocks in a grid. CUDA extends the \CC\ language with \code{<<<numBlocks, blockSize>>>} syntax for that purpose.
+From the implementation side, to launch a kernel function, a programmer must specify the number of threads in a single thread block and the number of thread blocks in a grid. CUDA extends the \CC\ language with \mintinline{cuda}{<<<numBlocks, blockSize>>>} syntax for that purpose.
 
 Every thread in a thread block has an identifier, which is exposed inside the thread as a constant variable: \code{threadIdx}. Simillary; each thread block can be identified with the block index within a grid, \code{blockIdx}. With the dimensions of a block known \code{blockDim}, the global index of a thread can be computed as such:
 
@@ -26,12 +26,12 @@ All threads in a warp execute the same line of code at once. This rule at face v
 
 At some point, synchronization needs to happen, either for threads to communicate and share data with each other or to ensure all threads have completed their work at a certain point.
 
-Kernel launches from the host, for example, are asynchronous by nature, and the host code will not wait for results unless \code{cudaDeviceSynchronize()} is invoked. This instruction will block the host until the device has completed all preceding requested tasks \cite{cudaprog}.
+Kernel launches from the host, for example, are asynchronous by nature, and the host code will not wait for results unless \mintinline{cpp}{cudaDeviceSynchronize()} is invoked. This instruction will block the host until the device has completed all preceding requested tasks \cite{cudaprog}.
 
-Threads can also be synchronized, as threads do not execute at the same time and thus do not complete their task simultaneously. A synchronization barrier \code{\_\_syncthreads()} is used to synchronize the threads in a thread block, which all threads must reach to resume execution. This barrier guarantees that all code preceding the instruction is executed before the code after the instruction.
+Threads can also be synchronized, as threads do not execute at the same time and thus do not complete their task simultaneously. A synchronization barrier \mintinline{cpp}{__syncthreads()} is used to synchronize the threads in a thread block, which all threads must reach to resume execution. This barrier guarantees that all code preceding the instruction is executed before the code after the instruction.
 
-Threads inside a thread block may use shared memory or global memory to cooperate and share data. To ensure all writes to the memory are visible to all other threads, \code{\_\_threadfence()} can be used to stall the threads until writes to the memory are completed.
+Threads inside a thread block may use shared memory or global memory to cooperate and share data. To ensure all writes to the memory are visible to all other threads, \mintinline{cpp}{__threadfence()} can be used to stall the threads until writes to the memory are completed.
 
-Warp-level primitives enable fine-tuned collective operations within warps. Parallel reductions and synchronized data exchange can be achieved with \code{\_\_shfl\_down()} and \code{\_\_shfl\_sync()} respectively. Similar to \code{\_\_syncthreads()}, \code{\_\_syncwarp()} can be utilized to create a synchronization barrier for all threads in a warp.
+Warp-level primitives enable fine-tuned collective operations within warps. Parallel reductions and synchronized data exchange can be achieved with \mintinline{cpp}{__shfl_down()} and \mintinline{cpp}{__shfl_sync()} respectively. Similar to \mintinline{cpp}{__syncthreads()}, \mintinline{cpp}{__syncwarp()} can be utilized to create a synchronization barrier for all threads in a warp.
 
-At last, atomic functions (such as \code{\_\_atomicAdd()} or \code{\_\_atomicCAS()}) can be used to read from or write to shared or global memory while ensuring no interference from other threads until the operation is complete.
+At last, atomic functions (such as \mintinline{cpp}{__atomicAdd()} or \mintinline{cpp}{__atomicCAS()}) can be used to read from or write to shared or global memory while ensuring no interference from other threads until the operation is complete.

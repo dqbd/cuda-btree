@@ -1,0 +1,28 @@
+\section{Environment}
+
+The measurements are captured on the \code{gp1} system provided by Faculty of Nuclear Sciences and Physical Engineering, Czech Technical University with following specifications seen in \cref{table:env-gp1}:
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{ | l | l | }
+    \hline
+    CPU             & Intel Xeon CPU E5-2630 v3 (2.40\,GHz)    \\
+    \hline
+    GPU             & NVIDIA Quadro P6000 (24\,GB, CUDA 6.1)   \\
+    \hline
+    RAM             & 128\,GB                                  \\
+    \hline
+    Driver          & 465.31                                   \\
+    \hline
+    OS              & Arch Linux (kernel 4.12.9, KPTI enabled) \\
+    \hline
+    Host compiler   & GCC g++ 11.1.0                           \\
+    \hline
+    Device compiler & nvcc v11.3.58                            \\
+    \hline
+  \end{tabular}
+  \caption{Hardware and software specification of the \code{gp1} system.}
+  \label{table:env-gp1}
+\end{table}
+
+Furthermore, the optimization flag is set to \code{-O3}. \CC\ dialect is set to \CC17 when benchmarking against different implementations, although \CC14 is supported as well.

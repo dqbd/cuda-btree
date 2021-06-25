@@ -1,6 +1,6 @@
 \section{Data Structure and Memory Allocation}
 
-This section describes the proposed data structure, found in the Listing \ref{lst:bnode}. Comments and helpers methods were removed for the sake of brevity.
+This section describes the proposed data structure, found in the \cref{lst:bnode}. Comments and helpers methods were removed for the sake of brevity.
 
 \begin{listing}[H]
   \begin{minted}{cpp}
@@ -22,8 +22,10 @@ struct BNode {
   \caption{The \code{BNode} struct}\label{lst:bnode}
 \end{listing}
 
-\code{uint16\_t} have been chosen in favor of smaller data types, as in most cases, smaller data types are converted to larger data types \todo{Explain more}. In the B-Link-Tree variant, \code{mSibling} and \code{mChildren} are using the volatile qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.
+\mintinline{cpp}{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} statement.
+
+In the B-Link-Tree variant, \mintinline{cpp}{mSibling} and \mintinline{cpp}{mChildren} are using the \mintinline{cpp}{volatile} qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.
 
 As the allocator for the data structure, a bump allocator is used (also known as stack allocator). The bump allocator allocates a continuous linear section of memory and works by increasing a pointer at the next unused memory. Atomic instructions are used to ensure the serializability of the operations, as the allocator is invoked concurrently from different threads.
 
-To further reduce the number of instructions executed and cycles used, \code{asm} statement with specific PTX instructions is used instead of relying on compiler optimizations.
+To further reduce the number of instructions executed and cycles used, \mintinline{cpp}{asm} statement with specific PTX instructions is used instead of relying on compiler optimizations.
