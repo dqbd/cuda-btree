@@ -25,11 +25,11 @@ The measurements are captured on the \code{gp1} system provided by Faculty of Nu
   \label{table:env-gp1}
 \end{table}
 
-Furthermore, the optimization flag is set to \code{-O3}. \CC\,dialect is set to \CC17 when benchmarking against different implementations, although \CC14 is supported as well.
+Furthermore, the optimization flag is set to \code{-O3}. \CC\ dialect is set to \CC17 when benchmarking against different implementations, although \CC14 is supported as well.
 
 \section{Testing methodology}
 
-As the execution of code on the device is not deterministic, it is hard to prove the complete absence of errors and bugs of the solution. Nevertheless, for each of the B-Tree implementations, a set of unit tests is prepared. This unit test suite rigorously examines if each operation preserves the valid tree state, which has proved to be helpful when optimizing the performance of the tree without sacrificing correctness. \code{GoogleTest} framework \cite{gtest} is the framework of choice used for writing these unit test suites.
+As the execution of code on the device is not deterministic, it is hard to prove the complete absence of errors and bugs of the solution. Nevertheless, for each of the B-Tree implementations, a set of unit tests is prepared. This unit test suite rigorously examines if each operation preserves the valid tree state, which has proved to be helpful when optimizing the performance of the tree without sacrificing correctness. The unit tests also test the proper usage of templates, verifying the validity of operations when handling non-integer keys or values. \code{GoogleTest} framework \cite{gtest} is the framework of choice used for writing these unit test suites.
 
 For the host implementation, unit tests do include assertions of the internal states of a node to aid the development and catch bugs early on. On the device side, though, asserts on the device code are limited, and unit tests make their assertions only on the result after operation completion, as \code{GoogleTest} is unfortunately not supported on the device code.
 
@@ -40,7 +40,7 @@ Macro functions have been inserted through the implementations, which are enable
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{components/figure/debugger.png}
-  \caption{Web based visual debugger displaying the internal state of a tree. Red boxes denote split nodes not yet inserted to the parent node. Yellow-highlighted node addresses indicate that a thread has latched that node.}
+  \caption{Web based visual debugger displaying the internal state of a tree. Red boxes denote split nodes not yet inserted to the parent node. A highlighted node address indicate that a thread has latched that node.}
   \label{figure:debugger}
 \end{figure}
 
@@ -63,28 +63,3 @@ TYPED_TEST(TestSuite, Test) {
     \end{minted}
   \caption{Snippet of a \code{GoogleTest} typed test}\label{lst:gtest-typed}
 \end{listing}
-
-\section{Benchmarking methodology}
-
-After measuring execution times from chosen implementations, we calculate the speedup as the ratio of serial execution time on the CPU and parallel execution time on the GPU.
-
-$$\mathit{Speedup} = \frac{\tau_{\mathit{CPU}}}{\tau_{\mathit{GPU}}}$$
-
-\section{Numerical network microbenchmark}
-
-\todo{Add numerical mesh microbenchmark - numerical networks}
-
-
-To determine the performance speedup between the GPU and the CPU implementation, a micro-benchmark is introduced with a simple use case. The benchmark consists of incremental inserting and querying unstructured numerical cube mesh.
-
-\section{Comparison against known implementations}
-
-This section describes the comparison of the thesis implementation against other GPU and CPU based implementations. \todo{add cites}
-
-For all of the experiments, 32-bit keys and values are used. Different kinds of pair sequences were used as the input data and each implementation is executed and measured 10 times. Results presented here are averaged. Measurement of CPU based variants are measured using {std::chrono::high\_resolution\_clock::now}, whereas the GPU based ones are measured using CUDA runtime API. The time spent on copying the data from host to device is not included in the measurement.
-
-\todo{Add search benchmark}
-
-\todo{Add insertion benchmark}
-
-\todo{Add an explanation why \cite{awad} is 2-3 times faster than our implementation.} Improved memory access
