@@ -1,87 +1,83 @@
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[
-    bnode/.style = {
-        draw,
-        rectangle split,
-        rectangle split horizontal,
-        rectangle split ignore empty parts,
-        anchor=north
-      },
-    bchild/.style = { -> },
-    bsibling/.style = { ->, red },
-    bvalue/.style = { -{Circle[open]}, blue }
-    ]
+\begin{tikzpicture}[
+  bnode/.style = {
+      draw,
+      rectangle split,
+      rectangle split horizontal,
+      rectangle split ignore empty parts,
+      anchor=north
+    },
+  bchild/.style = { -> },
+  bsibling/.style = { ->, red },
+  bvalue/.style = { -{Circle[open]}, blue }
+  ]
 
-    % Level 0
-    \node[bnode](y0) {
-      \nodepart{one} $18$ \nodepart{two} $23$
+  % Level 0
+  \node[bnode](y0) {
+    \nodepart{one} $18$ \nodepart{two} $23$
+  };
+
+  % Level 1
+  \draw[bchild](y0.south west) -- +(-4,-1) node[bnode](y1x0){
+      \nodepart{one} $5$
     };
 
-    % Level 1
-    \draw[bchild](y0.south west) -- +(-4,-1) node[bnode](y1x0){
-        \nodepart{one} $5$
-      };
+  \draw[bchild](y0.one split south) -- +(0,-1) node[bnode](y1x1){
+      \nodepart{one} $20$ \nodepart{two} $21$
+    };
 
-    \draw[bchild](y0.one split south) -- +(0,-1) node[bnode](y1x1){
-        \nodepart{one} $20$ \nodepart{two} $21$
-      };
+  \draw[bchild](y0.south east) -- +(4,-1) node[bnode](y1x2){
+      \nodepart{one} $43$
+    };
 
-    \draw[bchild](y0.south east) -- +(4,-1) node[bnode](y1x2){
-        \nodepart{one} $43$
-      };
+  \draw[bsibling](y1x0.east) -- (y1x1.west);
+  \draw[bsibling](y1x1.east) -- (y1x2.west);
 
-    \draw[bsibling](y1x0.east) -- (y1x1.west);
-    \draw[bsibling](y1x1.east) -- (y1x2.west);
+  % Level 2
+  \draw[bchild](y1x0.south west) -- +(-0.5,-1) node[bnode](y2x0){
+      \nodepart{one} $1$
+    };
+  \draw[bvalue](y2x0.one south) -- +(0,-0.5);
 
-    % Level 2
-    \draw[bchild](y1x0.south west) -- +(-0.5,-1) node[bnode](y2x0){
-        \nodepart{one} $1$
-      };
-    \draw[bvalue](y2x0.one south) -- +(0,-0.5);
+  \draw[bchild](y1x0.south east) -- +(0.5,-1) node[bnode](y2x1){
+      \nodepart{one} $5$ \nodepart{two} $12$
+    };
+  \draw[bvalue](y2x1.one south) -- +(0,-0.5);
+  \draw[bvalue](y2x1.two south) -- +(0,-0.5);
 
-    \draw[bchild](y1x0.south east) -- +(0.5,-1) node[bnode](y2x1){
-        \nodepart{one} $5$ \nodepart{two} $12$
-      };
-    \draw[bvalue](y2x1.one south) -- +(0,-0.5);
-    \draw[bvalue](y2x1.two south) -- +(0,-0.5);
+  % ------
+  \draw[bchild](y1x1.south west) -- +(-1,-1) node[bnode](y2x2){
+      \nodepart{one} $18$
+    };
+  \draw[bvalue](y2x2.one south) -- +(0,-0.5);
 
-    % ------
-    \draw[bchild](y1x1.south west) -- +(-1,-1) node[bnode](y2x2){
-        \nodepart{one} $18$
-      };
-    \draw[bvalue](y2x2.one south) -- +(0,-0.5);
+  \draw[bchild](y1x1.one split south) -- +(0,-1) node[bnode](y2x3){
+      \nodepart{one} $20$
+    };
+  \draw[bvalue](y2x3.one south) -- +(0,-0.5);
 
-    \draw[bchild](y1x1.one split south) -- +(0,-1) node[bnode](y2x3){
-        \nodepart{one} $20$
-      };
-    \draw[bvalue](y2x3.one south) -- +(0,-0.5);
+  \draw[bchild](y1x1.south east) -- +(1.3,-1) node[bnode](y2x4){
+      \nodepart{one} $21$ \nodepart{two} $22$
+    };
+  \draw[bvalue](y2x4.one south) -- +(0,-0.5);
+  \draw[bvalue](y2x4.two south) -- +(0,-0.5);
 
-    \draw[bchild](y1x1.south east) -- +(1.3,-1) node[bnode](y2x4){
-        \nodepart{one} $21$ \nodepart{two} $22$
-      };
-    \draw[bvalue](y2x4.one south) -- +(0,-0.5);
-    \draw[bvalue](y2x4.two south) -- +(0,-0.5);
+  % ------
+  \draw[bchild](y1x2.south west) -- +(-0.5,-1) node[bnode](y2x5){
+      \nodepart{one} $23$
+    };
+  \draw[bvalue](y2x5.one south) -- +(0,-0.5);
 
-    % ------
-    \draw[bchild](y1x2.south west) -- +(-0.5,-1) node[bnode](y2x5){
-        \nodepart{one} $23$
-      };
-    \draw[bvalue](y2x5.one south) -- +(0,-0.5);
+  \draw[bchild](y1x2.south east) -- +(0.5,-1) node[bnode](y2x6){
+      \nodepart{one} $43$ \nodepart{two} $45$
+    };
+  \draw[bvalue](y2x6.one south) -- +(0,-0.5);
+  \draw[bvalue](y2x6.two south) -- +(0,-0.5);
 
-    \draw[bchild](y1x2.south east) -- +(0.5,-1) node[bnode](y2x6){
-        \nodepart{one} $43$ \nodepart{two} $45$
-      };
-    \draw[bvalue](y2x6.one south) -- +(0,-0.5);
-    \draw[bvalue](y2x6.two south) -- +(0,-0.5);
+  \draw[bsibling](y2x0.east) -- (y2x1.west);
+  \draw[bsibling](y2x1.east) -- (y2x2.west);
+  \draw[bsibling](y2x2.east) -- (y2x3.west);
+  \draw[bsibling](y2x3.east) -- (y2x4.west);
+  \draw[bsibling](y2x4.east) -- (y2x5.west);
+  \draw[bsibling](y2x5.east) -- (y2x6.west);
 
-    \draw[bsibling](y2x0.east) -- (y2x1.west);
-    \draw[bsibling](y2x1.east) -- (y2x2.west);
-    \draw[bsibling](y2x2.east) -- (y2x3.west);
-    \draw[bsibling](y2x3.east) -- (y2x4.west);
-    \draw[bsibling](y2x4.east) -- (y2x5.west);
-    \draw[bsibling](y2x5.east) -- (y2x6.west);
-
-  \end{tikzpicture}
-  \caption{B-Link-Tree with $\mathit{Order} = 3$.}
-\end{figure}
+\end{tikzpicture}

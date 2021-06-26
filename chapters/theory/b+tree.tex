@@ -10,7 +10,12 @@ As the B$^+$Tree does not reuse the keys and may duplicate the keys found in the
 
 In most implementations, leaf nodes may include an additional pointer to a right sibling node, enabling straightforward sequential querying, which is helpful for range querying.
 
-\input{components/figure/b+tree.tex}
+\begin{figure}[H]
+  \centering
+  \input{components/figure/b+tree.tex}
+  \caption{B$^+$Tree with $\mathit{Order} = 3$.}
+\end{figure}
+
 
 All operations on the B$^+$Tree are simplified thanks to storing the keys exclusively in leaf nodes, as the end state when traversing a tree is always a leaf node.
 
