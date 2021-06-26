@@ -1,6 +1,0 @@
-\section{Search}
-
-Similar to insertion, WCWS is used to avoid the need for a load balancer. Both of the operations utilize warp-based operations internally to read or write the contents of a node.
-
-As we're using B-Link-Tree as our underlying data structure, no latches are required during tree traversal. The high key and sibling pointer pair ensure that a correct node is always found even in the middle of a split operation. We still need to acquire a read lock, though, as a different thread might perform a write operation on the same node.
-

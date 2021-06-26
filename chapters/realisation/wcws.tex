@@ -2,8 +2,46 @@
 
 Warp-cooperative work-sharing strategy (WCWS) is used to improve the performance of each operation by exploiting the behavior of NVIDIA GPUs and how threads are executed in each SM. As SMs have a limited number of cores, threads are organized into groups of 32 threads called \textit{warps} (see \cref{label:cuda}).
 
-\todo{Add pseudocode}
+\begin{listing}
+  \begin{minted}{cpp}
+__device__ static void WarpTask(
+  Node *root, KeyType key, bool &toFind
+) {
+  using cg = cooperative_groups;
+  auto threadBlock = cg::this_thread_block();
+  auto warp = cg::tiled_partition<32>(threadBlock);
+
+  uint32_t queue = 0;
+  while ((queue = warp.ballot(toFind))) {
+    uint32_t currentLane = __ffs(queue) - 1;
+    KeyType electedKey = warp.shfl(key, currentLane);
+
+    if (executeOperation(electedKey)) {
+      toFind = false;
+    }
+  }
+};
+
+__global__ static void KernelTask(
+  Node *root, ArrayView<KeyType, Devices::Cuda> keys
+) {
+  auto threadId = threadIdx.x + blockIdx.x * blockDim.x;
+  bool toFind = threadId < keys.getSize();
+
+  KeyType key;
+  if (toFind) {
+    key = keys.getElement(threadId);
+  }
+
+  WarpTask(root, key, toFind);
+};
+  \end{minted}
+  \caption{Example code used to implement the Warp Cooperative Work Sharing strategy. \code{KernelTask} is a kernel function invoked from the CPU, \code{WarpTask} is a function called from GPU. Assuming the \code{executeOperation} found in line 13 accepts a single value for processing.}
+  \label{lst:wcws}
+\end{listing}
 
 As threads can communicate with each other in a warp using warp-wide communication primitives in CUDA, these threads can synchronize with each other and work on a single task.
 
-This strategy is used in all of the B$^+$Tree and B-Link-Tree operations, especially during updates. We can achieve better memory coalescing and unlock vector load and store by utilizing every thread in a warp. As a side effect, the order of a B-Tree is upper-bound by the number of threads available in a warp, which is 32 in contemporary GPUs.
+An example is shown in \cref{lst:wcws} with entry-point being the \code{KernelTask} function. Each thread will read a single key based on the thread ID calculated on line 22. A reference to \code{toFind} boolean flag is passed to \code{WarpTask}. This flag is used in a \code{ballot} call on line 9, which returns a bitmap indicating which thread lane in a warp has \code{toFind} variable set to \mintinline{cpp}{true}. A single lane is selected as the main lane whose task will be processed by the entire warp. This lane is selected by calculating the position of the least significant bit set to 1 via the \mintinline{cpp}{__ffs} function. An elected key is shared between all warp threads from the selected lane via a synchronization primitive shown in line 11, and the \code{executeOperation} continues with the key. If the operation succeeds, \code{toFind} is set to \mintinline{cpp}{false}, which will be reflected in the next \code{ballot} call. The loop will end after all tasks assigned to the warp threads were completed.
+
+This strategy is used in all of the B$^+$Tree and B-Link-Tree operations, especially during updates. Better memory coalescing and vectorized load and store is achieved by utilizing every thread in a warp for a single task. As a side effect, the $Order$ of a B-Tree node must not exceed the number of thread lanes in a warp: 32 in contemporary GPUs.

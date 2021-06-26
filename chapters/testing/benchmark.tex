@@ -3,7 +3,7 @@
 Companion benchmarking methods have been created to provide a standard interface across different implementations of our choice. A tested solution is wrapped in a lambda function, accepting a timer instance and an input sequence as its arguments. This lambda function is invoked ten times, and an arithmetic mean of captured results is computed and stored on a disk. An example code can be seen in \cref{lst:benchmark} and the source code of the benchmarking methods can be found in \code{/benchmark/\_common/benchmark.hpp}.
 
 \begin{listing}
-  \begin{minted}[linenos]{cpp}
+  \begin{minted}{cpp}
 using DeviceType = Benchmark::Device::Host;
 using NumericType = uint32_t;
 Benchmark::execute<DeviceType, NumericType>(

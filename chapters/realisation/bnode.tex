@@ -2,7 +2,7 @@
 
 This section describes the proposed data structure, found in the \cref{lst:bnode}. Comments and helpers methods were removed for the sake of brevity.
 
-\begin{listing}[H]
+\begin{listing}
   \begin{minted}{cpp}
 template <typename KeyType, typename ValueType, size_t Order>
 struct BNode {
@@ -25,7 +25,3 @@ struct BNode {
 \mintinline{cpp}{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} statement.
 
 In the B-Link-Tree variant, \mintinline{cpp}{mSibling} and \mintinline{cpp}{mChildren} are using the \mintinline{cpp}{volatile} qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.
-
-As the allocator for the data structure, a bump allocator is used (also known as stack allocator). The bump allocator allocates a continuous linear section of memory and works by increasing a pointer at the next unused memory. Atomic instructions are used to ensure the serializability of the operations, as the allocator is invoked concurrently from different threads.
-
-To further reduce the number of instructions executed and cycles used, \mintinline{cpp}{asm} statement with specific PTX instructions is used instead of relying on compiler optimizations.

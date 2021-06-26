@@ -1,0 +1,7 @@
+\section{Warp based operations}
+
+As WCWS has been implemented as the load balancer of choice, all threads in a warp cooperate to complete a single task.
+
+Lower bound and upper bound is significantly simpler when warp synchronization primitives are available.
+
+Optimalization on the PTX, replacing specific constructs with a single \mintinline{asm}{min.u32} instruction, reducing the number of cycles spend on these critical functions.

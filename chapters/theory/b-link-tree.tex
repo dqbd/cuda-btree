@@ -16,11 +16,19 @@ Previous approaches include locking a subtree of highest affected node \cite{sam
 
 \input{components/figure/b-link-tree.tex}
 
-Splitting during node insertion is divided into two independent steps:  \textit{splitting a node} and inserting the split node with its new separator key to the parent node.
+Splitting during node insertion is divided into two independent steps: splitting a node and inserting the split node with its new separator key to the parent node.
 
-When splitting node $x$, a new right sibling node $y$ is created. The node $y$ inherits the high key from the split node $x$, whereas the first key of $y.keys$ is used as a new $x.highkey$. Thus, an internal node does exist without a parent in between the operations. $x.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth ]{components/figure/b-link-insert}
+  \caption{States of the tree during splitting while inserting a new key.}
+  \label{figure:b-link-insert}
+\end{figure}
 
-As the final step of node splitting, the separator key and the newly split node $y$ are inserted in the parent node. Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
+
+When splitting node $x$, a new right sibling node $y$ is created, as seen step (b) in \cref{figure:b-link-insert}. The node $y$ inherits the high key from the split node $x$, whereas the $x$ node is updated (marked as $x^\prime$) with a new $x.highkey = y.key_0$. Thus, an internal node does exist without a parent in between the operations. $x^\prime.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
+
+As the final step of node splitting, both the separator key and the pointer to the newly split node $y$ are inserted in the parent node $p$, seen in step (c) in \cref{figure:b-link-insert}. Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
 
 Tree traversal is modified to honor $x.highkey$ by returning the node at $x.sibling$ when the target key $k$ is larger or equal than $x.highkey$.
 
@@ -39,7 +47,7 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
 \end{theorem}
 
 \begin{proof}
-  By imposing a total ordering of nodes, cycles are eliminated from the system and thus the system is deadlock free.
+  By imposing a total ordering of nodes, cycles are eliminated from the system. Thus the system is deadlock-free.
 
   To prove a total ordering of nodes, the following ordering $a < b$, where $a$ and $b$ are nodes of the tree, is considered:
 
@@ -55,7 +63,7 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
 
   Therefore, insertion will not break the total ordering of nodes.
 
-  Latches for the nodes are acquired by following the ordering; thus once a latch is acquired for a node, no other latch will be acquired on any node below it, nor on any node on the same level.
+  Latches for the nodes are acquired by following the ordering; thus, once a latch is acquired for a node, no other latch will be acquired on any node below it, nor on any node on the same level.
 \end{proof}
 
 \begin{theorem}\label{theorem:b-link-tree:modifications}
