@@ -26,14 +26,8 @@
 \usepackage{layouts}
 \usepackage{makecell}
 
-\usepackage[style=iso-numeric]{biblatex}
+\usepackage[style=iso-numeric,maxbibnames=4]{biblatex}
 \addbibresource{sources.bib}
-% If you want to break on URL numbers
-\setcounter{biburlnumpenalty}{9000}
-% If you want to break on URL lower case letters
-\setcounter{biburllcpenalty}{9000}
-% If you want to break on URL UPPER CASE letters
-\setcounter{biburlucpenalty}{9000}
 
 \newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.25ex}{\relsize{-2}{\textbf{++}}}}
 \newcommand{\code}{\texttt}
@@ -99,6 +93,7 @@
 \setsecnumdepth{part}
 \input{chapters/conclusion.tex}
 
+% \hfuzz=5.002pt
 \printbibliography
 
 \setsecnumdepth{all}

@@ -329,7 +329,7 @@
   volume     = {36},
   number     = {4},
   issn       = {0362-5915},
-  url        = {https://doi.org/10.1145/2043652.2043655},
+  url        = {\url{https://doi.org/10.1145/2043652.2043655}},
   doi        = {10.1145/2043652.2043655},
   abstract   = {In-memory tree structured index search is a fundamental database operation. Modern processors provide tremendous computing power by integrating multiple cores, each with wide vector units. There has been much work to exploit modern processor architectures for database primitives like scan, sort, join, and aggregation. However, unlike other primitives, tree search presents significant challenges due to irregular and unpredictable data accesses in tree traversal. In this article, we present FAST, an extremely fast architecture-sensitive layout of the index tree. FAST is a binary tree logically organized to optimize for architecture features like page size, cache line size, and Single Instruction Multiple Data (SIMD) width of the underlying hardware. FAST eliminates the impact of memory latency, and exploits thread-level and data-level parallelism on both CPUs and GPUs to achieve 50 million (CPU) and 85 million (GPU) queries per second for large trees of 64M elements, with even better results on smaller trees. These are 5X (CPU) and 1.7X (GPU) faster than the best previously reported performance on the same architectures. We also evaluated FAST on the Intel$^tinytextregistered$ Many Integrated Core architecture (Intel$^tinytextregistered$ MIC), showing a speedup of 2.4X--3X over CPU and 1.8X--4.4X over GPU. FAST supports efficient bulk updates by rebuilding index trees in less than 0.1 seconds for datasets as large as 64M keys and naturally integrates compression techniques, overcoming the memory bandwidth bottleneck and achieving a 6X performance improvement over uncompressed index search for large keys on CPUs.},
   journal    = {ACM Trans. Database Syst.},
@@ -358,10 +358,11 @@
 }
 
 @misc{TLX,
-  title  = {{TLX}: Collection of Sophisticated {C++} Data Structures, Algorithms, and Miscellaneous Helpers},
-  author = {Bingmann, Timo},
-  year   = 2018,
-  note   = {\url{https://panthema.net/tlx}, retrieved {Oct.} 7, 2020}
+  title   = {{TLX}: Collection of Sophisticated {C++} Data Structures, Algorithms, and Miscellaneous Helpers},
+  author  = {Bingmann, Timo},
+  year    = 2018,
+  url     = {https://panthema.net/tlx},
+  urldate = {2021-06-24}
 }
 
 @misc{palm-impl,
