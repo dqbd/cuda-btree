@@ -1,17 +1,55 @@
 \section{Warp-based operations}
 
-As both of the GPU implementations use WCWS strategy mentioned in \cref{section:wcws}, all threads of a single warp coopearte to process a single task, whether it is an insertion, removal or query operation. With this detail in mind, it is possible to utilize the entire warp for certain computations.
+As discussed in \cref{section:wcws}, both GPU implementations use the WCWS strategy, and all threads of a warp are cooperating to process a single task. Whether it is an insertion, removal, or query operation, thus, it does make sense to use this implementation detail to speed up commonly used, performance-critical computations.
 
-One such common computation is finding the correct key index in a node, whether to find a specific key in a leaf node or to find a correct child node to traverse into correct sub-tree. This computation essentially boils down to finding the position of a lower and upper bound key, former being the first key in a node that is greater or equal to a searched key, latter being the first node key greater than a searched key.
+One such computation is finding the correct key index in a node, whether to find a specific key in a leaf node or to find the right child node to traverse into the correct sub-tree. This computation essentially boils down to finding the index of a lower and upper bound key, the former being the first key in a node that is greater or equal to a searched key, the latter being the first node key greater than a searched key.
 
-\todo{Add example of host lower bound operation}
+\begin{algorithm}
+  \caption{Lower bound in sorted list}\label{alg:lower-bound}
+  \DontPrintSemicolon
 
-On the host implementation it is done by performing a binary search, as the keys in each node are stored in a sorted manner, thus allowing a search with time complexity $\mathcal{O}(\log_2 n)$. However, as a single task is performed by all 32 threads in a warp, a binary search is sub-optimal on device implementations, as it will inherently execute in series for the reasons of thread divergence, explained in \cref{subsection:simt}.
+  \KwIn{$keys[1..n], needle$}
+  \KwResult{Position of a lower bound key}
 
-\todo{Add example of device lower bound}
+  \textit{index}, \textit{size} $\gets$ n\;
+  \While{size $>$ 0}{
+    $step \gets size / 2$\;
+    $it \gets index + step$\;
+    \eIf{$array[it] < needle$}{
+      $index \gets it + 1$\;
+      $size \gets size - step + 1$\;
+    }{
+      $size \gets step$\;
+    }
+  }
+  \KwRet{index}\;
+\end{algorithm}
 
-Thus, it is more efficient to break down the work for every thread to be able to participate. Therefore, a lower and upper bound search is done as follows: each thread in a warp will read a key from a node and perform a comparison. The results are aggregated as a bitmap using \codecpp{warp.ballot()}, where $N$-th bit indicates whether a thread at index $N$ fulfills the comparison. The position is obtained by invoking \codecpp{__ffs}, which returns the index of a first thread with a fulfilled comparison.
+On the host implementation, the lower-bound key is found by performing a binary search, as the keys are stored in a sorted manner in each node, thus allowing a search with time complexity $\mathcal{O}(\log_2 n)$. Implementation of a lower bound function can be seen in \cref{alg:lower-bound}. However, as all 32 threads perform a single task in a warp, a binary search is sub-optimal on the GPU, as it will inherently execute in series for the reasons of thread divergence, explained in \cref{subsection:simt}.
 
-The resulting position must not be greater or equal than the size of a processed node, as reading keys outside the expected node size is an undefined behavior. As the data type of a variable storing the position is independent on the used data type for keys or values, a single \code{asm} statement is used to clamp the position. This optimalization was done specifically to enforce the compiler to use a single \mintinline{asm}{min.u32} statement rather than generating multiple \mintinline{asm}{jmp} statements, thus reducing the number of cycles spent on these critical sections.
+\begin{listing}
+  \begin{minted}{cpp}
+__device__ static uint32_t lowerBound(
+  KeyType *keys, uint32_t size, KeyType needle
+) {
+  using cg = cooperative_groups;
+  auto threadBlock = cg::this_thread_block();
+  auto warp = cg::tiled_partition<32>(threadBlock);
 
-This optimalization does bring an additional constraint to the structure of a B-Tree node: the $Order$ of a tree must not exceed the number of threads available in a single warp, as if it does, some keys will become inaccessible.
+  uint64_t rank = warp.thread_rank();
+  uint32_t ballot = warp.ballot(keys[rank] >= needle);
+  uint32_t idx = __ffs(ballot) - 1;
+
+  asm("min.u32 %0, %1, %2;" : "=r"(idx) : "r"(idx), "r"(size));
+  return idx;
+}
+  \end{minted}
+  \caption{A warp-friendly implementation of finding a lower-bound key.}
+  \label{lst:lower-bound-cuda}
+\end{listing}
+
+Thus, it is more efficient to break down the work for every thread to be able to participate, seen in a lower-bound example in \cref{lst:lower-bound-cuda}. A lower bound (and upper bound) search is done as follows: each thread in a warp will read a key from a node and perform a comparison. The results are aggregated as a bitmap using \codecpp{warp.ballot()}, where $N$-th bit indicates whether a thread at index $N$ fulfills the comparison (see line 9). The position is obtained by invoking \codecpp{__ffs} on line 10, which returns the index of a first thread with a fulfilled comparison.
+
+The resulting position must not be greater or equal to the size of a processed node, as reading keys outside the expected node size is undefined behavior. As the data type of a variable storing the position is independent of the used data type for keys or values, a single \code{asm} statement on line 12 is used to clamp the position. This optimization was done specifically to enforce the compiler to use a single \mintinline{asm}{min.u32} statement rather than generating multiple \mintinline{asm}{jmp} statements, thus reducing the number of cycles spent on these critical sections.
+
+This optimization does bring an additional constraint to the structure of a B-Tree node: the $Order$ of a tree must not exceed the number of threads available in a single warp, as if it does, some keys will become inaccessible.
