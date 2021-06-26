@@ -22,6 +22,6 @@ struct BNode {
   \caption{The \code{BNode} struct}\label{lst:bnode}
 \end{listing}
 
-\mintinline{cpp}{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} statement.
+\codecpp{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} statement.
 
-In the B-Link-Tree variant, \mintinline{cpp}{mSibling} and \mintinline{cpp}{mChildren} are using the \mintinline{cpp}{volatile} qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.
+In the B-Link-Tree variant, \codecpp{mSibling} and \codecpp{mChildren} are using the \codecpp{volatile} qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.

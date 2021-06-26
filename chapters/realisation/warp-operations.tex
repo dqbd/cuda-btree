@@ -1,7 +1,17 @@
-\section{Warp based operations}
+\section{Warp-based operations}
 
-As WCWS has been implemented as the load balancer of choice, all threads in a warp cooperate to complete a single task.
+As both of the GPU implementations use WCWS strategy mentioned in \cref{section:wcws}, all threads of a single warp coopearte to process a single task, whether it is an insertion, removal or query operation. With this detail in mind, it is possible to utilize the entire warp for certain computations.
 
-Lower bound and upper bound is significantly simpler when warp synchronization primitives are available.
+One such common computation is finding the correct key index in a node, whether to find a specific key in a leaf node or to find a correct child node to traverse into correct sub-tree. This computation essentially boils down to finding the position of a lower and upper bound key, former being the first key in a node that is greater or equal to a searched key, latter being the first node key greater than a searched key.
 
-Optimalization on the PTX, replacing specific constructs with a single \mintinline{asm}{min.u32} instruction, reducing the number of cycles spend on these critical functions.
+\todo{Add example of host lower bound operation}
+
+On the host implementation it is done by performing a binary search, as the keys in each node are stored in a sorted manner, thus allowing a search with time complexity $\mathcal{O}(\log_2 n)$. However, as a single task is performed by all 32 threads in a warp, a binary search is sub-optimal on device implementations, as it will inherently execute in series for the reasons of thread divergence, explained in \cref{subsection:simt}.
+
+\todo{Add example of device lower bound}
+
+Thus, it is more efficient to break down the work for every thread to be able to participate. Therefore, a lower and upper bound search is done as follows: each thread in a warp will read a key from a node and perform a comparison. The results are aggregated as a bitmap using \codecpp{warp.ballot()}, where $N$-th bit indicates whether a thread at index $N$ fulfills the comparison. The position is obtained by invoking \codecpp{__ffs}, which returns the index of a first thread with a fulfilled comparison.
+
+The resulting position must not be greater or equal than the size of a processed node, as reading keys outside the expected node size is an undefined behavior. As the data type of a variable storing the position is independent on the used data type for keys or values, a single \code{asm} statement is used to clamp the position. This optimalization was done specifically to enforce the compiler to use a single \mintinline{asm}{min.u32} statement rather than generating multiple \mintinline{asm}{jmp} statements, thus reducing the number of cycles spent on these critical sections.
+
+This optimalization does bring an additional constraint to the structure of a B-Tree node: the $Order$ of a tree must not exceed the number of threads available in a single warp, as if it does, some keys will become inaccessible.

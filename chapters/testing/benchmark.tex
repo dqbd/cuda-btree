@@ -22,7 +22,7 @@ Benchmark::execute<DeviceType, NumericType>(
   \label{lst:benchmark}
 \end{listing}
 
-The \mintinline{cpp}{Benchmark::BenchTimer} class will capture the time spent between the invocations of \mintinline{cpp}{start()} and \mintinline{cpp}{stop()}. This class does support multiple timers within a single instance by specifying a key string in the stop function, as seen in line 8 and 12 of \cref{lst:benchmark}. Internally, CPU based implementations are measured using \mintinline{cpp}{std::chrono::high_resolution_clock}, whereas GPU based solutions will use the built-in CUDA runtime API, which is more p
+The \codecpp{Benchmark::BenchTimer} class will capture the time spent between the invocations of \codecpp{start()} and \codecpp{stop()}. This class does support multiple timers within a single instance by specifying a key string in the stop function, as seen in line 8 and 12 of \cref{lst:benchmark}. Internally, CPU based implementations are measured using \codecpp{std::chrono::high_resolution_clock}, whereas GPU based solutions will use the built-in CUDA runtime API, which is more p
 
 In most scenarios, the time spent on copying the data between the CPU and GPU were excluded in the actual measurement.
 
@@ -60,7 +60,7 @@ As the OWG implementation is the only readily available GPU implementation of th
 
 Chosen implementations described in \cref{subsection:benchmark:implementations} were measured against different sequences mentioned in \cref{subsection:benchmark:datasets}.
 
-For the speedup comparison, \code{std::map} is chosen as a baseline for querying and inserting 32-bit key-value pairs. First column indicate the size of the sequence used. Second column contains the raw execution time spent by \code{std::map} on a benchmark test. Remaining speedup values are presented as the ratio of the execution time spent by \code{std::map} to the execution time spent by a tested implementation:
+For the speedup comparison, \code{std::map} is chosen as a baseline. 32-bit key-value pairs sequences are generated as the input data. First column indicate the size of the sequence used. Second column contains the raw execution time spent by \code{std::map} on a benchmark test. Remaining speedup values are presented as the ratio of the execution time spent by \code{std::map} to the execution time spent by a tested implementation:
 
 $$\mathit{Speedup} = S = \frac{\tau_{\mathit{CPU}}}{\tau_{\mathit{GPU}}}$$
 
@@ -98,11 +98,11 @@ In all input distributions, the OWG implementation of GPU B-Tree performs $2\tim
 \begin{table}
   \centering
   \input{components/table/insert-shuffle.tex}
-  \caption{Insertion speed-up of chosen implementations compared to \mintinline{cpp}{std::map} for various input sizes. \textit{Shuffled} sequence is used as input.}
+  \caption{Insertion speed-up of chosen implementations compared to \codecpp{std::map} for various input sizes. \textit{Shuffled} sequence is used as input.}
   \label{table:insert-shuffle}
 \end{table}
 
-In \cref{table:insert-shuffle} it can be shown, that \mintinline{cpp}{std::map} is generally not performant even on a single thread, as both TLX and TNL$^{host}$ overtake the baseline when inserting more than $2^{15}$ items.
+In \cref{table:insert-shuffle} it can be shown, that \codecpp{std::map} is generally not performant even on a single thread, as both TLX and TNL$^{host}$ overtake the baseline when inserting more than $2^{15}$ items.
 
 
 \begin{figure}
@@ -116,8 +116,6 @@ In \cref{table:insert-shuffle} it can be shown, that \mintinline{cpp}{std::map} 
   \caption{Graph comparing the number of inserted keys-value pairs per second between chosen implementations for various input sizes. \textit{Increasing} sequence is used as input.}
   \label{figure:insert-increasing}
 \end{figure}
-
-\clearpage
 
 One notable observation can be gathered from the results of the PALM tree, as the insertion time is comparably the same as the querying execution time, a result more in line with other CPU implementations. All GPU-based implementations are slower than PALM when inserting less than $2^{17}$ items. This performance is consistent regardless of the distribution of incoming sequence, as seen in \cref{figure:insert-gaussian,figure:insert-increasing}, where PALM is the most performant implementation in the scenario of \textit{increasing} input sequence.
 

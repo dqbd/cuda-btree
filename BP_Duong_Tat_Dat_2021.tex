@@ -18,6 +18,7 @@
 \usepackage{subfig}
 \usepackage{graphicx}
 \usepackage{csquotes}
+\PassOptionsToPackage{hyphens}{url}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{cleveref}
@@ -27,9 +28,16 @@
 
 \usepackage[style=iso-numeric]{biblatex}
 \addbibresource{sources.bib}
+% If you want to break on URL numbers
+\setcounter{biburlnumpenalty}{9000}
+% If you want to break on URL lower case letters
+\setcounter{biburllcpenalty}{9000}
+% If you want to break on URL UPPER CASE letters
+\setcounter{biburlucpenalty}{9000}
 
 \newcommand{\CC}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.25ex}{\relsize{-2}{\textbf{++}}}}
 \newcommand{\code}{\texttt}
+\newcommand{\codecpp}[1]{\mintinline{cpp}{#1}}
 \overfullrule=5pt
 
 \newcommand{\todo}[1]{\textcolor{red}{[[TODO: #1]]}\PackageWarning{TODO:}{#1!}}
@@ -52,6 +60,8 @@
 \newtheorem{proposition}{Proposition}
 \theoremstyle{remark}
 \newtheorem{note}{Note}
+
+\Urlmuskip=0mu plus 1mu
 
 % list of acronyms
 \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
@@ -105,8 +115,7 @@
 		.1 implementation\DTcomment{implementation sources}.
 		.2 scripts\DTcomment{hotfix scripts for editor support}.
 		.2 src\DTcomment{source code of the implementation}.
-		.2 test\DTcomment{integration tests}.
-		.2 unittest\DTcomment{unit tests}.
+		.2 test\DTcomment{integration and unit tests}.
 		.1 thesis\DTcomment{sources of the thesis}.
 	}
 \end{figure}
