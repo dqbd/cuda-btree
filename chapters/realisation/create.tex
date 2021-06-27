@@ -2,30 +2,33 @@
 
 As described by Graefe \cite{goetz-tech}, there is a strong relationship between B-Trees and sorting, which we can utilize. Optimal construction of B-Tree shall forgo incremental insertion in favor of building the tree from a presorted list.
 
-As a B-Link-Tree internally stores its key-value pairs in nodes, we can avoid inserting these pairs individually. Instead, we construct the tree in a bottom-up approach, creating all nodes of a level at once, which can be seen in \cref{alg:bulk-loading}.
+As both B-Link-Tree and B$^+$Tree internally store their key-value pairs in their nodes, incremental insertion can be avoided. Instead, the tree can be constructed in a bottom-up approach, creating all nodes of each level one by one. Sample pseudocode can be seen in \cref{alg:bulk-loading}.
 
 \begin{algorithm}[H]
-  \caption{Bulk Loading}\label{alg:bulk-loading}
-  \SetKwInOut{Input}{Input}
-  \SetKw{return}{return}
-  \SetKwRepeat{Do}{do}{until}
+  \KwIn{\textit{inputKeys}: list of keys to be stored \newline \textit{inputValues}: list of values, each one is bound to a key}
+  \DontPrintSemicolon
 
-  \textit{SortByKeyKernel(inputKeys, inputValues)}\\
+  $(\mathit{keys}, \mathit{values}) \gets \mathit{sortByKey}(\mathit{inputKeys}, \mathit{inputValues})$\;
 
-  (keys, children) $\gets$ \textit{CreateLeafKernel(inputKeys, inputValues)}\\
-  \While{\textit{children.len()} $> 1$}{
-    (keys, children) $\gets$ \textit{CreateInternalKernel(keys, children)}
+  $\mathit{nodeCount} \gets \text{calculate}\ \mathit{nodeCount}$\;
+
+  $(\mathit{keys}, \mathit{children}) \gets \mathit{createLeafKernel}(\mathit{keys}, \mathit{values})$\;
+
+  \While{$\mathit{children}.\mathit{len}() > 1$}{
+    $(\mathit{keys}, \mathit{children}) \gets \mathit{createInternalKernel}(\mathit{keys}, \mathit{children})$\;
   }
-  \textit{setRootNode(children[0])}
+  $\textit{root} \gets \textit{children}[0]$\;
+  \caption{Bulk Insert}
+  \label{alg:bulk-loading}
 \end{algorithm}
 
-First, the key-value pairs are sorted by the \code{thrust::sort} function. \acrshort{tnl} does not have a sort function yet. Sorted pairs are passed to the \code{CreateLeafKernel}, which will divide the pairs and fit them into nodes. A fixed offset is chosen to make sure each node is not immediately full. 
-The expected node count is then calculated by dividing the number of pairs by the desired node size.  
+First, the key-value pairs are sorted by key using the built-in \codecpp{thrust::sort} function, as \acrshort{tnl} does not have a sort method yet. Sorted pairs are passed to the \code{createLeafKernel}, which will divide the pairs and fit them into nodes. A fixed offset is chosen to make sure each node is not immediately full.
+The expected node count is then calculated by dividing the number of pairs by the desired node size.
 
-$$\mathit{nodeCount} = \ceil{\frac{|\mathit{inputKeys}|}{\mathit{Order} - \mathit{Offset}}},\quad \begin{aligned} \mathit{Order} > 0\end{aligned}$$
+$$\mathit{nodeCount} = \left\lceil\frac{|\mathit{inputKeys}|}{\mathit{Order} - \mathit{Offset}}\right\rceil,\quad \begin{aligned} \mathit{Order} > 0\end{aligned}$$
 
-Each kernel invocation will return separator keys and pointers of the created nodes. These keys and children nodes are passed back to the kernel to create an additional level until the kernel creates only one node. This node then becomes the root of the tree.
+Each kernel invocation of \codecpp{createInternalKernel} will return separator keys and pointers of the created nodes. These keys and children nodes are passed back to the kernel to create an additional level until the kernel creates only one node. This node then becomes the root of the tree, as seen at line 6 in \cref{alg:bulk-loading}.
 
-A significant additional benefit of constructing the tree in bulk is the improved memory locality of the tree. Nodes at the same level are created and inserted into memory simultaneously and thus reside in the memory near each other.
+A significant additional benefit of constructing the tree in such a manner is the improved memory locality of the tree. The reason is that B-Tree nodes at the same level are created and inserted into memory simultaneously. Thus the nodes reside in the memory block near each other.
 
 

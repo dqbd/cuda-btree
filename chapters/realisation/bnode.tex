@@ -1,27 +1,41 @@
-\section{Data Structure and Memory Allocation}
+\section{Node structure}
 
-This section describes the proposed data structure, found in the \cref{lst:bnode}. Comments and helpers methods were removed for the sake of brevity.
+This section describes the proposed B$^+$Tree and B-Link-Tree node structure, found in the \cref{lst:node}. Comments and helpers methods were removed for the sake of brevity.
 
 \begin{listing}
   \begin{minted}{cpp}
 template <typename KeyType, typename ValueType, size_t Order>
-struct BNode {
-  BNode * mSibling;
-  KeyType mHighKey;
-
-  uint16_t mHighKeyFlag;
+struct BPlusNode {
   uint16_t mLeaf;
   uint16_t mSize;
   uint16_t mWriteLock;
 
   KeyType mKeys[Order];
   ValueType mValues[Order];
+
   BNode * mChildren[Order]; 
+  BNode * mSibling;
+}
+
+template <typename KeyType, typename ValueType, size_t Order>
+struct BLinkNode {
+  uint16_t mLeaf;
+  uint16_t mSize;
+  uint16_t mWriteLock;
+
+  KeyType mHighKey;
+  uint16_t mHighKeyFlag;
+
+  KeyType mKeys[Order];
+  ValueType mValues[Order];
+  volatile BNode * mChildren[Order]; 
+  volatile BNode * mSibling;
 }
     \end{minted}
-  \caption{The \code{BNode} struct}\label{lst:bnode}
+  \caption[B$^+$Tree and B-Link-Tree node structures]{The node structures used in B$^+$Tree and B-Link-Tree.}
+  \label{lst:node}
 \end{listing}
 
-\codecpp{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} statement.
+\codecpp{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} conversion statement \cite{ptxisa}.
 
-In the B-Link-Tree variant, \codecpp{mSibling} and \codecpp{mChildren} are using the \codecpp{volatile} qualifier to avoid incorrect memory access optimization by the compiler and ensure the correctness of the tree during operations. This qualifier does incur a performance hit, however.
+As seen in the \codecpp{BLinkNode} variant at line 25--26, \codecpp{mChildren} and \codecpp{mSibling} are both using the \codecpp{volatile} qualifier to avoid incorrect memory access optimization by the compiler. This qualifier tells the compiler to assume that the contents of the variable may be changed or used at any time by another thread. Therefore all references to this variable will compile into an actual memory read or write \cite{cudaprog}.

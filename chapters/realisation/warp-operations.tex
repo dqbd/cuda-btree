@@ -8,14 +8,14 @@ One such computation is finding the correct key index in a node, whether to find
   \caption{Lower bound in sorted list}\label{alg:lower-bound}
   \DontPrintSemicolon
 
-  \KwIn{$keys[1..n], needle$}
+  \KwIn{$keys[0\dots{n}], needle$}
   \KwResult{Position of a lower bound key}
 
-  \textit{index}, \textit{size} $\gets$ n\;
+  \textit{index} $\gets$ 0, \textit{size} $\gets$ n\;
   \While{size $>$ 0}{
     $step \gets size / 2$\;
     $it \gets index + step$\;
-    \eIf{$array[it] < needle$}{
+    \eIf{$keys[it] < needle$}{
       $index \gets it + 1$\;
       $size \gets size - step + 1$\;
     }{
@@ -50,6 +50,6 @@ __device__ static uint32_t lowerBound(
 
 Thus, it is more efficient to break down the work for every thread to be able to participate, seen in a lower-bound example in \cref{lst:lower-bound-cuda}. A lower bound (and upper bound) search is done as follows: each thread in a warp will read a key from a node and perform a comparison. The results are aggregated as a bitmap using \codecpp{warp.ballot()}, where $N$-th bit indicates whether a thread at index $N$ fulfills the comparison (see line 9). The position is obtained by invoking \codecpp{__ffs} on line 10, which returns the index of a first thread with a fulfilled comparison.
 
-The resulting position must not be greater or equal to the size of a processed node, as reading keys outside the expected node size is undefined behavior. As the data type of a variable storing the position is independent of the used data type for keys or values, a single \code{asm} statement on line 12 is used to clamp the position. This optimization was done specifically to enforce the compiler to use a single \mintinline{asm}{min.u32} statement rather than generating multiple \mintinline{asm}{jmp} statements, thus reducing the number of cycles spent on these critical sections.
+The resulting position must not be greater or equal to the size of a processed node, as reading keys outside the expected node size is undefined behavior. As the data type of a variable storing the position is independent of the used data type for keys or values, a single \code{asm} statement on line 12 is used to clamp the position. This optimization was done specifically to enforce the compiler to use a single \mintinline{asm}{min.u32} statement rather than generating branch and jump statements, thus reducing the number of cycles spent on these critical sections.
 
 This optimization does bring an additional constraint to the structure of a B-Tree node: the $Order$ of a tree must not exceed the number of threads available in a single warp, as if it does, some keys will become inaccessible.

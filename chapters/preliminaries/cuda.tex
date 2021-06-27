@@ -34,4 +34,4 @@ Threads inside a thread block may use shared memory or global memory to cooperat
 
 Warp-level primitives enable fine-tuned collective operations within warps. Parallel reductions and synchronized data exchange can be achieved with \codecpp{__shfl_down()} and \codecpp{__shfl_sync()} respectively. Similar to \codecpp{__syncthreads()}, \codecpp{__syncwarp()} can be utilized to create a synchronization barrier for all threads in a warp.
 
-At last, atomic functions (such as \codecpp{__atomicAdd()} or \codecpp{__atomicCAS()}) can be used to read from or write to shared or global memory while ensuring no interference from other threads until the operation is complete.
+At last, atomic functions (such as \codecpp{atomicAdd()} or \codecpp{atomicCAS()}) can be used to read from or write to shared or global memory while ensuring no interference from other threads until the operation is complete.

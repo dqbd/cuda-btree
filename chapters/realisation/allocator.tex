@@ -1,16 +1,29 @@
 \section{Allocation}
 
-As the allocator for the data structure, a bump allocator is used (also known as stack allocator). The bump allocator allocates a continuous linear section of memory and works by increasing a pointer at the next unused memory.
+As the allocator for the data structure, a bump allocator is used (also known as stack allocator) in both of the implementations. The bump allocator allocates a continuous linear section of memory and works by increasing a pointer at the next unused memory.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth ]{components/figure/bump-allocator}
-  \caption{States of the tree during splitting while inserting a new key.}
-  \label{figure:bump-allocator}
-\end{figure}
+\begin{listing}
+  \begin{minted}{cpp}
+template <typename Object>
+struct BumpAllocator { 
+  int *mOffset;
+  ArrayView<Object, Devices::Cuda> mData;
 
-To handle the allocation of nodes, a section of memory must be allocated beforehand on the CPU, as the device code cannot allocate additional memory by itself. A bump allocator is used in both of the TNL implementations.
+  __device__ Object *allocate(int size) {
+    return mData.getData() + atomicAdd(mOffset, size);
+  }
+};
+  \end{minted}
+  \caption{Implementation snippet of a bump allocator with an \codecpp{allocate} method.}
+  \label{lst:allocator}
+\end{listing}
 
-Keeping track of the used size and the pointer to a next node with utilizing \code{atomicCAS}. Atomic instructions are used to ensure the serializability of the operations, as the allocator is invoked concurrently from different threads.
+To handle the allocation of nodes, a section of memory is allocated beforehand on the CPU. This continuous section of memory can be resized by invoking the \codecpp{setSize} method, which will allocate a new memory segment and copy the remaining data.
 
-The main benefit is the simplicity of the allocator; the disadvantage is the lack of granular deallocation; it can only free all memory at once.
+Atomicity is key for successful allocation, as the allocator can be invoked concurrently from different threads. The \codecpp{allocate} method will move the memory offset atomically via the \codecpp{atomicAdd} function. This function will return the previous offset, which is used to obtain the address on the newly available global memory block, as seen on line 7 in \cref{lst:allocator}. Atomic instructions are used to ensure the serializability of the operations, as the allocator is invoked concurrently from different threads.
+
+Proper care needs to be taken of the root node and its address when moving the pointers to a different memory location, for example, while resizing the underlying memory block of the allocator.
+
+The main benefit of the bump allocator is its simplicity and performance. Dynamic global memory allocation inside a device function is considerably slower \cite{vinkler2015register} than the bump allocator. It is also allocated on a size-limited heap. By default, the heap is only 8 MB large and may be resized only once in a during application runtime \cite{cudaprog}, which is not suitable for storing large amounts of data in global memory.
+
+However, the presented allocator is not as versatile when compared to traditional allocators, as the acquired memory cannot be deallocated because the returned \codecpp{mOffset} only increases.

@@ -7,7 +7,7 @@ Previous approaches include locking a subtree of highest affected node \cite{sam
   \begin{enumerate}
     \item Each node $x$ has additional attributes:
           \begin{itemize}
-            \item $x.sibling$, a pointer to a right sibling node at the same level,
+            \item $x.\mathit{sibling}$, a pointer to a right sibling node at the same level,
             \item $x.highkey$, the upper bound of all keys found in the subtree rooted by $x$ (every key found in $x$ is less then $x.highkey$).
           \end{itemize}
     \item Does not require locks nor latches for reading.
@@ -29,25 +29,26 @@ Splitting during node insertion is divided into two independent steps: splitting
   \label{figure:b-link-insert}
 \end{figure}
 
+Assuming node $x$ is a full node, which needs to be split, shown in step (a) in \cref{figure:b-link-insert}. When splitting the node $x$, a new right sibling node $y$ is created, as seen in step (b). The node $y$ inherits the high key from the split node $x$, whereas the $x$ node is updated (marked as $x^\prime$) with a new $x.highkey = y.key_0$. Thus, an internal node does exist without a parent in between the operations.
 
-When splitting node $x$, a new right sibling node $y$ is created, as seen step (b) in \cref{figure:b-link-insert}. The node $y$ inherits the high key from the split node $x$, whereas the $x$ node is updated (marked as $x^\prime$) with a new $x.highkey = y.key_0$. Thus, an internal node does exist without a parent in between the operations. $x^\prime.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete.
+$x^\prime.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete. \todo{refactor this sentence to better clarify the usage of sibling nodes}
 
-As the final step of node splitting, both the separator key and the pointer to the newly split node $y$ are inserted in the parent node $p$, seen in step (c) in \cref{figure:b-link-insert}. Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
+As the final step of node splitting, both the separator key and the pointer to the newly split node $y$ are inserted in the parent node $p$, seen in step (c). Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
 
-Tree traversal is modified to honor $x.highkey$ by returning the node at $x.sibling$ when the target key $k$ is larger or equal than $x.highkey$.
+Tree traversal is modified to honor $x.highkey$ by returning the node at $x.\mathit{sibling}$ when the target key $k$ is larger or equal than $x.highkey$.
 
 \subsection{Proof of correctness}
 
-To prove the correctness of each operation performed on the B-link-tree, the following theorems need to be proven:
+To prove the correctness of each operation performed on the B-link-tree, the following theorems need to be proven: \todo{add proof from yehman}
 
 \begin{itemize}
-  \item \textit{Deadlock freedom} -- threads performing operations on the B-link-tree cannot produce a deadlock,
-  \item \textit{Correct tree modifications} -- the tree must appear as a valid tree for all nodes at any time,
-  \item \textit{Correct interactions} -- concurrent operations do not interfere with one another.
+  \item \textit{Deadlock freedom} --- threads performing operations on the B-link-tree cannot produce a deadlock,
+  \item \textit{Correct tree modifications} --- the tree must appear as a valid tree for all nodes at any time,
+  \item \textit{Correct interactions} --- concurrent operations do not interfere with one another.
 \end{itemize}
 
 \begin{theorem}
-  \textit{Deadlock freedom} -- threads performing operations on the B-link-tree cannot produce a deadlock.
+  \textit{Deadlock freedom}: threads performing operations on the B-link-tree cannot produce a deadlock.
 \end{theorem}
 
 \begin{proof}
@@ -56,8 +57,8 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
   To prove a total ordering of nodes, the following ordering $a < b$, where $a$ and $b$ are nodes of the tree, is considered:
 
   \begin{enumerate}
-    \item If $a$ and $b$ are not on the same distance from the root node, then $a < b$ if and only if node $a$ is less distant from root node than node $b$ (bottom-up).
-    \item If $a$ and $b$ are on the same level, then $a < b$ if and only if node $b$ is reachable from node $a$ by following a chain of one or more $sibling$ pointers (left-to-right).
+    \item If $a$ and $b$ are not on the same distance from the root node, then $a < b$ if and only if the path from the root node to node $a$ is shorter than the path from the root node to node $b$ (bottom-up condition),
+    \item if $a$ and $b$ are on the same level, then $a < b$ if and only if node $b$ is reachable from node $a$ by following a chain of one or more $sibling$ pointers (left-to-right condition).
   \end{enumerate}
 
   It can be shown that during insertion operation the total ordering of nodes is preserved. If $a < b$ at time $t_0$ at the start of insertion, then $a < b$ is preserved for $\forall t, t > t_0$, as a node $x$ during split operation will create a node $x^\prime$ and $x^{\prime\prime}$, where $x^\prime < x^{\prime\prime}$ and:
@@ -71,53 +72,54 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
 \end{proof}
 
 \begin{theorem}\label{theorem:b-link-tree:modifications}
-  \textit{Correct tree modifications} -- the tree must appear as a valid tree for all nodes at any time.
+  \textit{Correct tree modifications}: the tree must appear as a valid tree for all nodes at any time.
 \end{theorem}
 
 \begin{proof}
-  The tree must appear as a valid tree for all threads at any time except for the modifying thread. Assuming writing is done by invoking $writeNode$ function, which will write to the storage atomically.
+  The tree must appear as a valid tree for all threads at any time except for the modifying thread. Assuming writing is done by invoking $\mathit{writeNode}$ function, which will write to the storage atomically.
 
   The insertion operation, assuming performed on a node $x$ of the tree, will therefore write only in these circumstances:
 
   \begin{enumerate}
-    \item $writeNode(x)$ -- if node $x$ is not considered full and is safe for rewriting,
-    \item $writeNode(x^\prime)$ -- writing a newly allocated node $x^\prime$, which was created in the process of splitting node $x$,
-    \item $writeNode(x)$ -- rewriting the node $x$ as part of the splitting process, $x.sibling$ is set to point at node $x^\prime$.
+    \item $\mathit{writeNode}(x)$ --- if node $x$ is not considered full and is safe for rewriting,
+    \item $\mathit{writeNode}(x^{\prime\prime})$ --- writing a newly allocated node $x^\prime$, which was created in the process of splitting node $x$,
+    \item $\mathit{writeNode}(x^{\prime})$ --- rewriting the node $x$ as part of the splitting process, $x.\mathit{sibling}$ is set to point at node $x^\prime$.
   \end{enumerate}
 
-  Even though $writeNode(x^\prime)$ and subsequent $writeNode(x)$ operation are done in two writes, it can be shown, that these operations are equivalent to a single change in tree structure:
+  Even though $\mathit{writeNode}(x^{\prime\prime})$ and subsequent $\mathit{writeNode}(x^\prime)$ operation are done in two writes, it can be shown, that these operations are equivalent to a single change in tree structure:
 
   \begin{itemize}
-    \item When $writeNode(x^\prime)$ is executed, no other node has a pointer at $x^\prime$. Therefore this operation will not modify the tree structure,
-    \item when $writeNode(x)$ is subsequently executed, the $x.sibling$ is set to point to $x^\prime$. This operation therefore does both modify the node $x$ and introduce newly allocated node $x^\prime$ to the tree in a single operation.
+    \item When $\mathit{writeNode}(x^{\prime\prime})$ is executed, no other node has a pointer at $x^{\prime\prime}$. Therefore this operation will not modify the tree structure,
+    \item when $\mathit{writeNode}(x^\prime)$ is subsequently executed, the $x^\prime.\mathit{sibling}$ is set to point to $x^{\prime\prime}$. This operation therefore does both modify the node $x$ and introduce newly allocated node $x^\prime$ to the tree in a single operation.
   \end{itemize}
 \end{proof}
 
 \begin{theorem}
-  \textit{Correct interactions} -- concurrent operations do not interfere with one another.
+  \textit{Correct interactions}: concurrent operations do not interfere with one another.
 \end{theorem}
 
 \begin{proof}
-  Assume $t_i$ is the time when the insertion process $I$ writes node $x$ to storage, and $t_r$ is the time when another operation $P$ reads the same node $x$. All of the operations are considered atomic, thus $t_i \neq t_r$.
+  Assume $t_i$ is the time when the insertion process $I$ writes node $x$ to storage, and $t_r$ is the time when another operation $P$ reads the same node $x$. All of the operations are considered atomic, thus $t_r \neq t_i$.
 
-  First, the case of $t_r > t_i$, where an operation $P$ is reading a node $x$ later than the insertion, is completed is considered; any changes that the insertion process $I$ does will preserve the correct tree structure, as proven in \cref{theorem:b-link-tree:modifications}.
+  First, the case of $t_r > t_i$ is considered: an operation $P$ is reading a node $x$ after the insertion is done. Any changes that the insertion process $I$ does will preserve the correct tree structure, as proven in \cref{theorem:b-link-tree:modifications}.
 
-  In the case of $t_r < t_i$, where insertion $I$ happens after operation $P$ does a read. the proof is broken into three possible scenarios, which the insertion might perform:
+  In the case of $t_r < t_i$, where insertion $I$ happens after operation $P$ does a read, the proof is broken into three possible scenarios, which the insertion might perform:
 
   \begin{enumerate}
     \item Simple insertion of a key-pointer pair into node $x$ without splitting,
-    \item splitting of node $x$, where the inserted key is placed in the left node $x$, same as the node, which has been split,
-    \item splitting of node $x$, where the inserted key is placed in the right node $y$, the newly allocated node.
+    \item splitting of node $x$, where the inserted key is placed in the left node $x^\prime$, same as the node, which has been split ($x^\prime = x$),
+    \item splitting of node $x$, where the inserted key is placed in the right node $x^{\prime\prime}$, the newly allocated node.
   \end{enumerate}
 
-  In the first scenario, $I$ performs the insertion in node $x$ without additional splitting. If it is inserting into a leaf node ($x.leaf = true$), no other pointers are inserted by the process $I$, and the operation $P$ behaves as if the read happened before insertion.
+  In the first scenario, $I$ performs the insertion in node $x$ without additional splitting. If it is inserting into a leaf node ($x.\mathit{leaf} = \mathit{true}$), no other pointers are inserted by the process $I$, and the operation $P$ behaves as if the read happened before insertion.
 
-  If the insertion happens on an internal node ($x.leaf = false$), a key-pointer pair created by splitting a lower-level node $z$ is inserted into the node $x$. As the node $z$ has already been split, as this is the only situation where a key-pointer pair could propagate upwards to node $x$, the operation $P$ will be able to utilize the link pointers $z.sibling$ to reach both the original node and the newly split node.
+  If the insertion happens on an internal node ($x.\mathit{leaf} = \mathit{false}$), a key-pointer pair created by splitting a lower-level node $z^{\prime\prime}$ is inserted into the node $x$. This scenario is the only one where a key-pointer pair could propagate upwards to node $x$. The operation $P$ will be able to utilize the link pointers $z.\mathit{sibling}$ to reach both the original node and the newly split node.
 
-  In the second and third scenarios, the process $I$ has split the node $x$ into two nodes $x_1$ and $x_2$. If the process is happening on leaf nodes, $P$ will continue as if no insertion has occurred. In non-leaf nodes, a key-pointer pair from the newly split node from the lower level is inserted into node $x$, which caused the node to be split. Both the insertion and search in the node below node $x$ will be correct thanks to \cref{theorem:b-link-tree:modifications}. It only remains to prove the correctness of split operation on node $x$.
+  In the second and third scenarios, the process $I$ has split the node $x$ into two nodes $x^\prime$ and $x^{\prime\prime}$. If the process happens on a leaf node, $P$ will continue as if no insertion has occurred. Similar to the first scenario, the only possible scenario where the process $I$ needs to split is when a child node $z$ went through a split and a new separator key and a pointer to $z^{\prime\prime}$.
 
-  Assume $z$ is the node, which has been created by splitting a node below $x$ and $z_l$ the node on the left of node $z$ ($z_l.sibling = z$).
-  If the search would not follow the pointer of $z$, the operation $P$ will proceed as usual because the nodes $x_1$ and $x_2$ contain the same set of pointers as node $x$ with the addition of the pointer to $z$. Otherwise, if the search would follow the pointer to $z$, had the process $P$ read the node $x$ after the split, the operation $P$ will proceed instead to the node left of the node $z$, $z_l$. The operation $P$ is then able to reach node $z$ by using the link pointer of node $z_l$.
+  Both the insertion and search in the node $z^{\prime\prime}$ below node $x$ will be correct thanks to \cref{theorem:b-link-tree:modifications}. It only remains to prove the correctness of split operation on node $x$.
+
+  Assume $z^{\prime\prime}$ is the node, which has been created by splitting a node below $x$ and $z^\prime$ the node on the left of node $z^{\prime\prime}$ ($z^\prime.\mathit{sibling} = z$). If the search would not follow the pointer of $z$, the operation $P$ will proceed as usual because the nodes $x^\prime$ and $x^{\prime\prime}$ contain the same set of pointers as node $x$ with the addition of the pointer to $z^{\prime\prime}$. Otherwise, if the search would follow the pointer to $z^{\prime\prime}$, had the process $P$ read the node $x$ after the split, the operation $P$ will proceed instead to $z^\prime$ instead. The operation $P$ is then able to reach node $z^{\prime\prime}$ by using the sibling pointer of node $z^\prime$.
 
   If the process $P$ is another insertion process, it is either searching for the correct node, backtracking upwards, or attempting to insert into node $x$. In the case of searching, the proof is the same as if the process $P$ was a search operation.
 

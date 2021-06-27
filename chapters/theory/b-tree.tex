@@ -2,9 +2,9 @@
 
 B-Tree is a balanced search tree used for storing large blocks of data. It captures and maintains the sort order of data and supports searching, sequential retrieval, insertion, and deletion in logarithmic time.
 
-Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases and file systems, where a performant self-balancing external index for large blocks of data is required.
+Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases (e.g., PostgreSQL \cite{postgresql}) and file systems (e.g., btrfs \cite{btrfs}), where a performant self-balancing external index for large blocks of data is required. \todo{Add OLAP, OLTP usages and references}
 
-B-Trees are a specialization of $(a,b)$-Trees, where a B-Tree is either an $(a, 2a)$-tree or $(a, 2a + 1)$-tree depending on the oddness / evenness of $a$. This is also why 2-3-4-trees (which in turn are similar to RB-Trees) are B-Trees with an order of 3.
+B-Trees are a specialization of $(a,b)$-Trees, where a B-Tree is either an $(a, 2a)$-tree or $(a, 2a + 1)$-tree depending on the oddness / evenness of $a$. This is also why 2-4 trees (also known as \enquote{2-3-4-trees}) (which in turn are similar to RB-Trees) are B-Trees with an order of 3.
 
 However, it raises why B-Trees are used for on-disk data, and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by having its node be as large as a whole block.
 
@@ -18,19 +18,18 @@ The main benefit of B-Trees is their shallow height even with many keys inserted
   \caption{B-Tree with $\mathit{Order} = 3$.}
 \end{figure}
 
-
 \begin{definition}\label{def:btree}
   B-Tree of order $m$ is a rooted tree with following properties:
   \begin{enumerate}
     \item Every node $x$ has following attributes:
           \begin{enumerate}
-            \item $x.size$, the number of keys in a node,
-            \item $x.leaf$, a boolean value indicating whether the node is a leaf or not,
-            \item An list of $x.size$ keys $x.key_1, x.key_2, \dots, x.key_{x.size}$ sorted in ascending order ($x.key_1 \le x.key_2 \le \dots \le x.key_{x.size}$),
+            \item $x.\mathit{size}$, the number of keys in a node,
+            \item $x.\mathit{leaf}$, a boolean value indicating whether the node is a leaf or not,
+            \item An list of $x.\mathit{size}$ keys $x.\mathit{key}_1, x.\mathit{key}_2, \dots, x.\mathit{key}_{x.size}$ sorted in ascending order ($x.\mathit{key}_1 \le x.\mathit{key}_2 \le \dots \le x.\mathit{key}_{x.\mathit{size}}$),
           \end{enumerate}
     \item Every internal node $x$ has $x.size + 1$ pointers as its children \\($x.child_1, x.child_2, \dots, x.child_{x.size + 1}$),
     \item All leaf nodes appear at the same depth, which is the height of tree $h$,
-    \item Nodes have upper and lower bounds, which limit the number of keys and children:
+    \item Nodes have upper and lower bounds, which limit the number of keys and children. Assuming $m$ is the order of a B-Tree:
           \begin{enumerate}
             \item Every node other than the root has at least $\floor{\nicefrac{m}{2}}$ children, thus every node other than root has at least $\floor{\nicefrac{m}{2}} - 1$ keys,
             \item The root node has at least two children, except if it is a leaf node,
@@ -46,7 +45,7 @@ The main benefit of B-Trees is their shallow height even with many keys inserted
 \begin{proof}
   Assume $t = \floor{\nicefrac{m}{2}}$ as the minimum number of children in a node. The root of $T$ has at least one key; all other nodes contain at least $t - 1$ keys.
 
-  Thus, $T$ has at depth $1$ at least $2$ nodes, at depth $2$ at least $2t$ nodes, and so forth, until depth $h$, which has at least $2t^{h-1}$ nodes.
+  Thus, $T$ has at level $1$ at least $2$ nodes, at level $2$ at least $2t$ nodes, and so forth. The last level $h$ will have at least $2t^{h-1}$ nodes.
 
   Define $n_{min}$ as the minimum amount of keys in $T$ of height $h$ as the sum of key count per depth.
 
@@ -74,7 +73,7 @@ As search, insertion, and deletion on a single node takes $\Theta{(1)}$, time co
 
 \subsection{Search}
 
-The search algorithm for B-Trees is trivial but crucial, similar to the search algorithm for binary search trees. We compare the keys in every node and decide the subtree to continue the search starting from the root node. The search ends if we find the desired key or if we end up in a leaf node.
+The search algorithm for B-Trees is trivial but crucial, similar to the search algorithm for binary search trees. We compare the keys in every node and decide the subtree to continue the search starting from the root node, as seen in lines 3--4 in the sample \cref{alg:b-tree-search}. The search ends if we find the desired key or if we end up in a leaf node, which does not have any children.
 
 \begin{algorithm}
   \caption{B-Tree Search}\label{alg:b-tree-search}
@@ -123,11 +122,11 @@ If the key is found on a leaf node, we can trivially delete the key from the nod
 
 Deleting a key from an internal node is more complicated, as child nodes are bound to keys, and a key deletion will result in the loss of a child. Thus, instead of deleting, we swap the key with a successor (or predecessor) key. The key can then be deleted as it is located in a leaf node after the swap. Similar rebalancing must occur if the node has become underfull.
 
-Rebalancing of node $x$ is performed when $x.size = \floor{\nicefrac{m}{2}} - 1$. Assume, without loss of generality, a sibling node $l$ on the left of $x$ exists, and $i$ is the key, which binds the node $n$ to its parent. If a left sibling does not exist, a right sibling is used instead, and the rebalancing operation is mirrored.
+Rebalancing of node $x$ is performed when $x.size = \floor{\nicefrac{m}{2}} - 1$. Assume, without loss of generality, a sibling node $l$ on the left of $x$ exists, and $i$ is the key, which binds the node $n$ to its parent. If a left sibling does not exist or does not have any spare keys to share, a right sibling is used instead, and the rebalancing operation is mirrored.
 
 If the sibling node $l$ has at least $\floor{\nicefrac{m}{2}} + 1$ keys, we can perform the borrowing operation; the key $i$ is prepended to the node $x$ and the last key of $l$ detaches from $l$ and replaces the key $i$. Last child of $l$ is also detached and prepended to $x$.
 
 However, if neither the sibling nodes have enough keys, a merge operation occurs. Both the $x$ node and its sibling $l$ are deleted, and a new node is created instead. This new node contains keys and children of both $x$ and $l$, with key $i$ in the middle. Deletion is, thus, propagated upwards. In the event of a root with no keys and a single child, the single child becomes the new root.
 
-Many implementations forgo rebalancing the tree in favor of deleting the key instead of leaving a ghost entry, which can be utilized to alleviate the cost of inserting a new key into a sorted list. Rebalancing the tree can be postponed and executed later.
+Many implementations forgo rebalancing the tree in favor of replacing the key with a tombstone \cite{goetz-tech}. The tombstone is useful even when inserting, as a key could be directly inserted in place of a tombstone if applicable, thus alleviating the cost of inserting a new key into a sorted list. Rebalancing the tree can be postponed and executed later.
 

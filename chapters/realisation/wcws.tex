@@ -4,6 +4,7 @@ Warp-cooperative work-sharing strategy (WCWS) is used to improve the performance
 
 \begin{listing}
   \begin{minted}{cpp}
+template <typename KeyType>
 __device__ static void WarpTask(
   Node *root, KeyType key, bool &toFind
 ) {
@@ -22,6 +23,7 @@ __device__ static void WarpTask(
   }
 };
 
+template <typename KeyType>
 __global__ static void KernelTask(
   Node *root, ArrayView<KeyType, Devices::Cuda> keys
 ) {
@@ -33,10 +35,10 @@ __global__ static void KernelTask(
     key = keys.getElement(threadId);
   }
 
-  WarpTask(root, key, toFind);
+  WarpTask<KeyType>(root, key, toFind);
 };
   \end{minted}
-  \caption{Example code used to implement the Warp Cooperative Work Sharing strategy. \code{KernelTask} is a kernel function invoked from the CPU, \code{WarpTask} is a function called from GPU. Assuming the \code{executeOperation} found in line 13 accepts a single value for processing.}
+  \caption{Example code used to implement the Warp Cooperative Work Sharing strategy. \code{KernelTask} is a kernel function invoked from the CPU, \code{WarpTask} is a function called from GPU. The \code{executeOperation} function found in line 13 shall accept a single value for processing.}
   \label{lst:wcws}
 \end{listing}
 
