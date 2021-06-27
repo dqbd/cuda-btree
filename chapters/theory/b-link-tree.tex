@@ -21,7 +21,7 @@ Previous approaches include locking a subtree of highest affected node \cite{sam
   \label{figure:b-link-tree}
 \end{figure}
 
-An example tree can be seen in \ref{figure:b-link-tree}, where it is shown that the idea of a sibling pointer from B$^+$Tree is extended towards all levels of the tree, not just the leaf nodes. 
+An example tree can be seen in \cref{figure:b-link-tree}, where it is shown that the idea of a sibling pointer from B$^+$Tree is extended towards all levels of the tree, not just the leaf nodes.
 
 \subsection{Insertion and Search}
 
@@ -29,16 +29,17 @@ Splitting during node insertion is divided into two independent steps: splitting
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth ]{components/figure/b-link-insert}
-  \caption{States of the tree during splitting while inserting a new key.}
-  \label{figure:b-link-insert}
+  \input{components/figure/b-link-insert.tex}
+  \caption[Possible states of a B-Link-Tree split operation.]{Possible states of a B-Link-Tree split operation.}
+  \label{figure:b-link-insert-states}
 \end{figure}
 
-Assuming node $x$ is a full node, which needs to be split, shown in step (a) in \cref{figure:b-link-insert}. When splitting the node $x$, a new right sibling node $y$ is created, as seen in step (b). The node $y$ inherits the high key from the split node $x$, whereas the $x$ node is updated (marked as $x^\prime$) with a new $x.highkey = y.key_0$. Thus, an internal node does exist without a parent in between the operations.
 
-$x^\prime.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete. As the final step of node splitting, both the separator key and the pointer to the newly split node $y$ are inserted in the parent node $p$, seen in step (c). Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
+Assuming node $x$ is a full node, which needs to be split, shown in step (a) of \cref{figure:b-link-insert-states}. When splitting the node $x$, a new right sibling node $x^{\prime\prime}$ is created, as seen in step (b). The node $y$ inherits the high key from the split node $x$, whereas the $x$ node is updated (marked as $x^\prime$) with a new $x.highkey = x^{\prime\prime}.key_0$. Thus, an internal node does exist without a parent in between the operations.
 
-Tree traversal is modified to honor $x.highkey$ by returning the node at $x.\mathit{sibling}$ when the target key $k$ is larger or equal to $x.highkey$.
+As the final step of node splitting, both the separator key and the pointer to the newly split node $y$ are inserted in the parent node $p$, seen in step (c). Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
+
+Tree traversal is modified to honor $x.highkey$ by returning the node at $x.\mathit{sibling}$ when the target key $k$ is larger or equal to $x.highkey$. With these additional attributes, it is possible to traverse the entire tree, even though some nodes (such as $x^{\prime\prime}$ in step (b) of \cref{figure:b-link-insert-states}) are yet to be inserted into the parent node.
 
 \subsection{Proof of correctness}
 
