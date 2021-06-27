@@ -11,7 +11,7 @@ The principles behind the Warp Cooperative Work Sharing strategy were outlined, 
 
 Multiple GoogleTest based unit test suites were written to ensure proper functionality. A complementary web tool has been developed to visualize operations done in a multithreaded environment.
 
-Finally, both of the implementations were measured and compared against STL and other state-of-the-art GPU and CPU B-Tree implementations. Measurements of both variants against \codecpp{std::map} show a substantial speedup: $\approx$\,$200\times$ when querying and $\approx$\,$25\times$ when inserting random sequences of length $2^{24}$--$2^{25}$. When compared to the GPU B-Tree implementation by Awad et al. \cite{awad}, both of the variants implemented in this thesis are slower. It should be noted that both the B$^+$Tree and B-Link-Tree perform similarly, suggesting the reduced instruction count and reduced unnecessary pointer chasing in B$^+$Tree overshadow the concurrency improvements of B-Link-Tree.
+Finally, both of the implementations were measured and compared against STL and other state-of-the-art GPU and CPU B-Tree implementations. Measurements of both variants against \codecpp{std::map} show a substantial speedup: $\approx$\,$200\times$ when querying and $\approx$\,$85\times$ when inserting random sequences of length $2^{24}$--$2^{25}$. When compared to the GPU B-Tree implementation by Awad et al. \cite{awad}, both of the variants implemented in this thesis are slower. It should be noted that both the B$^+$Tree and B-Link-Tree perform similarly, suggesting the reduced instruction count and reduced unnecessary pointer chasing in B$^+$Tree overshadow the concurrency improvements of B-Link-Tree.
 
 \section{Future work}
 

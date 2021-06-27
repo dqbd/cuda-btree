@@ -4,16 +4,16 @@
   B$^+$Tree is a B-Tree where keys are stored exclusively in leaf nodes.
 \end{definition}
 
-Separators found in internal nodes can be freely chosen and may not match the actual keys in leaf nodes, as long as these separators split the tree into subtrees and preserve the ordering of the keys. Value pointers are also exclusively stored in leaf nodes, highlighted by blue arrows in \cref{figure:b-plus-tree}.
+Separators found in internal nodes can be freely chosen and may not match the actual keys in leaf nodes, as long as these separators split the tree into subtrees and preserve the ordering of the keys. Value pointers are also exclusively stored in leaf nodes, highlighted as blue lines in \cref{figure:b-plus-tree}.
 
-As the B$^+$Tree does not reuse the keys and may duplicate the keys found in the leaf nodes to use as separators in internal nodes, they do bear increased storage requirements. Compressing techniques on keys can be used to reduce the increased space complexity in exchange for increased complexity caused by compressing itself.
+As the B$^+$Tree does not reuse the keys and may duplicate the keys found in the leaf nodes to use as separators in internal nodes, they do bear increased storage requirements. Compressing techniques on keys can be used to mitigate the increased space complexity in exchange for a slight execution complexity increase due to compression itself.
 
 In most implementations, leaf nodes may include an additional pointer to a right sibling node, as seen in \cref{figure:b-plus-tree} highlighted as red arrows, enabling straightforward sequential querying, which is helpful for range querying. 
 
 \begin{figure}
   \centering
   \input{components/figure/b+tree.tex}
-  \caption[B$^+$Tree with $\mathit{Order} = 3$.]{B$^+$Tree with $\mathit{Order} = 3$. Blue arrows indicate a pointer to a value, red arrows indicate an optional pointer to a sibling node.}
+  \caption[B$^+$Tree with $\mathit{Order} = 3$.]{B$^+$Tree with $\mathit{Order} = 3$. Blue lines indicate a pointer to a value, red arrows indicate an optional pointer to a sibling node.}
   \label{figure:b-plus-tree}
 \end{figure}
 

@@ -16,8 +16,8 @@ Nevertheless, a GPU-friendly implementation of such data structure can utilize t
 
 The main goal of this thesis is to introduce an implementation of a B-Tree built on top of the Template Numerical Library (TNL). This implementation will have the ability to change the execution environment to either run on the GPU or the CPU. The solution will be implemented in \CC\ and will support CUDA, as these are the prerequisites of the used TNL library.
 
-First, in \cref{chapter:preliminaries}, hardware structure and software architecture will be introduced, with a general primer of both the TNL library and the B-Tree data structure. Next, in \cref{chapter:theory}, different variants and modifications of the data structure, such as B$^+$Tree or B-Link-Tree, are explained and compared against the original B-Tree.
+First, in \cref{chapter:preliminaries}, hardware structure and software architecture will be introduced, with a general primer of both the TNL library and the B-Tree data structure. Previous implementations of such data structure and other state-of-the-art CPU solutions are discussed in \cref{chapter:state-of-art}. 
 
-Previous implementations of such data structure and other state-of-the-art CPU solutions are discussed in \cref{chapter:state-of-art}. The realization section presented in \cref{chapter:realisation} will explain the design decision choices and various implementation and optimization details made for both of the GPU B-Tree variants shown in this thesis.
+Next, in \cref{chapter:theory}, different variants and modifications of the data structure, such as B$^+$Tree or B-Link-Tree, are explained and compared against the original B-Tree. The realization section presented in \cref{chapter:realisation} will explain the design decision choices and various implementation and optimization details made for both of the GPU B-Tree variants shown in this thesis.
 
 Last but not least, implementation correctness, testing methodology, and the experimental benchmark results between the developed solution and other chosen CPU and GPU implementations are presented in \cref{chapter:testing}.

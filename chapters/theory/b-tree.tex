@@ -4,7 +4,7 @@ B-Tree is a balanced search tree used for storing large blocks of data. It captu
 
 Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases (e.g., PostgreSQL \cite{postgresql}) and file systems (e.g., BTRFS \cite{btrfs}), where a performant self-balancing external index for large blocks of data is required. They can also be found in more applications such as data mining, decision support systems, and Online analytical processing (OLAP) \cite{olap,goetz-tech}.
 
-However, it raises the question of why B-Trees are used for on-disk data and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by having its node be as large as a whole block.
+However, it raises the question of why B-Trees are used for on-disk data and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Tree exploits this behavior by having its nodes be as large as a whole block.
 
 B-Trees are exceptionally useful for secondary disk-based storage, but it still yields significant improvements even when storing data in memory; as with CPU caches and memory line caches, the memory can be treated as a block-access device.
 
@@ -13,7 +13,7 @@ The main benefit of B-Trees is their shallow height even with many keys inserted
 \begin{figure}[H]
   \centering
   \input{components/figure/b-tree.tex}
-  \caption[B-Tree with $\mathit{Order} = 3$.]{B-Tree with $\mathit{Order} = 3$. Blue arrows indicate the presence of a pointer to a value.}
+  \caption[B-Tree with $\mathit{Order} = 3$.]{B-Tree with $\mathit{Order} = 3$. Blue lines indicate the presence of a pointer to a value.}
   \label{figure:b-tree}
 \end{figure}
 
@@ -24,22 +24,22 @@ The main benefit of B-Trees is their shallow height even with many keys inserted
           \begin{enumerate}
             \item $x.\mathit{size}$, the number of keys in a node,
             \item $x.\mathit{leaf}$, a boolean value indicating whether the node is a leaf node or not,
-            \item An list of $x.\mathit{size}$ keys $x.\mathit{key}_1, x.\mathit{key}_2, \dots, x.\mathit{key}_{x.size}$ sorted in ascending order ($x.\mathit{key}_1 \le x.\mathit{key}_2 \le \dots \le x.\mathit{key}_{x.\mathit{size}}$),
+            \item an list of $x.\mathit{size}$ keys $x.\mathit{key}_1, x.\mathit{key}_2, \dots, x.\mathit{key}_{x.size}$ sorted in ascending order ($x.\mathit{key}_1 \le x.\mathit{key}_2 \le \dots \le x.\mathit{key}_{x.\mathit{size}}$).
           \end{enumerate}
-    \item Every internal node $x$ has $x.size + 1$ pointers as its children \\($x.child_1, x.child_2, \dots, x.child_{x.size + 1}$),
-    \item All leaf nodes appear at the same depth, which is the height of tree $h$,
+    \item Every internal node $x$ has $x.size + 1$ pointers as its children \\($x.child_1, x.child_2, \dots, x.child_{x.size + 1}$).
+    \item All leaf nodes appear at the same depth, which is the height of tree $h$.
     \item Nodes have upper and lower bounds, which limit the number of keys and children. Assuming $m$ is the order of a B-Tree:
           \begin{enumerate}
-            \item Every node other than the root has at least $\floor{\nicefrac{m}{2}}$ children, thus every node other than root has at least $\floor{\nicefrac{m}{2}} - 1$ keys,
-            \item The root node has at least two children, except if it is a leaf node,
+            \item Every node other than the root has at least $\floor{\nicefrac{m}{2}}$ children, thus every node other than root has at least $\floor{\nicefrac{m}{2}} - 1$ keys.
+            \item The root node has at least two children, except if it is a leaf node.
             \item Every node may contain at most $m$ children, thus may contain at most $m - 1$ keys.
           \end{enumerate}
   \end{enumerate}
 \end{definition}
 
-An example B-Tree with $\mathit{Order} = 3$ can be seen in \cref{figure:b-tree}. In the case of B-Tree, each key may include a pointer to a specific value, highlighted as blue arrows, which is useful when implementing a map-like container.
+An example B-Tree with $\mathit{Order} = 3$ can be seen in \cref{figure:b-tree}. In the case of B-Tree, each key may include a pointer to a specific value, highlighted as blue lines, which is useful when implementing a map-like container.
 
-As a note, B-Trees are a specialization of $(a,b)$-Trees, where a B-Tree is either an $(a, 2a)$-tree or $(a, 2a + 1)$-tree depending on the oddness / evenness of $a$. This is also why 2-4 trees (also known as \enquote{2-3-4-trees}) (which in turn are similar to RB-Trees) are B-Trees with an order of 3.
+As a note, B-Trees are a specialization of $(a,b)$-Trees, where a B-Tree is either an $(a, 2a)$-tree or $(a, 2a + 1)$-tree depending on the oddness / evenness of $a$. This is also why 2-4 trees (also known as \enquote{2-3-4-trees} which in turn are similar to RB-Trees) are B-Trees with an order of 3.
 
 \begin{lemma}
   B-Tree $T$ of order $m$ with $n \ge 1$ keys has height $h = \Theta(\log{n})$.
@@ -117,7 +117,7 @@ First, the tree is traversed for the existence of the needle key. The algorithm 
 
 If a node after insertion has subsequently become full after insertion, a split operation must occur to preserve the rules of the B-Tree \cref{def:btree}. The node is considered \textit{full} if the node contains exactly $m - 1$ keys. The median key is chosen as the separator, and the node is split into two smaller nodes based on that separator. The separator is inserted into the parent of the split node, which might trigger the split operation again.
 
-When the root node needs to be split, a new node with the separator as its only key and two subtrees as its children, which the definition \cref{def:btree} permits (only internal nodes must contain at least $\floor{\nicefrac{m}{2}}$ keys).
+When the root node needs to be split, a new node with the separator as its only key and two subtrees as its children, which the \cref{def:btree} permits (only internal nodes must contain at least $\floor{\nicefrac{m}{2}}$ keys).
 
 \subsection{Deletion}
 

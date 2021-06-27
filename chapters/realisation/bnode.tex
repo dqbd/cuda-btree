@@ -2,6 +2,10 @@
 
 This section describes the proposed B$^+$Tree and B-Link-Tree node structure, found in the \cref{lst:node}. Comments and helpers methods were removed for the sake of brevity.
 
+\codecpp{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} conversion statement \cite{ptxisa}.
+
+\pagebreak
+
 \begin{listing}
   \begin{minted}{cpp}
 template <typename KeyType, typename ValueType, size_t Order>
@@ -35,7 +39,5 @@ struct BLinkNode {
   \caption[B$^+$Tree and B-Link-Tree node structures]{The node structures used in B$^+$Tree and B-Link-Tree.}
   \label{lst:node}
 \end{listing}
-
-\codecpp{uint16_t} have been chosen in favor of smaller data types, as most instructions in the \acrshort{isa} do not support operand types smaller than 16-bits and instead convert them to larger data types via a \mintinline{asm}{cvt} conversion statement \cite{ptxisa}.
 
 As seen in the \codecpp{BLinkNode} variant at line 25--26, \codecpp{mChildren} and \codecpp{mSibling} are both using the \codecpp{volatile} qualifier to avoid incorrect memory access optimization by the compiler. This qualifier tells the compiler to assume that the contents of the variable may be changed or used at any time by another thread. Therefore all references to this variable will compile into an actual memory read or write \cite{cudaprog}.
