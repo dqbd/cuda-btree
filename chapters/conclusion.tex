@@ -1,17 +1,18 @@
 \chapter{Conclusion}\label{chapter:conclusion}
 
-The purpose of this work was to understand the programming of GPGPU using CUDA, create a GPU B-Tree key-value store on top of Template Numerical Library, test the implemented tree, and compare performance between the CPU and GPU version and between other CUDA implementations.
+\section{Goals and results}
+The goal of this body of work was to study and understand the B-Tree data structure with all of its variants and introduce an implementation of a B-Tree data structure capable of execution on the GPU.
 
-We studied the core concepts behind the CUDA programming model -- how it allows the programmer to execute code on the GPU and how threads behave during execution. We also got familiar with Template Numerical Library and how templating metaprogramming provides a unified interface for different devices.
+Core concepts behind the CUDA programming model were studied and explained; how it allows the programmer to execute GPU code from the CPU, how threads are organized and assigned to each CUDA execution core, and how a programmer can synchronize threads on the GPU. An introduction to the Template Numerical Library has been made to understand how template metaprogramming can provide a unified interface for different execution environments.
 
-Later on, this thesis delved into understanding the behavior of B-Trees and the nature of concurrency control for parallel access and writing. We explored various methods of latching and ensuring the integrity of the tree and explained the reasoning behind choosing B-Link-Tree as our underlying structure.
+Two variants of B-Tree were introduced and described: B$^+$Tree and B-Link-Tree. Both of the variants were appropriately modified to support concurrent updates and reads. All of the implementations were written in \CC\ with the help of the TNL library.
 
-Next, we explained how we avoid significant contention issues with proactive splitting, which limits the node modifications to two tree levels at most. This allows us to avoid implementing a stack to keep track of parent nodes.
+The principles behind the Warp Cooperative Work Sharing strategy were outlined, and different warp-friendly optimizations were introduced to utilize the entire warp to accelerate a single operation, avoiding unnecessary warp divergence and improving performance. Proactive splitting has been utilized to avoid implementing a stack for keeping track of parent nodes, and various concurrency control methods used in both of the variants were discussed.
 
-We outlined the principles behind the Warp Cooperative Work Sharing strategy and per-warp processing and how it helps us improve the performance of insertion and search by eliminating unnecessary branch divergence and improving coalesced memory access.
+Multiple GoogleTest based unit test suites were written to ensure proper functionality. A complementary web tool has been developed to visualize operations done in a multithreaded environment.
 
-Both GPU B-Tree and its CPU counterpart were implemented on top of TNL, which takes care of actual memory allocations and data exchange between devices. Multiple GoogleTest based units were written to ensure proper functionality. We have also developed a complementary web tool written in React to visualize operations done in a multithreaded environment, where the lack of debug tools makes debugging issues hard. Performance of both of the classes were compared against \code{STL::map}, \code{TLX::BTree} and other state-of-the-art GPU implementations.
+Finally, both of the implementations were measured and compared against STL and other state-of-the-art GPU and CPU B-Tree implementations. Measurements of both variants against \codecpp{std::map} show a substantial speedup: $\approx$\,$200\times$ when querying and $\approx$\,$25\times$ when inserting random sequences of length $2^{24}$--$2^{25}$. When compared to the GPU B-Tree implementation by Awad et al. \cite{awad}, both of the variants implemented in this thesis are slower. It should be noted that both the B$^+$Tree and B-Link-Tree perform similarly, suggesting the reduced instruction count and reduced unnecessary pointer chasing in B$^+$Tree overshadow the concurrency improvements of B-Link-Tree.
 
-Our implementation demonstrated a significant performance uplift compared to our CPU counterpart, 50$\times$ during searching, 5$\times$ during incremental insertion. When compared to state-of-the-art GPU implementations, our work is 3$\times$ slower in searching and insertion, which we see as a tradeoff for a more general-purpose data structure capable of storing data of different data types.
+\section{Future work}
 
-\todo{Add future work}
+The implementation presented in this thesis, as shown in \cref{section:results}, is $\approx$\,$3\times$ slower than the solution from Awad et al. \cite{awad}, even though it is not certain their implementation perform correctly on large input sequences. Further work needs to be done to improve memory access patterns. Another point of improvement can be the implementation of range queries.
