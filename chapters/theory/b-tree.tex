@@ -2,29 +2,28 @@
 
 B-Tree is a balanced search tree used for storing large blocks of data. It captures and maintains the sort order of data and supports searching, sequential retrieval, insertion, and deletion in logarithmic time.
 
-Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases (e.g., PostgreSQL \cite{postgresql}) and file systems (e.g., btrfs \cite{btrfs}), where a performant self-balancing external index for large blocks of data is required. \todo{Add OLAP, OLTP usages and references}
+Since their invention 50 years ago \cite{bayer-org}, B-Trees have been already considered ubiquitous less than ten years later \cite{10.1145/356770.356776}. They can be found in various forms in databases (e.g., PostgreSQL \cite{postgresql}) and file systems (e.g., BTRFS \cite{btrfs}), where a performant self-balancing external index for large blocks of data is required. They can also be found in more applications such as data mining, decision support systems, and Online analytical processing (OLAP) \cite{olap,goetz-tech}.
 
-B-Trees are a specialization of $(a,b)$-Trees, where a B-Tree is either an $(a, 2a)$-tree or $(a, 2a + 1)$-tree depending on the oddness / evenness of $a$. This is also why 2-4 trees (also known as \enquote{2-3-4-trees}) (which in turn are similar to RB-Trees) are B-Trees with an order of 3.
+However, it raises the question of why B-Trees are used for on-disk data and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by having its node be as large as a whole block.
 
-However, it raises why B-Trees are used for on-disk data, and binary search trees are used for in-memory data. The main reason behind this is the high overhead of data access in block-access storage, where byte access is not well supported. A typical example is disk storage, where a disk is divided into blocks. B-Trees exploit this behavior by having its node be as large as a whole block.
-
-B-Trees are exceptionally useful for secondary disk-based storage, but it still yields significant improvements even when storing data in memory; as with CPU caches and memory line caches, we can treat the memory as a block-access device.
+B-Trees are exceptionally useful for secondary disk-based storage, but it still yields significant improvements even when storing data in memory; as with CPU caches and memory line caches, the memory can be treated as a block-access device.
 
 The main benefit of B-Trees is their shallow height even with many keys inserted; thus, the number of disk accesses to traverse the tree is also low.
 
 \begin{figure}[H]
   \centering
   \input{components/figure/b-tree.tex}
-  \caption{B-Tree with $\mathit{Order} = 3$.}
+  \caption[B-Tree with $\mathit{Order} = 3$.]{B-Tree with $\mathit{Order} = 3$. Blue arrows indicate the presence of a pointer to a value.}
+  \label{figure:b-tree}
 \end{figure}
 
 \begin{definition}\label{def:btree}
-  B-Tree of order $m$ is a rooted tree with following properties:
+  B-Tree of an order $m$ is a rooted tree with following properties:
   \begin{enumerate}
     \item Every node $x$ has following attributes:
           \begin{enumerate}
             \item $x.\mathit{size}$, the number of keys in a node,
-            \item $x.\mathit{leaf}$, a boolean value indicating whether the node is a leaf or not,
+            \item $x.\mathit{leaf}$, a boolean value indicating whether the node is a leaf node or not,
             \item An list of $x.\mathit{size}$ keys $x.\mathit{key}_1, x.\mathit{key}_2, \dots, x.\mathit{key}_{x.size}$ sorted in ascending order ($x.\mathit{key}_1 \le x.\mathit{key}_2 \le \dots \le x.\mathit{key}_{x.\mathit{size}}$),
           \end{enumerate}
     \item Every internal node $x$ has $x.size + 1$ pointers as its children \\($x.child_1, x.child_2, \dots, x.child_{x.size + 1}$),
@@ -37,6 +36,10 @@ The main benefit of B-Trees is their shallow height even with many keys inserted
           \end{enumerate}
   \end{enumerate}
 \end{definition}
+
+An example B-Tree with $\mathit{Order} = 3$ can be seen in \cref{figure:b-tree}. In the case of B-Tree, each key may include a pointer to a specific value, highlighted as blue arrows, which is useful when implementing a map-like container.
+
+As a note, B-Trees are a specialization of $(a,b)$-Trees, where a B-Tree is either an $(a, 2a)$-tree or $(a, 2a + 1)$-tree depending on the oddness / evenness of $a$. This is also why 2-4 trees (also known as \enquote{2-3-4-trees}) (which in turn are similar to RB-Trees) are B-Trees with an order of 3.
 
 \begin{lemma}
   B-Tree $T$ of order $m$ with $n \ge 1$ keys has height $h = \Theta(\log{n})$.
@@ -73,7 +76,9 @@ As search, insertion, and deletion on a single node takes $\Theta{(1)}$, time co
 
 \subsection{Search}
 
-The search algorithm for B-Trees is trivial but crucial, similar to the search algorithm for binary search trees. We compare the keys in every node and decide the subtree to continue the search starting from the root node, as seen in lines 3--4 in the sample \cref{alg:b-tree-search}. The search ends if we find the desired key or if we end up in a leaf node, which does not have any children.
+The search algorithm for B-Trees is trivial but crucial, similar to the search algorithm for binary search trees. Keys are compared against a needle key in every node, starting from the root node. The goal is to find the position of the first key, which is greater than or equal to the needle key, as seen in lines 3--4 in the sample \cref{alg:b-tree-search}.
+
+If the key at that position does match the needle key, the key has been found, and the function will return the node containing the needle key and the position of said key. Otherwise, the search will continue from the child node at the said position. The search ends if it ends up in a leaf node, which does not have any additional children.
 
 \begin{algorithm}
   \caption{B-Tree Search}\label{alg:b-tree-search}
@@ -104,11 +109,11 @@ The search algorithm for B-Trees is trivial but crucial, similar to the search a
   }
 \end{algorithm}
 
-Line 3--4 in the sample \cref{alg:b-tree-search} can be replaced with a binary search or parallelized search in CUDA, which is more suited towards SIMD systems.
+Line 3--4 in the sample \cref{alg:b-tree-search} can be replaced with a binary search or parallelized search in CUDA, which is more suited towards SIMD systems. More about that topic can be found in \cref{chapter:realisation}.
 
 \subsection{Insertion}
 
-First, we traverse the tree for the existence of the key. The algorithm will end up in a leaf node if the key is not found. Thus, we need to add the key to the parent of the found node
+First, the tree is traversed for the existence of the needle key. The algorithm will end up in a leaf node if the key is not found. In that case, a key needs to be inserted into the node at the correct position to preserve the key ordering.
 
 If a node after insertion has subsequently become full after insertion, a split operation must occur to preserve the rules of the B-Tree \cref{def:btree}. The node is considered \textit{full} if the node contains exactly $m - 1$ keys. The median key is chosen as the separator, and the node is split into two smaller nodes based on that separator. The separator is inserted into the parent of the split node, which might trigger the split operation again.
 
@@ -116,17 +121,17 @@ When the root node needs to be split, a new node with the separator as its only 
 
 \subsection{Deletion}
 
-Deletion in B-Trees is analogous to insertion. We start by searching the tree for the desired key.
+Deletion in B-Trees is analogous to insertion, starting by searching the tree for the desired needle key.
 
-If the key is found on a leaf node, we can trivially delete the key from the node. If the node has subsequently become \textit{underfull} by not containing at least $\ceil{\nicefrac{m}{2}}$ keys, the tree must be rebalanced.
+If the searched needle key is found on a leaf node, it can be trivially deleted from the node. If the node has subsequently become \textit{underfull} by not containing at least $\ceil{\nicefrac{m}{2}}$ keys, the tree must be rebalanced.
 
-Deleting a key from an internal node is more complicated, as child nodes are bound to keys, and a key deletion will result in the loss of a child. Thus, instead of deleting, we swap the key with a successor (or predecessor) key. The key can then be deleted as it is located in a leaf node after the swap. Similar rebalancing must occur if the node has become underfull.
+Deleting a key from an internal node is more complicated, as child nodes are bound to keys, and a key deletion will result in the loss of a child. Thus, instead of deleting, the key is swapped with a successor (or a predecessor) key. The key can then be deleted as it is now located in a leaf node after the swap. Similar rebalancing must occur if the node has become underfull.
 
 Rebalancing of node $x$ is performed when $x.size = \floor{\nicefrac{m}{2}} - 1$. Assume, without loss of generality, a sibling node $l$ on the left of $x$ exists, and $i$ is the key, which binds the node $n$ to its parent. If a left sibling does not exist or does not have any spare keys to share, a right sibling is used instead, and the rebalancing operation is mirrored.
 
-If the sibling node $l$ has at least $\floor{\nicefrac{m}{2}} + 1$ keys, we can perform the borrowing operation; the key $i$ is prepended to the node $x$ and the last key of $l$ detaches from $l$ and replaces the key $i$. Last child of $l$ is also detached and prepended to $x$.
+If the sibling node $l$ has at least $\floor{\nicefrac{m}{2}} + 1$ keys, the borrowing operation can be performed; the key $i$ is prepended to the node $x$ and the last key of $l$ detaches from $l$ and replaces the key $i$. Last child of $l$ is also detached and prepended to $x$.
 
 However, if neither the sibling nodes have enough keys, a merge operation occurs. Both the $x$ node and its sibling $l$ are deleted, and a new node is created instead. This new node contains keys and children of both $x$ and $l$, with key $i$ in the middle. Deletion is, thus, propagated upwards. In the event of a root with no keys and a single child, the single child becomes the new root.
 
-Many implementations forgo rebalancing the tree in favor of replacing the key with a tombstone \cite{goetz-tech}. The tombstone is useful even when inserting, as a key could be directly inserted in place of a tombstone if applicable, thus alleviating the cost of inserting a new key into a sorted list. Rebalancing the tree can be postponed and executed later.
+Many implementations forgo rebalancing the tree in favor of replacing the key with a tombstone \cite{goetz-tech}. The tombstone is useful even when inserting, as a key could be directly inserted in the place of a tombstone if applicable, thus alleviating the cost of inserting a new key into a sorted list. Rebalancing the tree can be postponed and executed later.
 

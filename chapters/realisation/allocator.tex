@@ -22,7 +22,7 @@ To handle the allocation of nodes, a section of memory is allocated beforehand o
 
 Atomicity is key for successful allocation, as the allocator can be invoked concurrently from different threads. The \codecpp{allocate} method will move the memory offset atomically via the \codecpp{atomicAdd} function. This function will return the previous offset, which is used to obtain the address on the newly available global memory block, as seen on line 7 in \cref{lst:allocator}. Atomic instructions are used to ensure the serializability of the operations, as the allocator is invoked concurrently from different threads.
 
-Proper care needs to be taken of the root node and its address when moving the pointers to a different memory location, for example, while resizing the underlying memory block of the allocator.
+Proper care needs to be taken of the root node and its address when moving the pointers to a different memory location, for example, while resizing the underlying memory block of the allocator. The address of the root node can be trivially updated in this instance by using pointer arithmetic.
 
 The main benefit of the bump allocator is its simplicity and performance. Dynamic global memory allocation inside a device function is considerably slower \cite{vinkler2015register} than the bump allocator. It is also allocated on a size-limited heap. By default, the heap is only 8 MB large and may be resized only once in a during application runtime \cite{cudaprog}, which is not suitable for storing large amounts of data in global memory.
 

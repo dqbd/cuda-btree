@@ -14,15 +14,20 @@ Previous approaches include locking a subtree of highest affected node \cite{sam
   \end{enumerate}
 \end{definition}
 
-\begin{figure}
+\begin{figure}[H]
   \centering
   \input{components/figure/b-link-tree.tex}
-  \caption{B-Link-Tree with $\mathit{Order} = 3$.}
+  \caption[B-Link-Tree with $\mathit{Order} = 3$.]{B-Link-Tree with $\mathit{Order} = 3$. Blue arrows indicate a pointer to a value, red arrows indicate an optional pointer to a sibling node.}
+  \label{figure:b-link-tree}
 \end{figure}
+
+An example tree can be seen in \ref{figure:b-link-tree}, where it is shown that the idea of a sibling pointer from B$^+$Tree is extended towards all levels of the tree, not just the leaf nodes. 
+
+\subsection{Insertion and Search}
 
 Splitting during node insertion is divided into two independent steps: splitting a node and inserting the split node with its new separator key to the parent node.
 
-\begin{figure}[H]
+\begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth ]{components/figure/b-link-insert}
   \caption{States of the tree during splitting while inserting a new key.}
@@ -31,24 +36,22 @@ Splitting during node insertion is divided into two independent steps: splitting
 
 Assuming node $x$ is a full node, which needs to be split, shown in step (a) in \cref{figure:b-link-insert}. When splitting the node $x$, a new right sibling node $y$ is created, as seen in step (b). The node $y$ inherits the high key from the split node $x$, whereas the $x$ node is updated (marked as $x^\prime$) with a new $x.highkey = y.key_0$. Thus, an internal node does exist without a parent in between the operations.
 
-$x^\prime.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete. \todo{refactor this sentence to better clarify the usage of sibling nodes}
+$x^\prime.highkey$ is used to be able to traverse the newly split node and its subtree, even when the split operation is not complete. As the final step of node splitting, both the separator key and the pointer to the newly split node $y$ are inserted in the parent node $p$, seen in step (c). Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
 
-As the final step of node splitting, both the separator key and the pointer to the newly split node $y$ are inserted in the parent node $p$, seen in step (c). Similar to the insertion in B-Tree, a split operation might trigger additional splitting in higher levels.
-
-Tree traversal is modified to honor $x.highkey$ by returning the node at $x.\mathit{sibling}$ when the target key $k$ is larger or equal than $x.highkey$.
+Tree traversal is modified to honor $x.highkey$ by returning the node at $x.\mathit{sibling}$ when the target key $k$ is larger or equal to $x.highkey$.
 
 \subsection{Proof of correctness}
 
-To prove the correctness of each operation performed on the B-link-tree, the following theorems need to be proven: \todo{add proof from yehman}
+The following theorems need to be proven to prove the correctness of each operation performed on the B-Link-Tree:
 
 \begin{itemize}
-  \item \textit{Deadlock freedom} --- threads performing operations on the B-link-tree cannot produce a deadlock,
+  \item \textit{Deadlock freedom} --- threads performing operations on the B-Link-Tree cannot produce a deadlock,
   \item \textit{Correct tree modifications} --- the tree must appear as a valid tree for all nodes at any time,
   \item \textit{Correct interactions} --- concurrent operations do not interfere with one another.
 \end{itemize}
 
 \begin{theorem}
-  \textit{Deadlock freedom}: threads performing operations on the B-link-tree cannot produce a deadlock.
+  \textit{Deadlock freedom}: threads performing operations on the B-Link-Tree cannot produce a deadlock.
 \end{theorem}
 
 \begin{proof}
@@ -111,7 +114,7 @@ To prove the correctness of each operation performed on the B-link-tree, the fol
     \item splitting of node $x$, where the inserted key is placed in the right node $x^{\prime\prime}$, the newly allocated node.
   \end{enumerate}
 
-  In the first scenario, $I$ performs the insertion in node $x$ without additional splitting. If it is inserting into a leaf node ($x.\mathit{leaf} = \mathit{true}$), no other pointers are inserted by the process $I$, and the operation $P$ behaves as if the read happened before insertion.
+  In the first scenario, $I$ performs the insertion in node $x$ without additional splitting if it is inserting into a leaf node ($x.\mathit{leaf} = \mathit{true}$), no other pointers are inserted by the process $I$. The operation $P$ behaves as if the read happened before insertion.
 
   If the insertion happens on an internal node ($x.\mathit{leaf} = \mathit{false}$), a key-pointer pair created by splitting a lower-level node $z^{\prime\prime}$ is inserted into the node $x$. This scenario is the only one where a key-pointer pair could propagate upwards to node $x$. The operation $P$ will be able to utilize the link pointers $z.\mathit{sibling}$ to reach both the original node and the newly split node.
 

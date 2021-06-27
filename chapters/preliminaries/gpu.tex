@@ -19,11 +19,11 @@ As the staggering performance of a \acrshort{gpu} has not gone unnoticed by the 
 
 \subsection{Hardware architecture}
 
-As the implementation of both B$^+$Tree and B-Link-Tree is based on CUDA (see \cref{label:cuda}), we're focusing on NVIDIA \acrshort{gpu} and its architecture in this work. Since the introduction of unified shared architecture with GeForce 8 Series in 2006, a single NVIDIA GPU comprises an array of \textit{streaming multiprocessors} (SM). The power of a single GPU card depends on the number of these streaming multiprocessors, which may vary between models. Each \acrshort{sm} in general have these components:
+As the implementation of both B$^+$Tree and B-Link-Tree is based on CUDA (see \cref{label:cuda}), we're focusing on NVIDIA \acrshort{gpu} and its architecture in this work. Since the introduction of unified shared architecture with GeForce 8 Series in 2006 \cite{cuda-g80}, a single NVIDIA GPU is made of an array of \textit{streaming multiprocessors} (SM). The power of a single GPU card depends on the number of these streaming multiprocessors, which may vary between models. Each \acrshort{sm} in general have these components:
 \begin{itemize}
   \item \textit{Streaming processors}\footnote{Also known as a \textit{CUDA core}}, each containing an arithmetic logic unit (ALU) for integer operations and floating-point unit (FPU) for floating-point operations.
   \item \textit{Register file}, where threads store their local variables. This register file is shared between all threads running in the SM. The number of available registers per thread is defined by architecture.
-  \item \textit{Instruction cache}, which caches the instruction without the data for quick fetching.
+  \item \textit{Instruction cache}, used to accelerate instruction fetching.
   \item \textit{Shared memory} used to share data between threads in the same thread block (see \cref{label:gpu:mem}).
   \item \textit{L1 / Texture cache}, which is used to store local memory of the thread or to serve as a texture cache for image data.
 \end{itemize}
@@ -47,5 +47,5 @@ Finally, all threads have access to the global memory, available to all threads 
 
 Both local and global memory can be routed through L2 and L1 cache. L1 and L2 cache work in a similar manner as in the CPU to speed up memory access. L1 cache level has lower latency than the L2 cache level when accessing, and both of these caches are faster than accessing the memory directly. Thus, to increase memory throughput, it is desirable to store and read data in faster caches than from memory itself, keeping both cache utilization and hit rate high.
 
-This can be achieved by organizing the memory allocation and access to honor temporal locality, ensuring the duration between the reuse of specific data is as short as possible, and spatial locality, keeping our data access close to each other.
+This can be achieved by organizing the memory allocation and access in a way to honor both the \textit{temporal locality}, ensuring the duration between the reuse of specific data is as short as possible, and \textit{spatial locality}, keeping our data access close to each other.
 

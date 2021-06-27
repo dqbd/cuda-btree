@@ -4,7 +4,7 @@
 
 B-Tree is a well-known data structure often used as an index, a critical primitive used in various applications, such as data mining, decision support systems, and Online analytical processing (OLAP) \cite{olap,goetz-tech}. Widely found in database systems and file systems \cite{postgresql,btrfs}, B-Tree became the data structure of choice used when dealing with a large amount of arbitrary data of an unknown domain.
 
-Thanks to the self-balancing nature of this data structure, by keeping the tree height as small as possible, regardless of arbitrary updates, lookup, insertion, and deletion in the tree are in $\mathcal{O}(\log{n})$. Naively, operating on multiple items will thus perform in $\mathcal{O}(n \log{n})$. This can be improved upon by using concurrent processing and computation on such data structure when processing multiple items.
+Lookup, insertion, and deletion in the tree are in $\mathcal{O}(\log{n})$, by keeping the tree height as small as possible regardless of arbitrary updates, thanks to the self-balancing nature of this data structure. Naively, operating on multiple items will thus perform in $\mathcal{O}(n \log{n})$. This can be improved upon by using concurrent processing and computation on such data structure when processing multiple items.
 
 One such hardware utilizing many processing cores to process tasks faster is the Graphical Processing Unit (GPU). With the advent of programmable shaders and support for floating-point operations, General-purpose computing on GPU became suitable for high-performance computing. Thanks to their superior computing performance to price ratio, GPUs became an essential staple for enabling high-performance computing for the masses.
 
